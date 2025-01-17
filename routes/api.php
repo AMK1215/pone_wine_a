@@ -38,33 +38,11 @@ Route::post('/player-change-password', [AuthController::class, 'playerChangePass
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::get('contact', [ContactController::class, 'get']);
 
-// sameless route
-Route::post('Seamless/Test', [TransactionController::class, 'SystemWalletTest']);
-Route::post('GetBalance', [GetBalanceController::class, 'getBalance']);
-Route::post('BetNResult', [BetNResultController::class, 'handleBetNResult']);
-//Route::post('BetNResult', [NewBetNResultController::class, 'handleBetNResult']);
-
-Route::post('CancelBetNResult', [CancelBetNResultController::class, 'handleCancelBetNResult']);
-Route::post('Bet', [BetController::class, 'handleBet']);
-Route::post('Result', [BetResultController::class, 'handleResult']);
-Route::post('CancelBet', [CancelBetController::class, 'handleCancelBet']);
-Route::post('Adjustment', [AdjustmentController::class, 'handleAdjustment']);
-Route::post('Reward', [RewardController::class, 'handleReward']);
-Route::post('GetGameProvider', [GetGameProviderController::class, 'fetchGameProviders']);
-Route::post('GetGameListByProvider', [GetGameListByProviderController::class, 'fetchGameListByProvider']);
-
-Route::post('transactions', [ShanTransactionController::class, 'index'])->middleware('transaction');
 
 // for slot
 Route::post('/transaction-details/{tranId}', [TransactionController::class, 'getTransactionDetails']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('GameLogin', [LaunchGameController::class, 'LaunchGame']);
-    Route::get('wager-logs', [WagerController::class, 'index']); //GSC
-    //Route::get('transactions', [TransactionController::class, 'index']);
-    //Route::get('shan-transactions', [TransactionController::class, 'index'])->middleware('transaction');
-    Route::get('shan-transactions', [TransactionController::class, 'GetPlayerShanReport']);
-
     Route::get('user', [AuthController::class, 'getUser']);
     Route::get('contact', [AuthController::class, 'getContact']);
     Route::get('agent', [AuthController::class, 'getAgent']);
@@ -76,7 +54,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('depositlog', [DepositRequestController::class, 'log']);
     Route::get('paymentType', [BankController::class, 'paymentType']);
     Route::post('withdraw', [WithDrawRequestController::class, 'withdraw']);
-    Route::post('withdrawTest', [WithDrawRequestController::class, 'withdrawTest']);
     Route::get('withdrawlog', [WithDrawRequestController::class, 'log']);
     Route::get('sitelogo-name', [GetAdminSiteLogoNameController::class, 'GetSiteLogoAndSiteName']);
     Route::get('banner', [BannerController::class, 'index']);
@@ -89,28 +66,4 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('banner_Text', [BannerController::class, 'bannerTest']);
     Route::get('popup-ads-banner', [BannerController::class, 'AdsBannerIndex']);
     Route::get('ads-banner', [BannerController::class, 'AdsBannerTest']);
-    Route::get('gameTypeProducts/{id}', [GameController::class, 'gameTypeProducts']);
-    Route::get('allGameProducts', [GameController::class, 'allGameProducts']);
-    Route::get('gameType', [GameController::class, 'gameType']);
-    Route::get('hotgamelist', [GameController::class, 'HotgameList']);
-    Route::get('pphotgamelist', [GameController::class, 'PPHotgameList']);
-    Route::get('gamelist/{provider_id}/{game_type_id}/', [GameController::class, 'gameList']);
-    Route::get('gameFilter', [GameController::class, 'gameFilter']);
-    Route::get('gamelistTest/{provider_id}/{game_type_id}/', [GameController::class, 'gameListTest']);
 });
-
-// DataVisualize for real time Monitoring
-Route::get('/visual-bets', [DataVisualizationController::class, 'VisualizeBet']); // Fetch all bets
-Route::get('/visual-results', [DataVisualizationController::class, 'VisualizeResult']); // Fetch all results
-
-Route::get('/getvisualresults', [DataVisualizationController::class, 'getResultsData']); // Fetch all results
-
-// transfer data to second db
-
-Route::group(['prefix' => 'transferdata'], function () {
-    // get all user
-    Route::get('/getallusers', [GetUserController::class, 'getAllUsers']); // Fetch all users
-
-});
-
-Route::get('/results/user/{userName}', [ReportController::class, 'getResultsForUser']);

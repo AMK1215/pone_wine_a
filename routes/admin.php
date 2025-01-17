@@ -8,31 +8,22 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BannerTextController;
 use App\Http\Controllers\Admin\Bonu\BonusController;
 use App\Http\Controllers\Admin\ContactController;
-use App\Http\Controllers\Admin\DailySummaryController;
 use App\Http\Controllers\Admin\Deposit\DepositRequestController;
 use App\Http\Controllers\Admin\GameListController;
 use App\Http\Controllers\Admin\GameListImageURLUpdateController;
 use App\Http\Controllers\Admin\GameTypeProductController;
-use App\Http\Controllers\Admin\GetBetDetailController;
-use App\Http\Controllers\Admin\GSCReportController;
-use App\Http\Controllers\Admin\MultiBannerReportController;
 use App\Http\Controllers\Admin\NewGameListController;
 use App\Http\Controllers\Admin\Owner\OwnerController;
 use App\Http\Controllers\Admin\PaymentTypeController;
 use App\Http\Controllers\Admin\Player\PlayerController;
 use App\Http\Controllers\Admin\PromotionController;
-use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RolesController;
-use App\Http\Controllers\Admin\Seniors\SeniorHierarchyController;
-use App\Http\Controllers\Admin\Shan\ShanReportController;
 use App\Http\Controllers\Admin\SubAccountController;
 use App\Http\Controllers\Admin\TopTenWithdrawController;
-use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\TransferLog\TransferLogController;
 use App\Http\Controllers\Admin\WinnerTextController;
 use App\Http\Controllers\Admin\WithDraw\WithDrawRequestController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\NewReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -95,7 +86,6 @@ Route::group([
         return response()->json(['success' => true]);
     })->name('markNotificationsRead');
 
-    Route::get('transaction-list', [TransactionController::class, 'index'])->name('transaction');
     // game list start
     Route::get('all-game-lists', [GameListController::class, 'index'])->name('gameLists.index');
     Route::get('all-game-lists/{id}', [GameListController::class, 'edit'])->name('gameLists.edit');
@@ -145,33 +135,10 @@ Route::group([
     Route::get('owner-changepassword/{id}', [OwnerController::class, 'getChangePassword'])->name('owner.getChangePassword');
     Route::post('owner-changepassword/{id}', [OwnerController::class, 'makeChangePassword'])->name('owner.makeChangePassword');
 
-    Route::get('agent-to-player-deplogs', [AgentController::class, 'AgentToPlayerDepositLog'])->name('agent.AgentToPlayerDepLog');
-
-    Route::get('agent-win-lose-report', [AgentController::class, 'AgentWinLoseReport'])->name('agent.AgentWinLose');
-
-    Route::get('/agent/wldetails/{agent_id}/{month}', [AgentController::class, 'AgentWinLoseDetails'])->name('agent_winLdetails');
-
-    Route::get('auth-agent-win-lose-report', [AgentController::class, 'AuthAgentWinLoseReport'])->name('AuthAgentWinLose');
-
-    Route::get('/authagent/wldetails/{agent_id}/{month}', [AgentController::class, 'AuthAgentWinLoseDetails'])->name('authagent_winLdetails');
-
-    Route::get('/agent-to-player-detail/{agent_id}/{player_id}', [AgentController::class, 'AgentToPlayerDetail'])->name('agent.to.player.detail');
 
     Route::get('withdraw', [WithDrawRequestController::class, 'index'])->name('agent.withdraw');
     Route::post('withdraw/{withdraw}', [WithDrawRequestController::class, 'statusChangeIndex'])->name('agent.withdrawStatusUpdate');
     Route::post('withdraw/reject/{withdraw}', [WithDrawRequestController::class, 'statusChangeReject'])->name('agent.withdrawStatusreject');
-
-    //Route::group(['prefix' => 'report'], function () {
-    Route::get('slot-win-lose', [GSCReportController::class, 'index'])->name('GscReport.index');
-
-    Route::get('/win-lose/details/{product_name}', [GSCReportController::class, 'ReportDetails'])->name('Reportproduct.details');
-
-    Route::get('agent-slot-win-lose', [GSCReportController::class, 'AgentWinLoseindex'])->name('GscReport.AgentWLindex');
-
-    Route::get('shan-report', [ShanReportController::class, 'index'])->name('shan.reports.index');
-    Route::get('shan-reports/{user_id}', [ShanReportController::class, 'show'])->name('shanreport.show');
-    // for agent shan report
-    Route::get('agent-shan-report', [ShanReportController::class, 'ShanAgentReportIndex'])->name('shanreports_index');
 
     Route::get('deposit', [DepositRequestController::class, 'index'])->name('agent.deposit');
     Route::get('deposit/{deposit}', [DepositRequestController::class, 'view'])->name('agent.depositView');
@@ -188,58 +155,6 @@ Route::group([
         Route::get('countindex', [BonusController::class, 'index'])->name('bonu_count.index');
     });
 
-    // get bet deatil
-    Route::get('get-bet-detail', [GetBetDetailController::class, 'index'])->name('getBetDetail');
-    Route::get('get-bet-detail/{wagerId}', [GetBetDetailController::class, 'getBetDetail'])->name('getBetDetail.show');
-
     Route::resource('/product_code', App\Http\Controllers\Admin\ProductCodeController::class);
 
-    Route::group(['prefix' => 'slot'], function () {
-
-        Route::get('/game-report', [NewReportController::class, 'getGameReport'])->name('game.report');
-        Route::get('/agent-game-report', [NewReportController::class, 'getGameAgentReport'])->name('agent.game.report');
-        Route::get('/game-report/{player_id}/{game_code}', [NewReportController::class, 'getGameReportDetail'])->name('game.report.detail');
-
-        Route::get('report', [ReportController::class, 'index'])->name('report.index');
-        Route::get('reports/details/{game_provide_name}', [ReportController::class, 'getReportDetails'])->name('reports.details');
-        Route::get('adminreport', [ReportController::class, 'Reportindex'])->name('report.adminindex');
-        Route::get('reports/player/{playerId}', [ReportController::class, 'playerDetails'])->name('reports.player.details');
-
-        Route::get('agentreport', [ReportController::class, 'AgentReportindex'])->name('report.agentindex');
-
-        Route::get('/daily-summaries', [DailySummaryController::class, 'index'])->name('daily_summaries.index');
-
-        Route::get('/reports/senior', [MultiBannerReportController::class, 'getSeniorReport'])->name('reports.senior');
-        Route::get('/reports/owner', [MultiBannerReportController::class, 'getAdminReport'])->name('reports.owner');
-        Route::get('/reports/agent', [MultiBannerReportController::class, 'getAgentReport'])->name('reports.agent');
-        Route::get('/reports/agent/detail/{user_id}', [MultiBannerReportController::class, 'getAgentDetail'])->name('reports.agent.detail');
-
-        // senior result
-        Route::get('/seniorresults', [ReportController::class, 'getAllResults'])->name('senior_results.index');
-        Route::post('/senior/delete-results', [ReportController::class, 'deleteResults'])->name('senior.deleteResults');
-
-        Route::get('/seniorbets', [ReportController::class, 'getAllBets'])->name('senior_bet.index');
-        Route::post('/senior/delete-bets', [ReportController::class, 'deleteBets'])->name('senior.deleteBets');
-
-        Route::get('/seniorbetnresults', [ReportController::class, 'getAllJili'])->name('senior_bet.index');
-        Route::post('/senior/delete-betnresults', [ReportController::class, 'deleteJili'])->name('senior.deleteBetNResult');
-        // report v3
-        Route::get('/results/user/{userName}', [ReportController::class, 'getResultsForOnlyUser']);
-
-        // find by username
-        Route::get('/result-search', [ReportController::class, 'GetResult'])->name('ResultSearchIindex');
-        Route::post('/results/search', [ReportController::class, 'FindByUserName'])->name('results.search');
-        //Route::delete('/results/{id}/delete', [ReportController::class, 'deleteResult'])->name('results.delete');
-        Route::delete('/admin/results/deleteMultiple', [ReportController::class, 'deleteMultiple'])->name('results.deleteMultiple');
-        Route::delete('/admin/results/{id}', [ReportController::class, 'deleteResult'])->name('results.delete');
-
-        // senior hierarchy
-        Route::get('/hierarchy', [SeniorHierarchyController::class, 'GetSeniorHierarchy'])->name('SeniorHierarchy');
-        Route::get('/get-owners', [SeniorHierarchyController::class, 'getAllOwners'])->name('GetAllOwners');
-        Route::get('/owner/{id}/agents', [SeniorHierarchyController::class, 'getOwnerWithAgents'])->name('OwnerAgentDetail');
-        Route::get('/agent/{id}/players', [SeniorHierarchyController::class, 'getAgentWithPlayers'])->name('AgentPlayerDetail');
-
-    });
 });
-
-Route::get('bo-report-sm', [ReportController::class, 'BoReport'])->name('SmBoReport');

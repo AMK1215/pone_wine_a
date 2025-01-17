@@ -11,16 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_logs', function (Blueprint $table) {
+        Schema::create('bets', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('ip_address');
-            $table->integer('lastupdate')->nullable();
-            $table->string('func_access')->nullable();
+            $table->string('user_name')->unique();
+            $table->string('room_id');
+            $table->string('bet_no');
+            $table->decimal('bet_amount');
+            $table->decimal('win_lose');
+            $table->decimal('net_win');
+            $table->boolean('is_winner');
+            $table->boolean('status')->default(0);
             $table->timestamps();
-
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
         });
     }
 
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_logs');
+        Schema::dropIfExists('bets');
     }
 };

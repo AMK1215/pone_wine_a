@@ -58,9 +58,9 @@ class User extends Authenticatable implements Wallet
         'site_link',
     ];
 
-    protected $dispatchesEvents = [
-        'created' => UserCreatedEvent::class,
-    ];
+    // protected $dispatchesEvents = [
+    //     'created' => UserCreatedEvent::class,
+    // ];
 
     protected $dates = ['created_at', 'updated_at'];
 
@@ -147,20 +147,6 @@ class User extends Authenticatable implements Wallet
         return self::where('type', UserType::SystemWallet)->first();
     }
 
-    public function seamlessTransactions()
-    {
-        return $this->hasMany(SeamlessTransaction::class, 'user_id');
-    }
-
-    public function wagers()
-    {
-        return $this->hasMany(Wager::class);
-    }
-
-    // public function parent()
-    // {
-    //     return $this->belongsTo(User::class, 'agent_id');
-    // }
 
     public function scopeRoleLimited($query)
     {
@@ -192,10 +178,6 @@ class User extends Authenticatable implements Wallet
         return $this->belongsTo(User::class, 'agent_id');
     }
 
-    // public function reports()
-    // {
-    //     return $this->hasMany(Report::class, 'agent_id');
-    // }
 
     public function banks(): HasMany
     {
@@ -206,17 +188,6 @@ class User extends Authenticatable implements Wallet
     {
         return $this->morphMany(Transaction::class, 'payable');
     }
-
-    public function bets()
-    {
-        return $this->hasMany(Bet::class, 'user_id');
-    }
-
-    // Fetch agents created by an admin
-    // public function createdAgents()
-    // {
-    //     return $this->hasMany(User::class, 'agent_id');
-    // }
 
     // Fetch players managed by an agent
     public function players()

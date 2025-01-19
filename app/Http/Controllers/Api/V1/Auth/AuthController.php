@@ -27,38 +27,6 @@ class AuthController extends Controller
 
     private const PLAYER_ROLE = 4;
 
-    // public function login(LoginRequest $request)
-    // {
-
-    //     $credentials = $request->only('phone', 'password');
-
-    //     if (! Auth::attempt($credentials)) {
-    //         return $this->error('', 'Credentials do not match!', 401);
-    //     }
-    //     $user = Auth::user();
-
-    //     if ($user->status == 0) {
-    //         return $this->error('', 'Your account is not activated!', 401);
-    //     }
-
-    //     if ($user->is_changed_password == 0) {
-    //         return $this->error($user, 'You have to change password', 200);
-    //     }
-
-    //     if($user->roles[0]['id'] != self::PLAYER_ROLE)
-    //     {
-    //         return $this->error('', 'You do not have permissions', 200);
-    //     }
-
-    //     UserLog::create([
-    //         'ip_address' => $request->ip(),
-    //         'user_id' => $user->id,
-    //         'user_agent' => $request->userAgent(),
-    //     ]);
-
-    //     return $this->success(new UserResource($user), 'User login successfully.');
-    // }
-
     public function login(LoginRequest $request)
     {
         $data = $request->validated();
@@ -80,10 +48,6 @@ class AuthController extends Controller
         if ($user->is_changed_password == 0) {
             return $this->error($user, 'You have to change password', 200);
         }
-
-        // if ($user->roles[0]['id'] != self::PLAYER_ROLE) {
-        //     return $this->error('', 'You do not have permission', 200);
-        // }
 
         // Ensure roles relationship is loaded
         $user->load('roles');

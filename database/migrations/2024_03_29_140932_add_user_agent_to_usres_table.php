@@ -15,9 +15,7 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
         });
 
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('user_agent');
-        });
+
     }
 
     /**
@@ -25,8 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('usres', function (Blueprint $table) {
-            //
+        Schema::table('user_logs', function (Blueprint $table) {
+            $table->dropColumn('user_agent');
         });
     }
 };

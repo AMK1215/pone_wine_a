@@ -79,7 +79,7 @@ class BetController extends Controller
         if ($winLoseStatus == 1) {
             (new WalletService)->deposit($player, $amountChanged, TransactionName::CapitalDeposit);
         } else {
-            (new WalletService)->withdraw($player, abs($amountChanged), TransactionName::CapitalDeposit);
+            (new WalletService)->withdraw($player, abs($amountChanged), TransactionName::CapitalWithdraw);
         }
 
         $player->wallet->save();

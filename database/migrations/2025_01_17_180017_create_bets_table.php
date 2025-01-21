@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bets', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('user_name')->unique();
+            $table->string('user_name');
             $table->string('room_id');
             $table->string('bet_no');
             $table->decimal('bet_amount');

@@ -31,6 +31,11 @@ class WalletService
         $user->depositFloat($amount, self::buildDepositMeta($user, $user, $transaction_name, $meta));
     }
 
+    public function withdraw(User $user, float $amount, TransactionName $transaction_name, array $meta = [])
+    {
+        $user->withdrawFloat($amount, self::buildDepositMeta($user, $user, $transaction_name, $meta));
+    }
+
     public static function buildTransferMeta(User $user, User $target_user, TransactionName $transaction_name, array $meta = [])
     {
         return array_merge([

@@ -2,6 +2,7 @@
 use App\Http\Controllers\Api\V1\Auth\AuthController;
 use App\Http\Controllers\Api\V1\Bank\BankController;
 use App\Http\Controllers\Api\V1\BannerController;
+use App\Http\Controllers\Api\V1\BetController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\DepositRequestController;
 use App\Http\Controllers\Api\V1\GetAdminSiteLogoNameController;
@@ -37,6 +38,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('banner', [BannerController::class, 'index']);
     Route::get('videoads', [BannerController::class, 'ApiVideoads']);
     Route::get('toptenwithdraw', [BannerController::class, 'TopTen']);
+    Route::post('bet', [BetController::class, 'index']);
 
     Route::get('promotion', [PromotionController::class, 'index']);
     Route::get('bannerText', [BannerController::class, 'bannerText']);

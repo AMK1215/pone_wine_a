@@ -21,7 +21,6 @@ use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\SubAccountController;
 use App\Http\Controllers\Admin\TopTenWithdrawController;
 use App\Http\Controllers\Admin\TransferLog\TransferLogController;
-use App\Http\Controllers\Admin\WinnerTextController;
 use App\Http\Controllers\Admin\WithDraw\WithDrawRequestController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -63,12 +62,8 @@ Route::group([
     Route::get('/players-list', [PlayerController::class, 'player_with_agent'])->name('playerListForAdmin');
 
     Route::resource('banners', BannerController::class);
-
-    Route::resource('video-upload', AdsVedioController::class);
-
     Route::resource('adsbanners', BannerAdsController::class);
     Route::resource('text', BannerTextController::class);
-    Route::resource('winner_text', WinnerTextController::class);
     Route::resource('/promotions', PromotionController::class);
     Route::resource('contact', ContactController::class);
     Route::resource('paymentTypes', PaymentTypeController::class);

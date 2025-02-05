@@ -111,7 +111,11 @@ class OwnerController extends Controller
         $user->roles()->sync(self::OWNER_ROLE);
 
         if (isset($inputs['amount'])) {
-            app(WalletService::class)->transfer($admin, $user, $inputs['amount'], TransactionName::CreditTransfer);
+            app(WalletService::class)->transfer($admin, $user, $inputs['amount'], 
+            TransactionName::CreditTransfer, [
+                'old_balance' => $user->balanceFloat,
+                'new_balance' => $user->balanceFloat + $request->amount,
+            ]);
         }
         session()->forget('user_name');
 
@@ -227,7 +231,12 @@ class OwnerController extends Controller
             }
 
             // Transfer money
-            app(WalletService::class)->transfer($admin, $master, $request->validated('amount'), TransactionName::CreditTransfer, ['note' => $request->note]);
+            app(WalletService::class)->transfer($admin, $master, $request->validated('amount'),
+             TransactionName::CreditTransfer, [
+                'note' => $request->note,
+                'old_balance' => $master->balanceFloat,
+                'new_balance' => $master->balanceFloat + $request->amount,
+            ]);
 
             return redirect()->back()->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {
@@ -260,7 +269,12 @@ class OwnerController extends Controller
             }
 
             // Transfer money
-            app(WalletService::class)->transfer($master, $admin, $request->validated('amount'), TransactionName::DebitTransfer, ['note' => $request->note]);
+            app(WalletService::class)->transfer($master, $admin, $request->validated('amount'),
+             TransactionName::DebitTransfer, [
+                'note' => $request->note,
+                'old_balance' => $master->balanceFloat,
+                'new_balance' => $master->balanceFloat - $request->amount,
+            ]);
 
             return redirect()->back()->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {
@@ -304,89 +318,6 @@ class OwnerController extends Controller
             'User '.($user->status == 1 ? 'activate' : 'inactive').' successfully'
         );
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    // public function update(Request $request, string $id)
-    // {
-    //     abort_if(
-    //         Gate::denies('owner_edit') || ! $this->ifChildOfParent($request->user()->id, $id),
-    //         Response::HTTP_FORBIDDEN,
-    //         '403 Forbidden |You cannot  Access this page because you do not have permission'
-    //     );
-
-    //     $user = User::find($id);
-
-    //     if ($request->file('agent_logo')) {
-    //         File::delete(public_path('assets/img/logo/'.$user->agent_logo));
-    //         // image
-    //         $image = $request->file('agent_logo');
-    //         $ext = $image->getClientOriginalExtension();
-    //         $filename = uniqid('banner').'.'.$ext; // Generate a unique filename
-    //         $image->move(public_path('assets/img/logo/'), $filename); // Save the file
-    //         $request->agent_logo = $filename;
-    //     }
-
-    //     $user->update([
-    //         'name' => $request->name,
-    //         'phone' => $request->phone,
-    //         'player_name' => $request->player_name,
-    //         'agent_logo' => $request->agent_logo,
-    //     ]);
-
-    //     return redirect()->back()
-    //         ->with('success', 'Owner Updated successfully');
-    // }
-    // public function update(Request $request, string $id)
-    // {
-    //     dd($request->all());
-    //     abort_if(
-    //         Gate::denies('owner_edit') || ! $this->ifChildOfParent($request->user()->id, $id),
-    //         Response::HTTP_FORBIDDEN,
-    //         '403 Forbidden |You cannot Access this page because you do not have permission'
-    //     );
-
-    //     // Find the user to update
-    //     $user = User::findOrFail($id);
-
-    //     // Validate the input
-    //     $request->validate([
-    //         'user_name' => 'nullable|string|max:255',
-    //         'name' => 'required|string|max:255',
-    //         'phone' => 'required|numeric|digits_between:10,15|unique:users,phone,'.$id,
-    //         'agent_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    //     ]);
-
-    //     // Handle the logo file if uploaded
-    //     if ($request->file('agent_logo')) {
-    //         // Delete the old logo if it exists
-    //         if ($user->agent_logo && File::exists(public_path('assets/img/logo/'.$user->agent_logo))) {
-    //             File::delete(public_path('assets/img/logo/'.$user->agent_logo));
-    //         }
-
-    //         // Upload the new logo
-    //         $image = $request->file('agent_logo');
-    //         $ext = $image->getClientOriginalExtension();
-    //         $filename = uniqid('logo').'.'.$ext;
-    //         $image->move(public_path('assets/img/logo/'), $filename);
-
-    //         // Update the logo field
-    //         $user->agent_logo = $filename;
-    //     }
-
-    //     // Update other user fields
-    //     $user->update([
-    //         'user_name' => $request->player_name,
-    //         'name' => $request->name,
-    //         'phone' => $request->phone,
-    //         'agent_logo' => $user->agent_logo, // Set the updated logo
-    //     ]);
-
-    //     // Redirect back with a success message
-    //     return redirect()->back()
-    //         ->with('success', 'Owner updated successfully!');
-    // }
 
     public function update(Request $request, string $id)
     {

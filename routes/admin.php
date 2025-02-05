@@ -142,7 +142,6 @@ Route::group([
 
     Route::get('transer-log', [TransferLogController::class, 'index'])->name('transferLog');
     Route::get('transferlog/{id}', [TransferLogController::class, 'transferLog'])->name('transferLogDetail');
-    Route::get('top-10-withdraw-log', [TransferLogController::class, 'getTopWithdrawals'])->name('TopTenWithdraw');
 
     Route::resource('top-10-withdraws', TopTenWithdrawController::class);
 

@@ -18,7 +18,7 @@ class GetAdminSiteLogoNameController extends Controller
 
             $adminLogo = $user->agent_logo
                 ? asset('assets/img/logo/'.$user->agent_logo)
-                : asset('assets/img/logo/default-logo.jpg');
+                : asset('assets/img/logo/default-logo.png');
 
             $siteName = $user->site_name ?? 'GoldenJack';
 

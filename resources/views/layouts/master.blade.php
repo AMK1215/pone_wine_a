@@ -287,14 +287,6 @@
                             </p>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a href="{{ url('admin/top-10-withdraw-log') }}" class="nav-link">
-                        <i class="fas fa-swatchbook"></i>
-                        <p>
-                                WithdrawTopTen
-                            </p>
-                        </a>
-                    </li>
                     @endcan
                     @can('owner_access')
                     <li class="nav-item">

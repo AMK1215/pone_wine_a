@@ -18,7 +18,7 @@ class AdminLogoMiddleware
             if($user->hasRole('Agent')){
                 $siteName = 'Agent Dashboard';
             }else{
-                $siteName = $user->site_name ?? 'DelightMyanmar'; // Default site name
+                $siteName = $user->site_name ?? 'PoneWine20x'; // Default site name
             }
 
             //Log::info('Auth User Logo:', ['logo' => $logoFilename]);
@@ -26,7 +26,7 @@ class AdminLogoMiddleware
 
             $adminLogo = $logoFilename
                 ? asset('assets/img/logo/'.$logoFilename)
-                : asset('assets/img/logo/default-logo.jpg');
+                : asset('assets/img/logo/default-logo.png');
 
             //Log::info('Admin Logo Path:', ['path' => $adminLogo]);
 

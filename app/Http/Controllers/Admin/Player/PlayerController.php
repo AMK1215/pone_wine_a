@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
 class PlayerController extends Controller
@@ -123,7 +122,11 @@ class PlayerController extends Controller
             $user->roles()->sync(self::PLAYER_ROLE);
 
             if (isset($inputs['amount'])) {
-                app(WalletService::class)->transfer($agent, $user, $inputs['amount'], TransactionName::CreditTransfer);
+                app(WalletService::class)->transfer($agent, $user, $inputs['amount'],  
+                TransactionName::CreditTransfer,   [
+                    'old_balance' => $user->balanceFloat,
+                    'new_balance' => $user->balanceFloat + $request->amount,
+                ]);
             }
 
             return redirect()->back()

@@ -4,26 +4,28 @@ namespace App\Http\Controllers\Admin\TransferLog;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class TransferLogController extends Controller
 {
     protected const SUB_AGENT_ROlE = 'Sub Agent';
 
-    public function index()
+    public function index(Request $request)
     {
-        $this->authorize('transfer_log', User::class);
-        $agent = $this->getAgent() ?? Auth::user();
+        $agent = $this->getAgentOrCurrentUser();
 
-        $transferLogs = $agent->transactions()->with('targetUser')
-            ->whereIn('transactions.type', ['withdraw', 'deposit'])
-            ->whereIn('transactions.name', ['credit_transfer', 'debit_transfer'])
-            ->orderby('transactions.id', 'desc')->get();
+        [$startDate, $endDate] = $this->parseDateRange($request);
 
-        return view('admin.trans_log.index', compact('transferLogs'));
+        $transferLogs = $this->fetchTransferLogs($agent, $startDate, $endDate);
+        $depositTotal = $this->fetchTotalAmount($agent, 'deposit', $startDate, $endDate);
+
+        $withdrawTotal = $this->fetchTotalAmount($agent, 'withdraw', $startDate, $endDate);
+
+        return view('admin.trans_log.index', compact('transferLogs', 'depositTotal', 'withdrawTotal'));
     }
 
     public function transferLog($id)
@@ -55,33 +57,49 @@ class TransferLogController extends Controller
         return $this->isExistingAgent(Auth::id());
     }
 
-    //     public function getTopWithdrawals()
-    // {
-    //     // Retrieve the top 10 withdrawals
-    //     $topWithdrawals = DB::table('transactions')
-    //         ->join('users', 'transactions.payable_id', '=', 'users.id') // Join with users to get the player's name
-    //         ->where('transactions.name', 'debit_transfer') // Only withdrawals
-    //         ->where('transactions.confirmed', true) // Ensure the withdrawal is confirmed
-    //         ->select('users.name as player_name', 'transactions.amount as withdraw_amount') // Select player's name and withdrawal amount
-    //         ->orderByDesc('transactions.amount') // Order by withdrawal amount in descending order
-    //         ->limit(10) // Limit to top 10
-    //         ->get();
-
-    //     return view('admin.withdraw_top_ten', compact('topWithdrawals'));
-    // }
-    public function getTopWithdrawals()
+    private function getAgentOrCurrentUser(): User
     {
-        // Retrieve the top 10 withdrawals
-        $topWithdrawals = DB::table('transactions')
-            ->join('users', 'transactions.payable_id', '=', 'users.id') // Join with users to get the player's name
-            ->where('transactions.name', 'debit_transfer') // Only withdrawals
-            ->where('transactions.confirmed', true) // Ensure the withdrawal is confirmed
-            ->select('users.name as player_name', 'transactions.amount as withdraw_amount', 'transactions.created_at') // Select required fields
-            ->orderByDesc('transactions.amount') // Order by withdrawal amount in descending order
-            ->orderByDesc('transactions.created_at') // Get the latest transactions
-            ->limit(10) // Limit to top 10
-            ->get();
+        $user = Auth::user();
+        return $this->findAgent($user->id) ?? $user;
+    }
 
-        return view('admin.withdraw_top_ten', compact('topWithdrawals'));
+    private function findAgent(int $userId): ?User
+    {
+        $user = User::find($userId);
+        return $user && $user->hasRole(self::SUB_AGENT_ROlE) ? $user->parent : null;
+    }
+
+    private function parseDateRange(Request $request): array
+    {
+        $startDate = $request->start_date
+            ? Carbon::parse($request->start_date)->startOfDay()
+            : Carbon::today()->startOfDay();
+
+        $endDate = $request->end_date
+            ? Carbon::parse($request->end_date)->endOfDay()
+            : Carbon::today()->endOfDay();
+
+        return [$startDate->format('Y-m-d H:i'), $endDate->format('Y-m-d H:i')];
+    }
+
+    private function fetchTransferLogs(User $agent, string $startDate, string $endDate)
+    {
+        return $agent->transactions()
+            ->with('targetUser')
+            ->whereIn('type', ['withdraw', 'deposit'])
+            ->whereIn('name', ['credit_transfer', 'debit_transfer'])
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->orderByDesc('id')
+            ->get();
+    }
+
+    private function fetchTotalAmount(User $agent, string $type, string $startDate, string $endDate): float
+    {
+        return $agent->transactions()
+            ->with('targetUser')
+            ->where('type', $type)
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->whereIn('name', ['credit_transfer', 'debit_transfer'])
+            ->sum('amount');
     }
 }

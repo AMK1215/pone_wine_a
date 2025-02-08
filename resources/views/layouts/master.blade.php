@@ -104,6 +104,9 @@
 
                         </ul>
                     </li>
+
+                    <!-- Add the audio element -->
+                    <audio id="notificationSound" src="{{ asset('sounds/noti.wav') }}" preload="auto"></audio>
                 @endcan
 
                 {{-- <li class="nav-item dropdown">
@@ -523,6 +526,37 @@
                     }
                 });
             });
+        });
+    </script>
+
+    <!-- JavaScript to play the sound -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationSound = document.getElementById('notificationSound');
+            const notificationCount = document.getElementById('notificationCount');
+            const initialCount = parseInt(notificationCount.innerText);
+
+            // Function to play the notification sound
+            function playNotificationSound() {
+                notificationSound.play();
+            }
+
+            // Polling function to check for new notifications
+            function checkForNewNotifications() {
+                fetch(
+                    '{{ route('notifications.count') }}') // Replace with your route to get the notification count
+                    .then(response => response.json())
+                    .then(data => {
+                        const newCount = data.count;
+                        if (newCount > initialCount) {
+                            playNotificationSound();
+                            initialCount = newCount;
+                        }
+                    });
+            }
+
+            // Check for new notifications every 10 seconds
+            setInterval(checkForNewNotifications, 10000);
         });
     </script>
 

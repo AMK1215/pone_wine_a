@@ -25,7 +25,7 @@
         @media (max-width: 768px) {
             .login-page {
                 background-size: cover;
-                background-image: url(img/mobile.jpg);
+                background-image: url(img/mobile.png);
                 padding: 20px;
                 /* Add padding for smaller screens */
             }

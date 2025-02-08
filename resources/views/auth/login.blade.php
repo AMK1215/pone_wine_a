@@ -4,14 +4,14 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SlotMaker| Log in</title>
+    <title>PoneWine| Log in</title>
 
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/adminlte.min.css') }}">
     <style>
         /* Default styles (desktop view) */
         .login-page {
-            background-image: url(img/bg.jpg);
+            background-image: url(assets/img/default-logo.png);
             background-repeat: no-repeat;
             background-size: cover;
             height: 100vh;

@@ -11,7 +11,7 @@
     <style>
         /* Default styles (desktop view) */
         .login-page {
-            background-image: url(assets/img/default-logo.png);
+            background-image: url(assets/img/logo/default-logo.png);
             background-repeat: no-repeat;
             background-size: cover;
             height: 100vh;

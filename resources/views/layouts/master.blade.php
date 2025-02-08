@@ -544,7 +544,8 @@
             // Polling function to check for new notifications
             function checkForNewNotifications() {
                 fetch(
-                    '{{ route('notifications.count') }}') // Replace with your route to get the notification count
+                        '{{ route('admin.notifications.count') }}'
+                        ) // Replace with your route to get the notification count
                     .then(response => response.json())
                     .then(data => {
                         const newCount = data.count;

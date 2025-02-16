@@ -291,6 +291,11 @@
                                 </a>
                             </li>
                         @endcan
+                        <li class="nav-item">
+                            <a href="" class="nav-link">
+                                <i class="fas fa-user"><p>Game Report</p></i>
+                            </a>
+                        </li>
                         @can('owner_access')
                             <li class="nav-item">
                                 <a href="{{ route('admin.GetOwnerPlayerList') }}" class="nav-link">

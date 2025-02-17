@@ -448,7 +448,7 @@
             <strong>Copyright &copy; 2025 <a href="">PoneWine20X</a>.</strong>
             All rights reserved.
             <div class="float-right d-none d-sm-inline-block">
-                <b>Version</b> 3.2.0
+                <b>Version</b> 3.2.2
             </div>
         </footer>
 
@@ -545,7 +545,7 @@
             function checkForNewNotifications() {
                 fetch(
                         '{{ route('admin.notifications.count') }}'
-                        ) // Replace with your route to get the notification count
+                    ) // Replace with your route to get the notification count
                     .then(response => response.json())
                     .then(data => {
                         const newCount = data.count;

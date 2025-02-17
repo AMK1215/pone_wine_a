@@ -15,6 +15,8 @@ use App\Models\Admin\TopTenWithdraw;
 use App\Models\Report;
 use App\Models\SeamlessTransaction;
 use App\Models\Webhook\Bet;
+use App\Models\Webhook\BetNResult;
+use App\Models\Webhook\Result;
 use Bavix\Wallet\Interfaces\Wallet;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -147,7 +149,6 @@ class User extends Authenticatable implements Wallet
         return self::where('type', UserType::SystemWallet)->first();
     }
 
-
     public function scopeRoleLimited($query)
     {
         if (! Auth::user()->hasRole('Admin')) {
@@ -177,7 +178,6 @@ class User extends Authenticatable implements Wallet
     {
         return $this->belongsTo(User::class, 'agent_id');
     }
-
 
     public function banks(): HasMany
     {
@@ -264,5 +264,20 @@ class User extends Authenticatable implements Wallet
     public function agents()
     {
         return $this->hasMany(User::class, 'agent_id');
+    }
+
+    public function results()
+    {
+        return $this->hasMany(Result::class);
+    }
+
+    public function betNResults()
+    {
+        return $this->hasMany(BetNResult::class);
+    }
+
+    public function bets()
+    {
+        return $this->hasMany(Bet::class, 'user_id');
     }
 }

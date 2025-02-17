@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\GameListController;
 use App\Http\Controllers\Admin\GameListImageURLUpdateController;
 use App\Http\Controllers\Admin\GameTypeProductController;
 use App\Http\Controllers\Admin\NewGameListController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\Owner\OwnerController;
 use App\Http\Controllers\Admin\PaymentTypeController;
 use App\Http\Controllers\Admin\Player\PlayerController;
@@ -22,7 +23,6 @@ use App\Http\Controllers\Admin\SubAccountController;
 use App\Http\Controllers\Admin\TopTenWithdrawController;
 use App\Http\Controllers\Admin\TransferLog\TransferLogController;
 use App\Http\Controllers\Admin\WithDraw\WithDrawRequestController;
-use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
@@ -132,7 +132,6 @@ Route::group([
     Route::put('owner/{id}/ban', [OwnerController::class, 'banOwner'])->name('owner.ban');
     Route::get('owner-changepassword/{id}', [OwnerController::class, 'getChangePassword'])->name('owner.getChangePassword');
     Route::post('owner-changepassword/{id}', [OwnerController::class, 'makeChangePassword'])->name('owner.makeChangePassword');
-
 
     Route::get('withdraw', [WithDrawRequestController::class, 'index'])->name('agent.withdraw');
     Route::post('withdraw/{withdraw}', [WithDrawRequestController::class, 'statusChangeIndex'])->name('agent.withdrawStatusUpdate');

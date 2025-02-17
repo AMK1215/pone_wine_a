@@ -28,10 +28,10 @@ class DepositRequestController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $filename = uniqid('deposit') . '.' . $image->getClientOriginalExtension();
+            $filename = uniqid('deposit').'.'.$image->getClientOriginalExtension();
             $image->move(public_path('assets/img/deposit/'), $filename);
         }
-        
+
         $depositData = [
             'agent_payment_type_id' => $request->agent_payment_type_id,
             'user_id' => $player->id,
@@ -39,13 +39,13 @@ class DepositRequestController extends Controller
             'amount' => $request->amount,
             'refrence_no' => $request->refrence_no,
         ];
-        
+
         if ($image) {
             $depositData['image'] = $filename;
         }
-        
+
         $deposit = DepositRequest::create($depositData);
-        
+
         $agent = User::find($player->agent_id);
         if ($agent) {
             $agent->notify(new PlayerDepositNotification($deposit));

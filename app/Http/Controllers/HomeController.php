@@ -26,7 +26,6 @@ class HomeController extends Controller
      */
     private const PLAYER_ROLE = 4;
 
-
     public function __construct()
     {
         $this->middleware('auth');
@@ -43,9 +42,9 @@ class HomeController extends Controller
         $role = $user->roles->pluck('title');
         $totalAgent = $user->children->count();
         $totalPlayer = User::with('roles')->whereIn('agent_id', $user->children->pluck('id'))
-        ->whereHas('roles', function ($query) {
-            $query->where('role_id', self::PLAYER_ROLE);
-        })->count();
+            ->whereHas('roles', function ($query) {
+                $query->where('role_id', self::PLAYER_ROLE);
+            })->count();
 
         $totalBalance = DB::table('users')
             ->join('role_user', 'role_user.user_id', '=', 'users.id')
@@ -72,7 +71,7 @@ class HomeController extends Controller
                 return $query->where('users.type', 40);
             })
             ->first();
-        
+
         return view('admin.dashboard', compact(
             'user',
             'totalBalance',

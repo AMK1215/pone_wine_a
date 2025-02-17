@@ -15,9 +15,9 @@ class AdminLogoMiddleware
             $user = Auth::user();
 
             $logoFilename = $user->agent_logo;
-            if($user->hasRole('Agent')){
+            if ($user->hasRole('Agent')) {
                 $siteName = 'Agent Dashboard';
-            }else{
+            } else {
                 $siteName = $user->site_name ?? 'PoneWine20x'; // Default site name
             }
 

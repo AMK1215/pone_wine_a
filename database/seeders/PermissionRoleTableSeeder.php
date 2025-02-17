@@ -22,12 +22,14 @@ class PermissionRoleTableSeeder extends Seeder
             'owner_delete',
             'transfer_log',
             'make_transfer',
+            'game_type_access',
         ]);
         Role::findOrFail(1)->permissions()->sync($senior_permissions->pluck('id'));
 
         // Owner permissions
         $owner_permissions = Permission::whereIn('title', [
             'owner_access',
+            'agent_access',
             'agent_index',
             'agent_create',
             'agent_edit',
@@ -56,7 +58,6 @@ class PermissionRoleTableSeeder extends Seeder
             'bank',
             'site_logo',
             'contact',
-            'sub_acc'
         ])->pluck('id');
 
         Role::findOrFail(3)->permissions()->sync($agent_permissions);

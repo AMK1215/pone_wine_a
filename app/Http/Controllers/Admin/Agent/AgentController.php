@@ -99,10 +99,10 @@ class AgentController extends Controller
 
         if (isset($inputs['amount'])) {
             app(WalletService::class)->transfer($master, $agent, $inputs['amount'],
-             TransactionName::CreditTransfer,   [
-                'old_balance' => $agent->balanceFloat,
-                'new_balance' => $agent->balanceFloat + $request->amount,
-            ]);
+                TransactionName::CreditTransfer, [
+                    'old_balance' => $agent->balanceFloat,
+                    'new_balance' => $agent->balanceFloat + $request->amount,
+                ]);
         }
 
         return redirect()->route('admin.agent.index')
@@ -181,12 +181,12 @@ class AgentController extends Controller
                 throw new \Exception('You do not have enough balance to transfer!');
             }
 
-            app(WalletService::class)->transfer($admin, $agent, $request->amount, 
-            TransactionName::CreditTransfer,   [
-                'note' => $request->note,
-                'old_balance' => $agent->balanceFloat,
-                'new_balance' => $agent->balanceFloat + $request->amount,
-            ]);
+            app(WalletService::class)->transfer($admin, $agent, $request->amount,
+                TransactionName::CreditTransfer, [
+                    'note' => $request->note,
+                    'old_balance' => $agent->balanceFloat,
+                    'new_balance' => $agent->balanceFloat + $request->amount,
+                ]);
 
             return redirect()->route('admin.agent.index')->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {
@@ -213,11 +213,11 @@ class AgentController extends Controller
 
             // Transfer money
             app(WalletService::class)->transfer($agent, $admin, $request->amount,
-             TransactionName::DebitTransfer, [
-                'note' => $request->note,
-                'old_balance' => $agent->balanceFloat,
-                'new_balance' => $agent->balanceFloat - $request->amount,
-            ]);
+                TransactionName::DebitTransfer, [
+                    'note' => $request->note,
+                    'old_balance' => $agent->balanceFloat,
+                    'new_balance' => $agent->balanceFloat - $request->amount,
+                ]);
 
             return redirect()->back()->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {

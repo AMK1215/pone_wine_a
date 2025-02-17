@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('banner_texts', function (Blueprint $table) {
             $table->id();
             $table->string('text');
-            $table->unsignedBigInteger('admin_id')->nullable(); 
+            $table->unsignedBigInteger('admin_id')->nullable();
             $table->foreign('admin_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });

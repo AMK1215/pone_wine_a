@@ -60,12 +60,14 @@ class TransferLogController extends Controller
     private function getAgentOrCurrentUser(): User
     {
         $user = Auth::user();
+
         return $this->findAgent($user->id) ?? $user;
     }
 
     private function findAgent(int $userId): ?User
     {
         $user = User::find($userId);
+
         return $user && $user->hasRole(self::SUB_AGENT_ROlE) ? $user->parent : null;
     }
 

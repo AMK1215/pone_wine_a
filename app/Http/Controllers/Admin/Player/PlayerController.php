@@ -122,11 +122,11 @@ class PlayerController extends Controller
             $user->roles()->sync(self::PLAYER_ROLE);
 
             if (isset($inputs['amount'])) {
-                app(WalletService::class)->transfer($agent, $user, $inputs['amount'],  
-                TransactionName::CreditTransfer,   [
-                    'old_balance' => $user->balanceFloat,
-                    'new_balance' => $user->balanceFloat + $request->amount,
-                ]);
+                app(WalletService::class)->transfer($agent, $user, $inputs['amount'],
+                    TransactionName::CreditTransfer, [
+                        'old_balance' => $user->balanceFloat,
+                        'new_balance' => $user->balanceFloat + $request->amount,
+                    ]);
             }
 
             return redirect()->back()

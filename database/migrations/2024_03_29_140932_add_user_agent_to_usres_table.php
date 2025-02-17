@@ -15,7 +15,6 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
         });
 
-
     }
 
     /**

@@ -11,7 +11,6 @@ class WinnerText extends Model
 
     protected $fillable = ['id', 'text', 'owner_id'];
 
-
     public function owner()
     {
         return $this->belongsTo(User::class);

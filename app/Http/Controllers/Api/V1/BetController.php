@@ -7,9 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Bet;
 use App\Models\User;
 use App\Services\WalletService;
-use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BetController extends Controller
@@ -37,7 +37,7 @@ class BetController extends Controller
                     $this->handlePlayerTransaction($data, $player);
                     $results[] = [
                         'player_id' => $player->user_name,
-                        'balance' => $player->balanceFloat
+                        'balance' => $player->balanceFloat,
                     ];
                 }
             }
@@ -57,7 +57,6 @@ class BetController extends Controller
         return User::where('user_name', $username)->first();
     }
 
-
     private function handlePlayerTransaction($data, $player): void
     {
         Bet::create([
@@ -68,7 +67,7 @@ class BetController extends Controller
             'bet_amount' => $data['bet_amount'],
             'win_lose' => $data['win_lose'],
             'net_win' => $data['net_win'],
-            'is_winner' => $data['is_winner']
+            'is_winner' => $data['is_winner'],
         ]);
 
         $this->updatePlayerBalance($player, $data['net_win'], $data['is_winner']);

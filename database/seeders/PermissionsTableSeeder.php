@@ -145,11 +145,7 @@ class PermissionsTableSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            [
-                'title' => 'sub_acc',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+
         ];
 
         Permission::insert($permissions);

@@ -67,6 +67,9 @@ Route::post('GetGameListByProvider', [GetGameListByProviderController::class, 'f
 Route::post('/transaction-details/{tranId}', [TransactionController::class, 'getTransactionDetails']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+
+    Route::post('GameLogin', [LaunchGameController::class, 'LaunchGame']);
+    Route::get('wager-logs', [WagerController::class, 'index']);
     Route::get('user', [AuthController::class, 'getUser']);
     Route::get('contact', [AuthController::class, 'getContact']);
     Route::get('agent', [AuthController::class, 'getAgent']);
@@ -91,4 +94,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('banner_Text', [BannerController::class, 'bannerTest']);
     Route::get('popup-ads-banner', [BannerController::class, 'AdsBannerIndex']);
     Route::get('ads-banner', [BannerController::class, 'AdsBannerTest']);
+
+    //slot
+    Route::get('gameTypeProducts/{id}', [GameController::class, 'gameTypeProducts']);
+    Route::get('allGameProducts', [GameController::class, 'allGameProducts']);
+    Route::get('gameType', [GameController::class, 'gameType']);
+    Route::get('hotgamelist', [GameController::class, 'HotgameList']);
+    Route::get('pphotgamelist', [GameController::class, 'PPHotgameList']);
+    Route::get('gamelist/{provider_id}/{game_type_id}/', [GameController::class, 'gameList']);
+    Route::get('slotfishgamelist/{provider_id}/{game_type_id}/', [GameController::class, 'JILIgameList']);
+    Route::get('gameFilter', [GameController::class, 'gameFilter']);
+    Route::get('gamelistTest/{provider_id}/{game_type_id}/', [GameController::class, 'gameListTest']);
 });

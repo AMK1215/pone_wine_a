@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Enums;
+namespace App\note\Enums;
+
+use App\Enums\HasLabelTrait;
 
 enum TransactionName: string
 {

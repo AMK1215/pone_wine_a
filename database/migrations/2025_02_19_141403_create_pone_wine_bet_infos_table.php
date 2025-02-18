@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pone_wine_bets', function (Blueprint $table) {
+        Schema::create('pone_wine_bet_infos', function (Blueprint $table) {
             $table->id();
-            $table->string('room_id');
-            $table->string('match_id');
-            $table->boolean('win_number');
-            $table->boolean('status')->default(0);
+            $table->string('bet_no');
+            $table->decimal('bet_amount');
+            $table->unsignedBigInteger('pone_wine_player_bet_id');
+            $table->foreign('pone_wine_player_bet_id')->references('id')->on('pone_wine_player_bets')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pone_wine_bets');
+        Schema::dropIfExists('pone_wine_bet_infos');
     }
 };

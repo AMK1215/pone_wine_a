@@ -43,19 +43,14 @@ Route::get('contact', [ContactController::class, 'get']);
 // sameless route
 Route::post('Seamless/Test', [TransactionController::class, 'SystemWalletTest']);
 Route::post('GetBalance', [GetBalanceController::class, 'getBalance']);
-//Route::post('BetNResult', [BetNResultController::class, 'handleBetNResult']);
 Route::post('BetNResult', [BetNResulNewController::class, 'handleBetNResult']);
 
-//Route::post('BetNResult', [NewBetNResultController::class, 'handleBetNResult']);
 
 Route::post('CancelBetNResult', [CancelBetNResultController::class, 'handleCancelBetNResult']);
-//Route::post('Bet', [BetController::class, 'handleBet']);
 Route::post('Bet', [NewBetController::class, 'handleBet']);
 Route::delete('TestBet', [PlaceBetWebhookController::class, 'BetTest']);
-//Route::post('Result', [BetResultController::class, 'handleResult']);
 Route::post('Result', [NewBetResultController::class, 'handleResult']);
 
-//Route::post('CancelBet', [CancelBetController::class, 'handleCancelBet']);
 Route::post('CancelBet', [CancelBetNewVersionController::class, 'handleCancelBet']);
 
 Route::post('Adjustment', [AdjustmentController::class, 'handleAdjustment']);

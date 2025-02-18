@@ -7,6 +7,7 @@ enum TransactionName: string
     use HasLabelTrait;
 
     case CapitalDeposit = 'capital_deposit';
+    case CapitalWithdraw = 'capital_withdraw';
 
     case Stake = 'stake';
     case Payout = 'payout';

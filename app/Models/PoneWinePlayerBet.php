@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PoneWineBet extends Model
+class PoneWinePlayerBet extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['room_id', 'match_id', 'status', 'win_number'];
+    protected $fillable = ['user_id', 'user_name', 'win_lose_amt', 'pone_wine_bet_id'];
 }

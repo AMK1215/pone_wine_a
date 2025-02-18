@@ -38,14 +38,14 @@ class GameTypeTableSeeder extends Seeder
                 'name' => 'Arcade',
                 'code' => '3',
                 'order' => '4',
-                'status' => 0,
+                'status' => 1,
                 'img' => 'slots.png',
             ],
             [
                 'name' => 'Table',
                 'code' => '4',
                 'order' => '5',
-                'status' => 0,
+                'status' => 1,
                 'img' => 'slots.png',
             ],
             [
@@ -66,14 +66,14 @@ class GameTypeTableSeeder extends Seeder
                 'name' => 'Lottery',
                 'code' => '7',
                 'order' => '8',
-                'status' => 0,
+                'status' => 1,
                 'img' => 'slots.png',
             ],
             [
                 'name' => 'Bingo',
                 'code' => '8',
                 'order' => '9',
-                'status' => 0,
+                'status' => 1,
                 'img' => 'slots.png',
             ],
 

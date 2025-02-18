@@ -36,14 +36,22 @@ class DatabaseSeeder extends Seeder
             MegaH5GameTableSeeder::class,
             EpicWinGameTableSeeder::class,
             YellowBatGameTableSeeder::class,
-            //EVOPLAYGameTableSeeder::class,
+            EVOPLAYGameTableSeeder::class,
             FACHAIGameTableSeeder::class,
             BNGGameTableSeeder::class,
             YGRGameTableSeeder::class,
             FUNTAGameTableSeeder::class,
             SimplePlayGameTableSeeder::class,
+            JDBGameTableSeeder::class,
+            SAGamingSeeder::class,
+            GPDSlotSeeder::class,
+            GPDArcadeSeeder::class,
+            GPDTableSeeder::class,
+            GPDLotterySeeder::class,
+            R88SlotSeeder::class,
+            R88ArcadeSeeder::class,
+            R88LotterySeeder::class,
 
-            //JDBGameTableSeeder::class,
 
         ]);
     }

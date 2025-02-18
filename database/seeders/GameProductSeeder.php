@@ -122,7 +122,7 @@ class GameProductSeeder extends Seeder
                 'provider_name' => 'BNG',
                 'is_active' => true,
                 'order' => 14,
-                'status' => 0,
+                'status' => 1,
                 'game_list_status' => 1,
             ],
             [
@@ -130,7 +130,7 @@ class GameProductSeeder extends Seeder
                 'provider_name' => 'YGR',
                 'is_active' => true,
                 'order' => 15,
-                'status' => 0,
+                'status' => 1,
                 'game_list_status' => 1,
             ],
             [
@@ -138,7 +138,7 @@ class GameProductSeeder extends Seeder
                 'provider_name' => 'Hacksaw',
                 'is_active' => true,
                 'order' => 16,
-                'status' => 0,
+                'status' => 1,
                 'game_list_status' => 1,
             ],
             [
@@ -146,7 +146,7 @@ class GameProductSeeder extends Seeder
                 'provider_name' => 'Funta',
                 'is_active' => true,
                 'order' => 17,
-                'status' => 0,
+                'status' => 1,
                 'game_list_status' => 1,
             ],
             [
@@ -154,9 +154,43 @@ class GameProductSeeder extends Seeder
                 'provider_name' => 'SimplePlay',
                 'is_active' => true,
                 'order' => 18,
-                'status' => 0,
+                'status' => 1,
                 'game_list_status' => 1,
             ],
+            [
+                'provider_code' => 'WFG',
+                'provider_name' => 'WFGaming',
+                'is_active' => true,
+                'order' => 19,
+                'status' => 1,
+                'game_list_status' => 1,
+            ],
+
+            [
+                'provider_code' => 'SAG',
+                'provider_name' => 'SAGaming',
+                'is_active' => true,
+                'order' => 20,
+                'status' => 1,
+                'game_list_status' => 1,
+            ],
+            [
+                'provider_code' => 'GPD',
+                'provider_name' => 'GamingPanda',
+                'is_active' => true,
+                'order' => 21,
+                'status' => 1,
+                'game_list_status' => 1,
+            ],
+            [
+                'provider_code' => 'R88',
+                'provider_name' => 'Rich88',
+                'is_active' => true,
+                'order' => 22,
+                'status' => 1,
+                'game_list_status' => 1,
+            ],
+
         ];
 
         DB::table('products')->insert($gameProviders);

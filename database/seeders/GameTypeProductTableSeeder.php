@@ -98,7 +98,7 @@ class GameTypeProductTableSeeder extends Seeder
                 'rate' => '1.0000',
             ],
             [
-                'product_id' => 14,  // FACHAI
+                'product_id' => 14,  // bng
                 'game_type_id' => 2,  // Arcade
                 'image' => 'bng.jfif',
                 'rate' => '1.0000',
@@ -127,6 +127,66 @@ class GameTypeProductTableSeeder extends Seeder
                 'image' => 'simple_play.png',
                 'rate' => '1.0000',
             ],
+
+            [
+                'product_id' => 19,  // FUNTA
+                'game_type_id' => 2,  // Arcade
+                'image' => 'wf_gaming.webp',
+                'rate' => '1.0000',
+            ],
+            [
+                'product_id' => 20,  // FUNTA
+                'game_type_id' => 6,  // Arcade
+                'image' => 'sa_gamin_casino.webp',
+                'rate' => '1.0000',
+            ],
+
+            [
+                'product_id' => 21,  // FUNTA
+                'game_type_id' => 2,  // Arcade
+                'image' => 'gaming_panda.png',
+                'rate' => '1.0000',
+            ],
+            [
+                'product_id' => 21,  // FUNTA
+                'game_type_id' => 4,  // Arcade
+                'image' => 'gaming_panda.png',
+                'rate' => '1.0000',
+            ],
+            [
+                'product_id' => 21,  // FUNTA
+                'game_type_id' => 5,  // Arcade
+                'image' => 'gaming_panda.png',
+                'rate' => '1.0000',
+            ],
+            [
+                'product_id' => 21,  // FUNTA
+                'game_type_id' => 8,  // Arcade
+                'image' => 'gaming_panda.png',
+                'rate' => '1.0000',
+            ],
+            [
+                'product_id' => 22,  // FUNTA
+                'game_type_id' => 2,  // Arcade
+                'image' => 'rich_88.png',
+                'rate' => '1.0000',
+            ],
+            [
+                'product_id' => 22,  // FUNTA
+                'game_type_id' => 4,  // Arcade
+                'image' => 'rich_88.png',
+                'rate' => '1.0000',
+            ],
+            [
+                'product_id' => 22,  // FUNTA
+                'game_type_id' => 9,  // Arcade
+                'image' => 'rich_88.png',
+                'rate' => '1.0000',
+            ],
+
+
+
+
         ];
 
         DB::table('game_type_product')->insert($data);

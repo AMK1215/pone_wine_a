@@ -7,7 +7,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
-class GamingPandaSeeder extends Seeder
+class SAGamingSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,8 +15,7 @@ class GamingPandaSeeder extends Seeder
     public function run(): void
     {
         // Load the JSON file
-        //$json = File::get(base_path('database/seeders/data/PragmaticPlaySlot.json'));
-        $json = File::get(base_path('database/seeders/data/GamingPanda.json'));
+        $json = File::get(base_path('database/seeders/data/SAG.json'));
 
         $data = json_decode($json, true);
 
@@ -24,8 +23,8 @@ class GamingPandaSeeder extends Seeder
         foreach ($data['Game'] as $game) {
             GameList::create([
                 'game_id' => $game['GameId'],
-                'game_type_id' => 4,  // Fixed value for game_type_id
-                'product_id' => 26,  // Fixed value for product_id
+                'game_type_id' => 6,  // Fixed value for game_type_id
+                'product_id' => 20,  // Fixed value for product_id
                 'status' => 1,  // Default value for status
                 'hot_status' => 0,  // Default value for hot_status
                 'game_code' => $game['GameCode'],

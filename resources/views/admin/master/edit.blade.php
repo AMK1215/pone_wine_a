@@ -1,145 +1,74 @@
-@extends('admin_layouts.app')
-@section('styles')
-<style>
-  .transparent-btn {
-    background: none;
-    border: none;
-    padding: 0;
-    outline: none;
-    cursor: pointer;
-    box-shadow: none;
-    appearance: none;
-    /* For some browsers */
-  }
-
-
-  .custom-form-group {
-    margin-bottom: 20px;
-  }
-
-  .custom-form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
-  }
-
-  .custom-form-group input,
-  .custom-form-group select {
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #e1e1e1;
-    border-radius: 5px;
-    font-size: 16px;
-    color: #333;
-  }
-
-  .custom-form-group input:focus,
-  .custom-form-group select:focus {
-    border-color: #d33a9e;
-    box-shadow: 0 0 5px rgba(211, 58, 158, 0.5);
-  }
-
-  .submit-btn {
-    background-color: #d33a9e;
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .submit-btn:hover {
-    background-color: #b8328b;
-  }
-</style>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
-@endsection
+@extends('layouts.master')
 @section('content')
-<div class="container text-center mt-4">
-  <div class="row">
-    <div class="col-12 col-md-8 mx-auto">
-      <div class="card">
-        <!-- Card header -->
-        <div class="card-header pb-0">
-          <div class="d-lg-flex">
-            <div>
-              <h5 class="mb-0">Edit Master</h5>
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                        <li class="breadcrumb-item active">Edit Master</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card  col-lg-6 offset-lg-3 col-md-6 offset-md-3 col-sm-8 offset-sm-2 col-10 offset-1"
+                style="border-radius: 15px;">
+                <div class="card-header">
+                    <div class="card-title col-12">
+                        <h5 class="d-inline fw-bold">Edit Master</h5>
+                        <a href="{{ route('admin.master.index') }}" class="btn btn-primary float-right">
+                            <i class="fas fa-arrow-left" style="font-size: 20px;"></i> Back
+                        </a>
+
+                    </div>
+                    </span>
+                    </h3>
+                </div>
+                <form method="POST" action="{{ route('admin.master.update', $master->id) }}" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>masterId<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="user_name" value="{{ $master->user_name }}"
+                                readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Name<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" value="{{ $master->name }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="phone" value="{{ $master->phone }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Player Site Title</label>
+                            <input type="text" class="form-control" name="site_link" value="{{ $master->site_link }}">
+                        </div>
+                        <div class="form-group">
+                            <label>master Logo</label>
+                            <input type="file" class="form-control" name="agent_logo">
+                            @if ($master->agent_logo)
+                                <img src="{{ asset('assets/img/logo/' . $master->agent_logo) }}" alt="Logo"
+                                    width="100px">
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-success">Update</button>
+                    </div>
+                </form>
 
             </div>
-            <div class="ms-auto my-auto mt-lg-0 mt-4">
-              <div class="ms-auto my-auto">
-                <a class="btn btn-icon btn-2 btn-primary" href="{{ route('admin.master.index') }}">
-                  <span class="btn-inner--icon mt-1"><i class="material-icons">arrow_back</i>Back</span>
-                </a>
-              </div>
-            </div>
-          </div>
+
         </div>
-        <div class="card-body">
-          <form role="form" method="POST" class="text-start" action="{{ route('admin.master.update',$master->id) }}">
-            @csrf
-            @method('PUT')
-            <div class="custom-form-group">
-              <label for="title">Master Name <span class="text-danger">*</span></label>
-              <input type="text"  name="name" class="form-control" value="{{$master->user_name}}" readonly>
-              @error('name')
-              <span class="text-danger d-block">*{{ $message }}</span>
-              @enderror
-            </div>
-            <div class="custom-form-group">
-              <label for="title">Name <span class="text-danger">*</span></label>
-              <input type="text"  name="player_name" class="form-control" value="{{$master->name}}">
-              @error('player_name')
-              <span class="text-danger d-block">*{{ $message }}</span>
-              @enderror
-            </div>
-            <div class="custom-form-group">
-              <label for="title">Phone No <span class="text-danger">*</span></label>
-              <input type="text"  name="phone" class="form-control" value="{{$master->phone}}">
-              @error('phone')
-              <span class="text-danger d-block">*{{ $message }}</span>
-              @enderror
-            </div>
-            <div class="custom-form-group">
-              <button type="submit" class="btn btn-primary" type="button">Update</button>
-            </div>
-          </form>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-@endsection
-@section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
-
-<script src="{{ asset('admin_app/assets/js/plugins/choices.min.js') }}"></script>
-<script src="{{ asset('admin_app/assets/js/plugins/quill.min.js') }}"></script>
-
-<script>
-  var errorMessage = @json(session('error'));
-  var successMessage = @json(session('success'));
-  @if(session() -> has('success'))
-  Swal.fire({
-    title: successMessage,
-    icon: "success",
-    background: 'hsl(230, 40%, 10%)',
-    showConfirmButton: false,
-    showCloseButton: true,
-
-  });
-  @elseif(session()->has('error'))
-  Swal.fire({
-    icon: 'error',
-    title: errorMessage,
-    background: 'hsl(230, 40%, 10%)',
-    showConfirmButton: false,
-    timer: 1500
-  })
-  @endif
-</script>
+    </section>
 @endsection

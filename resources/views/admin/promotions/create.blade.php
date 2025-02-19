@@ -32,10 +32,16 @@
                                 <div class="custom-form-group mb-3">
                                     <label for="title mb-2">Title</label>
                                     <input type="text" class="form-control" id="" name="title">
+                                    @error('title')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="custom-form-group mb-3">
                                     <label for="title mb-2">Image</label>
                                     <input type="file" class="form-control" id="inputEmail3" name="image">
+                                    @error('image')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="custom-form-group mb-3">
                                     <label for="title mb-2">Description</label>

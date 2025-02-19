@@ -16,19 +16,19 @@ class PermissionRoleTableSeeder extends Seeder
         //Senior Permissions
         $senior_permissions = Permission::whereIn('title', [
             'senior_access',
-            'owner_index',
-            'owner_create',
-            'owner_edit',
-            'owner_delete',
+            'master_index',
+            'master_create',
+            'master_edit',
+            'master_delete',
             'transfer_log',
             'make_transfer',
             'game_type_access',
         ]);
         Role::findOrFail(1)->permissions()->sync($senior_permissions->pluck('id'));
 
-        // Owner permissions
-        $owner_permissions = Permission::whereIn('title', [
-            'owner_access',
+        // master permissions
+        $master_permissions = Permission::whereIn('title', [
+            'master_access',
             'agent_access',
             'agent_index',
             'agent_create',
@@ -38,7 +38,7 @@ class PermissionRoleTableSeeder extends Seeder
             'transfer_log',
             'make_transfer',
         ]);
-        Role::findOrFail(2)->permissions()->sync($owner_permissions->pluck('id'));
+        Role::findOrFail(2)->permissions()->sync($master_permissions->pluck('id'));
 
         $agent_permissions = Permission::whereIn('title', [
             'agent_access',

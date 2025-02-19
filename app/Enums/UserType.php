@@ -5,7 +5,7 @@ namespace App\Enums;
 enum UserType: int
 {
     case Senior = 10;
-    case Owner = 20;
+    case Master = 20;
     case Agent = 30;
     case Player = 40;
     case SystemWallet = 50;
@@ -15,7 +15,7 @@ enum UserType: int
     {
         return match ($type) {
             self::Senior => 1,
-            self::Owner => 2,
+            self::Master => 2,
             self::Agent => 3,
             self::Player => 4,
             self::SystemWallet => 5,
@@ -26,8 +26,8 @@ enum UserType: int
     public static function childUserType(UserType $type)
     {
         return match ($type) {
-            self::Senior => self::Owner,
-            self::Owner => self::Agent,
+            self::Senior => self::Master,
+            self::Master => self::Agent,
             self::Agent => self::subAgent,
             self::Agent => self::Player,
             self::Player => self::Player

@@ -128,7 +128,7 @@
                                 </table>
                             @endcan
 
-                            @can('owner_index')
+                            @can('master_index')
                                 <table id="mytable" class="table table-bordered table-hover">
                                     <thead>
                                         <tr>

@@ -40,7 +40,7 @@
                             <div class="inner">
                                 <h3>{{ number_format($totalBalance->balance / 100, 2) }}</h3>
 
-                                <p>Owner Total Balance</p>
+                                <p>Master Total Balance</p>
                             </div>
                             <div class="icon">
                                 <i class="ion ion-stats-bars"></i>
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                 @endif
-                @if ($role['0'] == 'Owner')
+                @if ($role['0'] == 'Master')
                     <div class="col-lg-4 col-6">
                         <!-- small box -->
                         <div class="small-box bg-success">
@@ -118,7 +118,7 @@
                         </div>
                     </div>
                 @endcan
-                @can('owner_access')
+                @can('master_access')
                     <div class="col-lg-4 col-6">
                         <!-- small box -->
                         <div class="small-box bg-warning">
@@ -134,7 +134,7 @@
                         </div>
                     </div>
                 @endcan
-                @can('owner_access')
+                @can('master_access')
                     <div class="col-lg-4 col-6">
                         <!-- small box -->
                         <div class="small-box bg-primary">
@@ -145,7 +145,7 @@
                             <div class="icon">
                                 <i class="ion ion-pie-graph"></i>
                             </div>
-                            <a href="{{ route('admin.GetOwnerPlayerList') }}" class="small-box-footer">More info <i
+                            <a href="{{ route('admin.GetMasterPlayerList') }}" class="small-box-footer">More info <i
                                     class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>

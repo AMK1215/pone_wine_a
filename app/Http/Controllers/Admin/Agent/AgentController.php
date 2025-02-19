@@ -248,8 +248,10 @@ class AgentController extends Controller
     private function generateRandomString()
     {
         $randomNumber = mt_rand(10000000, 99999999);
+        
+        $user_name = Auth::user()->name;
 
-        return 'A'.$randomNumber;
+        return strtoupper(substr($user_name, 0, 3)) . $randomNumber;    
     }
 
     public function banAgent($id): RedirectResponse

@@ -33,6 +33,9 @@
                                 <div class="custom-form-group mb-3">
                                     <label for="title">Ads Banner Image</label>
                                     <input type="file" class="form-control" id="inputEmail3" name="image">
+                                    @error('image')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="custom-form-group mb-3">
                                     <button class="btn btn-success float-right" type="submit" >Create</button>

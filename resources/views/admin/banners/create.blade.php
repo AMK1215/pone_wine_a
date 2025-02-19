@@ -22,7 +22,7 @@
                         <div class="card-header">
                            <div class="card-title col-12">
                                 <h3 class="d-inline fw-bold">Banner Create </h3>
-                                <a href="{{ route('admin.banners.index') }}" class="btn btn-danger float-right"><i
+                                <a href="{{ route('admin.banners.index') }}" class="btn btn-primary float-right"><i
                                     class="fas fa-arrow-left text-white  "></i>Back</a>
                            </div>
                         </div>
@@ -33,6 +33,9 @@
                                 <div class="custom-form-group mb-3">
                                     <label for="title mb-2">Banner Image</label>
                                     <input type="file" class="form-control" id="inputEmail3" name="image">
+                                    @error('image')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="custom-form-group ">
                                     <button class="btn btn-success float-right" type="submit">Create</button>

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Owner;
+namespace App\Http\Controllers\Admin\Master;
 
 use App\Enums\TransactionName;
 use App\Enums\UserType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\OwnerRequest;
+use App\Http\Requests\MasterRequest;
 use App\Http\Requests\TransferLogRequest;
 use App\Models\Admin\TransferLog;
 use App\Models\User;
@@ -20,46 +20,44 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
-class OwnerController extends Controller
+class MasterController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    private const OWNER_ROLE = 2;
+    private const MASTER_ROLE = 2;
 
     public function index()
     {
         abort_if(
-            Gate::denies('owner_index'),
+            Gate::denies('master_index'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
-        //kzt
+
         $users = User::with('roles')
             ->whereHas('roles', function ($query) {
-                $query->where('role_id', self::OWNER_ROLE);
+                $query->where('role_id', self::MASTER_ROLE);
             })
             ->where('agent_id', auth()->id())
             ->orderBy('id', 'desc')
             ->get();
 
-        //kzt
-        return view('admin.owner.index', compact('users'));
+        return view('admin.master.index', compact('users'));
     }
 
-    public function OwnerPlayerList()
+    public function masterPlayerList()
     {
         abort_if(
-            Gate::denies('owner_access'),
+            Gate::denies('master_access'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden | You cannot access this page because you do not have permission'
         );
 
-        $adminId = auth()->id(); // Get the authenticated admin's ID
+        $adminId = auth()->id();
 
-        // Fetch agents and their related players for this admin
         $agents = User::with(['createdAgents', 'createdAgents.players'])
-            ->where('id', $adminId) // Only fetch data for the current admin
+            ->where('id', $adminId)
             ->get();
 
         return view('admin.player.list', compact('agents'));
@@ -68,10 +66,10 @@ class OwnerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OwnerRequest $request)
+    public function store(MasterRequest $request)
     {
         abort_if(
-            Gate::denies('owner_create'),
+            Gate::denies('master_create'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
@@ -87,7 +85,7 @@ class OwnerController extends Controller
                 'user_name' => $user_name,
                 'password' => Hash::make($inputs['password']),
                 'agent_id' => Auth()->user()->id,
-                'type' => UserType::Owner,
+                'type' => UserType::Master,
                 'site_name' => $inputs['site_name'],
                 'site_link' => $inputs['site_link'],
             ]
@@ -98,31 +96,37 @@ class OwnerController extends Controller
                 'amount' => 'Insufficient balance for transfer.',
             ]);
         }
-        // image
+
         if ($request->agent_logo) {
             $image = $request->file('agent_logo');
             $ext = $image->getClientOriginalExtension();
-            $filename = uniqid('logo').'.'.$ext; // Generate a unique filename
-            $image->move(public_path('assets/img/logo/'), $filename); // Save the file
+            $filename = uniqid('logo') . '.' . $ext;
+            $image->move(public_path('assets/img/logo/'), $filename);
             $userPrepare['agent_logo'] = $filename;
         }
 
         $user = User::create($userPrepare);
-        $user->roles()->sync(self::OWNER_ROLE);
+        $user->roles()->sync(self::MASTER_ROLE);
 
         if (isset($inputs['amount'])) {
-            app(WalletService::class)->transfer($admin, $user, $inputs['amount'],
-                TransactionName::CreditTransfer, [
+            app(WalletService::class)->transfer(
+                $admin,
+                $user,
+                $inputs['amount'],
+                TransactionName::CreditTransfer,
+                [
                     'old_balance' => $user->balanceFloat,
                     'new_balance' => $user->balanceFloat + $request->amount,
-                ]);
+                ]
+            );
         }
         session()->forget('user_name');
 
-        return redirect()->back()
-            ->with('success', 'Owner created successfully')
+        return redirect()->route('admin.master.index')
+            ->with('successMessage', 'Master created successfully')
             ->with('password', $request->password)
-            ->with('username', $user->user_name);
+            ->with('username', $user->user_name)
+            ->with('amount', $request->amount);
     }
 
     /**
@@ -131,7 +135,7 @@ class OwnerController extends Controller
     public function create()
     {
         abort_if(
-            Gate::denies('owner_create'),
+            Gate::denies('master_create'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
@@ -139,14 +143,14 @@ class OwnerController extends Controller
 
         session()->put('user_name', $user_name);
 
-        return view('admin.owner.create', compact('user_name', 'user_name'));
+        return view('admin.master.create', compact('user_name', 'user_name'));
     }
 
     private function generateRandomString()
     {
         $randomNumber = mt_rand(10000000, 99999999);
 
-        return 'O'.$randomNumber;
+        return 'M' . $randomNumber;
     }
 
     /**
@@ -155,14 +159,14 @@ class OwnerController extends Controller
     public function show(string $id)
     {
         abort_if(
-            Gate::denies('owner_show'),
+            Gate::denies('master_show'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
         $master = User::find($id);
 
-        return view('admin.owner.show', compact('master'));
+        return view('admin.master.show', compact('master'));
     }
 
     /**
@@ -171,14 +175,14 @@ class OwnerController extends Controller
     public function edit(string $id)
     {
         abort_if(
-            Gate::denies('owner_edit'),
+            Gate::denies('master_edit'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        $owner = User::find($id);
+        $master = User::find($id);
 
-        return view('admin.owner.edit', compact('owner'));
+        return view('admin.master.edit', compact('master'));
     }
 
     /**
@@ -192,9 +196,9 @@ class OwnerController extends Controller
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        $owner = User::find($id);
+        $master = User::find($id);
 
-        return view('admin.owner.cash_in', compact('owner'));
+        return view('admin.master.cash_in', compact('master'));
     }
 
     public function getCashOut(string $id)
@@ -205,10 +209,9 @@ class OwnerController extends Controller
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        // Assuming $id is the user ID
-        $owner = User::findOrFail($id);
+        $master = User::findOrFail($id);
 
-        return view('admin.owner.cash_out', compact('owner'));
+        return view('admin.master.cash_out', compact('master'));
     }
 
     public function makeCashIn(TransferLogRequest $request, $id)
@@ -231,12 +234,17 @@ class OwnerController extends Controller
             }
 
             // Transfer money
-            app(WalletService::class)->transfer($admin, $master, $request->validated('amount'),
-                TransactionName::CreditTransfer, [
+            app(WalletService::class)->transfer(
+                $admin,
+                $master,
+                $request->validated('amount'),
+                TransactionName::CreditTransfer,
+                [
                     'note' => $request->note,
                     'old_balance' => $master->balanceFloat,
                     'new_balance' => $master->balanceFloat + $request->amount,
-                ]);
+                ]
+            );
 
             return redirect()->back()->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {
@@ -269,12 +277,17 @@ class OwnerController extends Controller
             }
 
             // Transfer money
-            app(WalletService::class)->transfer($master, $admin, $request->validated('amount'),
-                TransactionName::DebitTransfer, [
+            app(WalletService::class)->transfer(
+                $master,
+                $admin,
+                $request->validated('amount'),
+                TransactionName::DebitTransfer,
+                [
                     'note' => $request->note,
                     'old_balance' => $master->balanceFloat,
                     'new_balance' => $master->balanceFloat - $request->amount,
-                ]);
+                ]
+            );
 
             return redirect()->back()->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {
@@ -299,10 +312,10 @@ class OwnerController extends Controller
             ->orWhere('to_user_id', $id)
             ->get();
 
-        return view('admin.owner.transfer_detail', compact('transfer_detail'));
+        return view('admin.master.transfer_detail', compact('transfer_detail'));
     }
 
-    public function banOwner($id)
+    public function banmaster($id)
     {
         abort_if(
             ! $this->ifChildOfParent(request()->user()->id, $id),
@@ -315,38 +328,28 @@ class OwnerController extends Controller
 
         return redirect()->back()->with(
             'success',
-            'User '.($user->status == 1 ? 'activate' : 'inactive').' successfully'
+            'User ' . ($user->status == 1 ? 'activate' : 'inactive') . ' successfully'
         );
     }
 
     public function update(Request $request, string $id)
     {
-        //Log::info('Update method called.', ['request_data' => $request->all()]);
-
-        // Check permissions
         abort_if(
-            Gate::denies('owner_edit') || ! $this->ifChildOfParent($request->user()->id, $id),
+            Gate::denies('master_edit') || ! $this->ifChildOfParent($request->user()->id, $id),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden | You cannot access this page because you do not have permission'
         );
 
-        // Log permission passed
-        //Log::info('Permission granted.');
-
-        // Find the user
         $user = User::findOrFail($id);
 
-        // Validate input
-        //Log::info('Validating request data.');
         $request->validate([
             'user_name' => 'nullable|string|max:255',
             'name' => 'required|string|max:255',
-            'phone' => 'required|numeric|digits_between:10,15|unique:users,phone,'.$id,
+            'phone' => 'required|numeric|digits_between:10,15|unique:users,phone,' . $id,
             'agent_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'site_link' => 'nullable|string',
 
         ]);
-        //Log::info('Validation passed.');
 
         // Handle file upload
         if ($request->file('agent_logo')) {
@@ -355,41 +358,35 @@ class OwnerController extends Controller
                 'size' => $request->file('agent_logo')->getSize(),
             ]);
 
-            // Delete old logo if exists
-            if ($user->agent_logo && File::exists(public_path('assets/img/logo/'.$user->agent_logo))) {
-                File::delete(public_path('assets/img/logo/'.$user->agent_logo));
+            if ($user->agent_logo && File::exists(public_path('assets/img/logo/' . $user->agent_logo))) {
+                File::delete(public_path('assets/img/logo/' . $user->agent_logo));
             }
 
-            // Upload new logo
             $image = $request->file('agent_logo');
-            $filename = uniqid('logo').'.'.$image->getClientOriginalExtension();
+            $filename = uniqid('logo') . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('assets/img/logo/'), $filename);
             $user->agent_logo = $filename;
         } else {
             Log::info('No file uploaded for agent_logo.');
         }
 
-        // Update fields
         $user->update([
             'user_name' => $request->user_name ?? $user->user_name,
             'name' => $request->name,
             'phone' => $request->phone,
             'agent_logo' => $user->agent_logo, // Updated logo
-            //'site_link' => $user->site_link
             'site_link' => $request->site_link,
         ]);
 
-        //Log::info('Owner updated successfully.', ['user' => $user]);
-
         return redirect()->back()
-            ->with('success', 'Owner updated successfully!');
+            ->with('success', 'master updated successfully!');
     }
 
     public function getChangePassword($id)
     {
-        $owner = User::find($id);
+        $master = User::find($id);
 
-        return view('admin.owner.change_password', compact('owner'));
+        return view('admin.master.change_password', compact('master'));
     }
 
     public function makeChangePassword($id, Request $request)
@@ -410,7 +407,7 @@ class OwnerController extends Controller
         ]);
 
         return redirect()->back()
-            ->with('success', 'Owner Change Password successfully')
+            ->with('success', 'master Change Password successfully')
             ->with('password', $request->password)
             ->with('username', $master->user_name);
     }

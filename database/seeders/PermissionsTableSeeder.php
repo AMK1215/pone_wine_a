@@ -20,7 +20,7 @@ class PermissionsTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'title' => 'owner_access',
+                'title' => 'master_access',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -121,22 +121,22 @@ class PermissionsTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'title' => 'owner_index',
+                'title' => 'master_index',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'title' => 'owner_create',
+                'title' => 'master_create',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'title' => 'owner_edit',
+                'title' => 'master_edit',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'title' => 'owner_delete',
+                'title' => 'master_delete',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

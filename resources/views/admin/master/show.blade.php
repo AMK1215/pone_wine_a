@@ -63,7 +63,7 @@
  <div class="col-8">
   <div class="container mt-2">
    <div class="d-flex justify-content-between">
-    <h4>Master Detail</h4>
+    <h4>Agent Detail</h4>
     <a class="btn btn-icon btn-2 btn-primary" href="{{ route('admin.agent.index') }}">
      <span class="btn-inner--icon mt-1"><i class="material-icons">arrow_back</i>Back</span>
     </a>
@@ -74,20 +74,20 @@
       <tbody>
        <tr>
         <th>ID</th>
-        <td>{!! $master->id !!}</td>
+        <td>{!! $user_detail->id !!}</td>
        </tr>
        <tr>
         <th>User Name</th>
-        <td>{!! $master->name !!}</td>
+        <td>{!! $user_detail->name !!}</td>
        </tr>
        <tr>
         <th>Phone</th>
-        <td>{!! $master->phone !!}</td>
+        <td>{!! $user_detail->phone !!}</td>
        </tr>
        <tr>
         <th>Role</th>
         <td>
-         @foreach ($master->roles as $role)
+         @foreach ($user_detail->roles as $role)
          <span class="badge badge-pill badge-primary">{{ $role->title }}</span>
          @endforeach
         </td>
@@ -95,11 +95,11 @@
 
        <tr>
         <th>Create Date</th>
-        <td>{!! $master->created_at !!}</td>
+        <td>{!! $user_detail->created_at !!}</td>
        </tr>
        <tr>
         <th>Update Date</th>
-        <td>{!! $master->updated_at !!}</td>
+        <td>{!! $user_detail->updated_at !!}</td>
        </tr>
       </tbody>
      </table>

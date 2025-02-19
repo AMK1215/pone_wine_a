@@ -23,42 +23,33 @@ class RewardController extends Controller
 
         DB::beginTransaction();
         try {
-            // Log::info('Starting handleReward method for multiple transactions');
-
             foreach ($transactions as $transaction) {
-                // Retrieve player by PlayerId
                 $player = User::where('user_name', $transaction['PlayerId'])->first();
                 if (! $player) {
-                    Log::warning('Invalid player detected', [
-                        'PlayerId' => $transaction['PlayerId'],
-                    ]);
-
+                    Log::warning('Invalid player detected', ['PlayerId' => $transaction['PlayerId']]);
                     return $this->buildErrorResponse(StatusCode::InvalidPlayerPassword);
                 }
 
-                // Validate signature
+                if (! $player->wallet) {
+                    Log::error('Player wallet not found', ['PlayerId' => $player->id]);
+                    return $this->buildErrorResponse(StatusCode::WalletNotFound);
+                }
+
                 $signature = $this->generateSignature($transaction);
                 if ($signature !== $transaction['Signature']) {
                     Log::warning('Signature validation failed', [
                         'transaction' => $transaction,
                         'generated_signature' => $signature,
                     ]);
-
                     return $this->buildErrorResponse(StatusCode::InvalidSignature);
                 }
 
-                // Check for duplicate transaction
                 $existingTransaction = Reward::where('tran_id', $transaction['TranId'])->first();
                 if ($existingTransaction) {
-                    Log::warning('Duplicate TranId detected', [
-                        'TranId' => $transaction['TranId'],
-                    ]);
-                    $balance = $player->wallet->balanceFloat;
-
-                    return $this->buildErrorResponse(StatusCode::DuplicateTransaction, $balance);
+                    Log::warning('Duplicate TranId detected', ['TranId' => $transaction['TranId']]);
+                    return $this->buildErrorResponse(StatusCode::DuplicateTransaction, $player->wallet->balanceFloat ?? 0);
                 }
 
-                // Process the reward
                 $this->processTransfer(
                     User::adminUser(),
                     $player,
@@ -66,11 +57,14 @@ class RewardController extends Controller
                     $transaction['Amount']
                 );
 
-                //$newBalance = $player->wallet->refreshBalance()->balanceFloat;
                 $player->wallet->refreshBalance();
+                if (! isset($player->wallet->balanceFloat)) {
+                    Log::error('Wallet balanceFloat property missing after refresh', ['PlayerId' => $player->id]);
+                    return $this->buildErrorResponse(StatusCode::WalletUpdateFailed);
+                }
+
                 $newBalance = $player->wallet->balanceFloat;
 
-                // Create the reward record
                 $reward = Reward::create([
                     'user_id' => $player->id,
                     'operator_id' => $transaction['OperatorId'],
@@ -90,19 +84,15 @@ class RewardController extends Controller
                 if (! $reward) {
                     throw new \Exception('Failed to create reward record');
                 }
-
             }
 
             DB::commit();
-            // Log::info('All reward transactions committed successfully');
+            Log::info('All reward transactions committed successfully');
 
             return $this->buildSuccessResponse($newBalance);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to handle Reward', [
-                'error' => $e->getMessage(),
-            ]);
-
+            Log::error('Failed to handle Reward', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Failed to handle Reward'], 500);
         }
     }
@@ -130,13 +120,7 @@ class RewardController extends Controller
     private function generateSignature(array $transaction): string
     {
         $method = 'Reward';
-
         return md5($method.$transaction['TranId'].$transaction['RequestDateTime'].
                    $transaction['OperatorId'].config('game.api.secret_key').$transaction['PlayerId']);
     }
 }
-
-//$newBalance = $player->wallet->refreshBalance()->balanceFloat;
-//$request->getMember()->wallet->refreshBalance();
-
-//$newBalance = $request->getMember()->balanceFloat;

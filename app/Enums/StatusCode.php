@@ -22,5 +22,7 @@ enum StatusCode: int
     case InvalidOperatorID = 900401;
     case NotEligibleCancel = 900300;
     case InvalidTranID = 900408;
+    case WalletNotFound = 900127;
+    case WalletUpdateFailed = 900128;
 
 }

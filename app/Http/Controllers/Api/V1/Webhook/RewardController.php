@@ -39,10 +39,10 @@ class RewardController extends Controller
                 // Validate signature
                 $signature = $this->generateSignature($transaction);
                 if ($signature !== $transaction['Signature']) {
-                    // Log::warning('Signature validation failed', [
-                    //     'transaction' => $transaction,
-                    //     'generated_signature' => $signature,
-                    // ]);
+                    Log::warning('Signature validation failed', [
+                        'transaction' => $transaction,
+                        'generated_signature' => $signature,
+                    ]);
 
                     return $this->buildErrorResponse(StatusCode::InvalidSignature);
                 }
@@ -66,9 +66,9 @@ class RewardController extends Controller
                     $transaction['Amount']
                 );
 
-                $newBalance = $player->wallet->refreshBalance()->balanceFloat;
-                // $player->wallet->refreshBalance();
-                // $newBalance = $player->wallet->balanceFloat;
+                //$newBalance = $player->wallet->refreshBalance()->balanceFloat;
+                $player->wallet->refreshBalance();
+                $newBalance = $player->wallet->balanceFloat;
 
                 // Create the reward record
                 $reward = Reward::create([
@@ -122,6 +122,7 @@ class RewardController extends Controller
         return response()->json([
             'Status' => $statusCode->value,
             'Description' => $statusCode->name,
+            'ResponseDateTime' => now()->format('Y-m-d H:i:s'),
             'Balance' => round($balance, 4),
         ]);
     }

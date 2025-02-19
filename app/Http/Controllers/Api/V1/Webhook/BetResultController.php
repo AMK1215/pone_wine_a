@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Slot\ResultWebhookRequest;
 use App\Models\Admin\GameList;
 use App\Models\User;
+use App\Models\Webhook\Bet;
 use App\Models\Webhook\Result;
-use App\Services\WalletService;
 use App\Traits\UseWebhook;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -26,51 +26,30 @@ class BetResultController extends Controller
 
         DB::beginTransaction();
         try {
-            // Log::info('Starting handleResult method for multiple transactions');
-
             foreach ($transactions as $transaction) {
-                $player = User::where('user_name', $transaction['PlayerId'])->first();
+                $player = $this->validatePlayer($transaction['PlayerId']);
                 if (! $player) {
-                    Log::warning('Invalid player detected', ['PlayerId' => $transaction['PlayerId']]);
-
                     return $this->buildErrorResponse(StatusCode::InvalidPlayerPassword, 0);
                 }
 
-                // Acquire a Redis lock for the player's wallet
-                $lockKey = "wallet:lock:{$player->id}";
-                $lock = Redis::set($lockKey, true, 'EX', 1, 'NX'); // 1-second lock
+                if (! $this->validateRoundId($transaction['RoundId'])) {
+                    return $this->buildErrorResponse(StatusCode::BetTransactionNotFound, 0);
+                }
 
-                if (! $lock) {
-                    return $this->buildErrorResponse(StatusCode::DuplicateTransaction, $player->wallet->balanceFloat);
-                    // return response()->json([
-                    //     'Status' => StatusCode::DuplicateTransaction->value,
-                    //     'Description' => 'Wallet is currently locked. Please try again later.',
-                    // ], 409); // Valid HTTP status code
+                $lockKey = "wallet:lock:{$player->id}";
+                if (! $this->acquireLock($lockKey)) {
+                    return $this->buildErrorResponse(StatusCode::BetTransactionNotFound, $player->wallet->balanceFloat);
                 }
 
                 try {
-                    // Validate signature and prevent duplicate ResultId
-                    // if (! $this->isValidSignature($transaction) || $this->isDuplicateResult($transaction)) {
-                    //     Redis::del($lockKey); // Release lock
-
-                    //     return $this->buildErrorResponse(StatusCode::InvalidSignature, $player->wallet->balanceFloat);
-                    // }
-
-                    // Validate signature
                     if (! $this->isValidSignature($transaction)) {
-                        Redis::del($lockKey); // Release lock
-
                         return $this->buildErrorResponse(StatusCode::InvalidSignature, $player->wallet->balanceFloat);
                     }
 
-                    // Prevent duplicate ResultId
                     if ($this->isDuplicateResult($transaction)) {
-                        Redis::del($lockKey); // Release lock
-
-                        return $this->buildErrorResponse(StatusCode::BetTransactionNotFound, $player->wallet->balanceFloat);
+                        return $this->buildErrorResponse(StatusCode::DuplicateTransaction, $player->wallet->balanceFloat);
                     }
 
-                    // Process payout if WinAmount > 0
                     if ($transaction['WinAmount'] > 0) {
                         $this->processTransfer(
                             User::adminUser(),
@@ -78,57 +57,18 @@ class BetResultController extends Controller
                             TransactionName::Payout,
                             $transaction['WinAmount']
                         );
-                        // Log successful payout
-                        // Log::info('Payout processed successfully', [
-                        //     'PlayerID' => $transaction['PlayerId'],
-                        //     'WinAmount' => $transaction['WinAmount'],
-                        // ]);
                     }
-                    // } else {
-                    //     // Log case where no payout is necessary
-                    //     Log::info('No payout required', [
-                    //         'PlayerID' => $transaction['PlayerId'],
-                    //         'WinAmount' => $transaction['WinAmount'],
-                    //     ]);
-                    // }
 
-                    // // Prepare the log data
-                    // $logData = [
-                    // 'PlayerID' => $transaction['PlayerId'],
-                    // 'WinAmount' => $transaction['WinAmount'],
-                    // 'GameCode' => $transaction['GameCode'] ?? 'Unknown Game', // Optional field for game name
-                    // 'TransactionID' => $transaction['ResultId'] ?? 'N/A', // Optional field for transaction ID
-                    // 'LogLevel' => 'INFO',
-                    // 'Message' => $transaction['WinAmount'] > 0
-                    // ? 'Payout processed successfully'
-                    // : 'No payout required',
-                    // 'Timestamp' => now()->toDateTimeString(),
-                    // ];
-
-                    // // Log the data into the JSON file
-                    // file_put_contents(
-                    // storage_path('logs/payout_logs.json'), // Path to the JSON log file
-                    // json_encode($logData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL, // JSON format with pretty print
-                    // FILE_APPEND // Append to the file without overwriting
-                    // );
-
-                    // Refresh balance
                     $player->wallet->refreshBalance();
-                    $newBalance = $player->wallet->balanceFloat;
-
-                    // Log game info and create result record
                     $this->logGameAndCreateResult($transaction, $player);
-
                 } finally {
-                    // Release the Redis lock for the wallet
-                    Redis::del($lockKey);
+                    $this->releaseLock($lockKey);
                 }
             }
 
             DB::commit();
 
-            return $this->buildSuccessResponse($newBalance ?? 0);
-
+            return $this->buildSuccessResponse($player->wallet->balanceFloat ?? 0);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to handle Result transactions', [
@@ -139,6 +79,26 @@ class BetResultController extends Controller
 
             return response()->json(['message' => 'Failed to handle Result transactions'], 500);
         }
+    }
+
+    private function validatePlayer(string $playerId): ?User
+    {
+        return User::where('user_name', $playerId)->first();
+    }
+
+    private function validateRoundId(string $roundId): bool
+    {
+        return Bet::where('round_id', $roundId)->exists();
+    }
+
+    private function acquireLock(string $key): bool
+    {
+        return Redis::set($key, true, 'EX', 10, 'NX') !== null;
+    }
+
+    private function releaseLock(string $key): void
+    {
+        Redis::del($key);
     }
 
     private function buildSuccessResponse(float $newBalance): JsonResponse
@@ -160,33 +120,11 @@ class BetResultController extends Controller
             'Balance' => round($balance, 4),
         ]);
     }
-    //     private function buildErrorResponse(StatusCode $statusCode, float $balance = 0): JsonResponse
-    // {
-    //     $httpStatus = $this->mapToHttpStatus($statusCode);
-
-    //     return response()->json([
-    //         'Status' => $statusCode->value,           // Custom status code in the body
-    //         'Description' => $statusCode->name,      // Custom status description
-    //         'Balance' => round($balance, 4),         // Player's balance
-    //     ], $httpStatus);                            // Valid HTTP status code in the header
-    // }
-
-    private function mapToHttpStatus(StatusCode $statusCode): int
-    {
-        return match ($statusCode) {
-            StatusCode::DuplicateTransaction,
-            StatusCode::InvalidSignature,
-            StatusCode::BetTransactionNotFound => 409, // Conflict
-            StatusCode::InternalServerError => 500,    // Internal Server Error
-            StatusCode::BadRequest => 400,            // Bad Request
-            default => 400,                           // Default to Bad Request
-        };
-    }
 
     private function isValidSignature(array $transaction): bool
     {
         $generatedSignature = $this->generateSignature($transaction);
-        //Log::info('Generated result signature', ['GeneratedSignature' => $generatedSignature]);
+        Log::info('Generated result signature', ['GeneratedSignature' => $generatedSignature]);
 
         if ($generatedSignature !== $transaction['Signature']) {
             Log::warning('Signature validation failed for transaction', [
@@ -256,7 +194,7 @@ class BetResultController extends Controller
                 'tran_date_time' => $transaction['TranDateTime'],
             ]);
 
-            // Log::info('Game result logged successfully', ['PlayerId' => $transaction['PlayerId'], 'ResultId' => $transaction['ResultId']]);
+            Log::info('Game result logged successfully', ['PlayerId' => $transaction['PlayerId'], 'ResultId' => $transaction['ResultId']]);
         } catch (\Exception $e) {
             Log::error('Failed to log game result', [
                 'PlayerId' => $transaction['PlayerId'],
@@ -265,67 +203,4 @@ class BetResultController extends Controller
             ]);
         }
     }
-
-    // private function logGameAndCreateResult($transaction, $player)
-    // {
-    //     // Retrieve game information based on the game code
-    //     $game = GameList::where('game_code', $transaction['GameCode'])->first();
-    //     $game_name = $game ? $game->game_name : null;
-    //     $provider_name = $game ? $game->game_provide_name : null;
-
-    //     // Capture balance BEFORE processing the transaction
-    //     $beforeBalance = $player->wallet->balanceFloat;
-
-    //     // Process payout if WinAmount > 0
-    //     if ($transaction['WinAmount'] > 0) {
-    //         $this->processTransfer(
-    //             User::adminUser(),
-    //             $player,
-    //             TransactionName::Payout,
-    //             $transaction['WinAmount']
-    //         );
-    //     }
-
-    //     // Refresh balance AFTER processing the payout
-    //     $player->wallet->refreshBalance();
-    //     $newBalance = $player->wallet->balanceFloat;
-
-    //     // Create a result record in the database
-    //     try {
-    //         Result::create([
-    //             'user_id' => $player->id,
-    //             'player_name' => $player->name,
-    //             'game_provide_name' => $provider_name,
-    //             'game_name' => $game_name,
-    //             'operator_id' => $transaction['OperatorId'],
-    //             'request_date_time' => $transaction['RequestDateTime'],
-    //             'signature' => $transaction['Signature'],
-    //             'player_id' => $transaction['PlayerId'],
-    //             'currency' => $transaction['Currency'],
-    //             'round_id' => $transaction['RoundId'],
-    //             'bet_ids' => $transaction['BetIds'],
-    //             'result_id' => $transaction['ResultId'],
-    //             'game_code' => $transaction['GameCode'],
-    //             'total_bet_amount' => $transaction['TotalBetAmount'],
-    //             'win_amount' => $transaction['WinAmount'],
-    //             'net_win' => $transaction['NetWin'],
-    //             'tran_date_time' => $transaction['TranDateTime'],
-    //             'old_balance' => $beforeBalance, // Balance before processing payout
-    //             'new_balance' => $newBalance, // Balance after processing payout
-    //         ]);
-
-    //         Log::info('Game result logged successfully', [
-    //             'PlayerId' => $transaction['PlayerId'],
-    //             'ResultId' => $transaction['ResultId'],
-    //             'Old Balance' => $beforeBalance,
-    //             'New Balance' => $newBalance,
-    //         ]);
-    //     } catch (\Exception $e) {
-    //         Log::error('Failed to log game result', [
-    //             'PlayerId' => $transaction['PlayerId'],
-    //             'Error' => $e->getMessage(),
-    //             'ResultId' => $transaction['ResultId'],
-    //         ]);
-    //     }
-    // }
 }

@@ -24,107 +24,284 @@ class CancelBetController extends Controller
 {
     use UseWebhook;
 
+    // second version
+
     public function handleCancelBet(CancelBetRequest $request): JsonResponse
     {
         $transactions = $request->getTransactions();
 
         DB::beginTransaction();
         try {
-            // Log::info('Starting handleCancelBet method for multiple transactions');
-
             foreach ($transactions as $transaction) {
-                // Get the player
+                // Validate the player
                 $player = User::where('user_name', $transaction['PlayerId'])->first();
                 if (! $player) {
                     Log::warning('Invalid player detected', [
                         'PlayerId' => $transaction['PlayerId'],
                     ]);
 
-                    return PlaceBetWebhookService::buildResponse(
-                        StatusCode::InvalidPlayerPassword,
-                        0,
-                        0
-                    );
+                    return $this->buildErrorResponse(StatusCode::InvalidPlayerPassword, 0);
                 }
 
-                // Validate transaction signature
+                // Validate the transaction signature
                 $signature = $this->generateSignature($transaction);
-                // Log::info('CancelBet Signature', ['GeneratedCancelBetSignature' => $signature]);
                 if ($signature !== $transaction['Signature']) {
                     Log::warning('Signature validation failed', [
-                        'transaction' => $transaction,
-                        'generated_signature' => $signature,
+                        'Transaction' => $transaction,
+                        'GeneratedSignature' => $signature,
                     ]);
 
-                    return $this->buildErrorResponse(StatusCode::InvalidSignature);
+                    return $this->buildErrorResponse(StatusCode::InvalidSignature, $player->wallet->balanceFloat);
                 }
+
                 // Check if the transaction already exists
                 $existingTransaction = Bet::where('bet_id', $transaction['BetId'])->first();
+                if ($existingTransaction) {
+                    if ($existingTransaction->status === 'cancelled') {
+                        // Transaction is already canceled; return success with the current balance
+                        Log::info('Duplicate CancelBet request detected', ['BetId' => $transaction['BetId']]);
+                        $Balance = $request->getMember()->balanceFloat;
 
-                Log::info('Checking BetId For Cancellation', ['BetId' => $transaction['BetId']]);
+                        //return $this->buildSuccessResponse($player->wallet->balanceFloat);
+                        return $this->buildErrorResponse(StatusCode::DuplicateTransaction, $Balance);
 
-                // Check if there's an associated result, which prevents cancellation
-                $associatedResult = Result::where('round_id', $transaction['RoundId'])->first();
-                if ($associatedResult) {
-                    Log::info('Cancellation not allowed - bet result already processed', ['RoundId' => $transaction['RoundId']]);
+                    }
+                } else {
+                    Log::warning('Bet Transaction Not Found', ['BetId' => $transaction['BetId']]);
 
-                    return $this->buildErrorResponse(StatusCode::InternalServerError); // 900500 error if result exists
+                    return $this->buildErrorResponse(StatusCode::BetTransactionNotFound, 0);
                 }
 
-                // Process the cancellation
-                if (! $existingTransaction || $existingTransaction->status == 'active') {
-                    Log::info('Cancelling Bet Transaction', ['TranId' => $transaction['RoundId']]);
+                // Check if a result exists for the round (cannot cancel if result exists)
+                $associatedResult = Result::where('round_id', $transaction['RoundId'])->first();
+                if ($associatedResult) {
+                    Log::info('Cancellation not allowed - result already processed', ['RoundId' => $transaction['RoundId']]);
 
-                    // Update the existing transaction status to canceled
+                    // Return 900500 Not Eligible Cancel without adjusting balance
+                    return $this->buildErrorResponse(StatusCode::NotEligibleCancel, $player->wallet->balanceFloat);
+                }
 
+                // Process cancellation
+                if ($existingTransaction->status === 'active') {
+                    Log::info('Processing CancelBet for BetId', ['BetId' => $transaction['BetId']]);
+
+                    // Mark the transaction as canceled
                     $existingTransaction->status = 'cancelled';
                     $existingTransaction->cancelled_at = now();
                     $existingTransaction->save();
 
-                    $PlayerBalance = $request->getMember()->balanceFloat;
-
-                    // Check for sufficient balance
-                    if ($transaction['BetAmount'] > $PlayerBalance) {
-                        Log::warning('Insufficient balance detected', [
-                            'BetAmount' => $transaction['BetAmount'],
-                            'balance' => $PlayerBalance,
-                        ]);
-
-                        return $this->buildErrorResponse(StatusCode::InsufficientBalance, $PlayerBalance);
-                    }
-
-                    // Process the bet refund
+                    // Refund the bet amount to the player
                     $this->processTransfer(
-                        User::adminUser(), // Assuming admin user as the receiving party
+                        User::adminUser(),
                         $player,
                         TransactionName::Refund,
-                        $transaction['BetAmount']
+                        $existingTransaction->bet_amount
                     );
 
-                    // Log::info('Bet Transaction processed successfully', ['BetID' => $transaction['BetId']]);
+                    Log::info('Bet cancellation processed successfully', ['BetId' => $transaction['BetId']]);
                 }
-                // else {
-                //     return $this->buildErrorResponse(StatusCode::DuplicateTransaction);
-                // }
             }
 
             DB::commit();
-            // Log::info('All Bet transactions committed successfully');
-            $Balance = $request->getMember()->balanceFloat;
 
-            // Build a successful response with the final balance of the last player
-            return $this->buildSuccessResponse($Balance);
+            return $this->buildSuccessResponse($player->wallet->balanceFloat);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Failed to handle BetNResult', [
+            Log::error('Failed to handle CancelBet', [
                 'error' => $e->getMessage(),
                 'line' => $e->getLine(),
                 'file' => $e->getFile(),
             ]);
 
-            return response()->json(['message' => 'Failed to handle BetNResult'], 500);
+            return response()->json(['message' => 'Failed to handle CancelBet'], 500);
         }
     }
+
+    //     public function handleCancelBet(CancelBetRequest $request): JsonResponse
+    // {
+    //     $transactions = $request->getTransactions();
+
+    //     DB::beginTransaction();
+    //     try {
+    //         foreach ($transactions as $transaction) {
+    //             // Validate the player
+    //             $player = User::where('user_name', $transaction['PlayerId'])->first();
+    //             if (!$player) {
+    //                 Log::warning('Invalid player detected', [
+    //                     'PlayerId' => $transaction['PlayerId'],
+    //                 ]);
+
+    //                 return $this->buildErrorResponse(StatusCode::InvalidPlayerPassword, 0);
+    //             }
+
+    //             // Validate the transaction signature
+    //             $signature = $this->generateSignature($transaction);
+    //             if ($signature !== $transaction['Signature']) {
+    //                 Log::warning('Signature validation failed', [
+    //                     'Transaction' => $transaction,
+    //                     'GeneratedSignature' => $signature,
+    //                 ]);
+
+    //                 return $this->buildErrorResponse(StatusCode::InvalidSignature, $player->wallet->balanceFloat);
+    //             }
+
+    //             // Check if the transaction already exists
+    //             $existingTransaction = Bet::where('bet_id', $transaction['BetId'])->first();
+    //             if ($existingTransaction) {
+    //                 if ($existingTransaction->status === 'cancelled') {
+    //                     // Transaction is already canceled; return success with the current balance
+    //                     Log::info('Duplicate CancelBet request detected', ['BetId' => $transaction['BetId']]);
+    //                     return $this->buildSuccessResponse($player->wallet->balanceFloat);
+    //                 }
+    //             } else {
+    //                 Log::warning('Bet Transaction Not Found', ['BetId' => $transaction['BetId']]);
+    //                 return $this->buildErrorResponse(StatusCode::BetTransactionNotFound, 0);
+    //             }
+
+    //             // Check if a result exists for the round (cannot cancel if result exists)
+    //             $associatedResult = Result::where('round_id', $transaction['RoundId'])->first();
+    //             if ($associatedResult) {
+    //                 Log::info('Cancellation not allowed - result already processed', ['RoundId' => $transaction['RoundId']]);
+    //                 return $this->buildErrorResponse(StatusCode::InternalServerError, $player->wallet->balanceFloat);
+    //             }
+
+    //             // Process cancellation
+    //             if ($existingTransaction->status === 'active') {
+    //                 Log::info('Processing CancelBet for BetId', ['BetId' => $transaction['BetId']]);
+
+    //                 // Mark the transaction as canceled
+    //                 $existingTransaction->status = 'cancelled';
+    //                 $existingTransaction->cancelled_at = now();
+    //                 $existingTransaction->save();
+
+    //                 // Refund the bet amount to the player
+    //                 $this->processTransfer(
+    //                     User::adminUser(),
+    //                     $player,
+    //                     TransactionName::Refund,
+    //                     $existingTransaction->bet_amount
+    //                 );
+
+    //                 Log::info('Bet cancellation processed successfully', ['BetId' => $transaction['BetId']]);
+    //             }
+    //         }
+
+    //         DB::commit();
+    //         return $this->buildSuccessResponse($player->wallet->balanceFloat);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Failed to handle CancelBet', [
+    //             'error' => $e->getMessage(),
+    //             'line' => $e->getLine(),
+    //             'file' => $e->getFile(),
+    //         ]);
+
+    //         return response()->json(['message' => 'Failed to handle CancelBet'], 500);
+    //     }
+    // }
+
+    // first version
+    // public function handleCancelBet(CancelBetRequest $request): JsonResponse
+    // {
+    //     $transactions = $request->getTransactions();
+
+    //     DB::beginTransaction();
+    //     try {
+    //         Log::info('Starting handleCancelBet method for multiple transactions');
+
+    //         foreach ($transactions as $transaction) {
+    //             // Get the player
+    //             $player = User::where('user_name', $transaction['PlayerId'])->first();
+    //             if (! $player) {
+    //                 Log::warning('Invalid player detected', [
+    //                     'PlayerId' => $transaction['PlayerId'],
+    //                 ]);
+
+    //                 return PlaceBetWebhookService::buildResponse(
+    //                     StatusCode::InvalidPlayerPassword,
+    //                     0,
+    //                     0
+    //                 );
+    //             }
+
+    //             // Validate transaction signature
+    //             $signature = $this->generateSignature($transaction);
+    //             Log::info('CancelBet Signature', ['GeneratedCancelBetSignature' => $signature]);
+    //             if ($signature !== $transaction['Signature']) {
+    //                 // Log::warning('Signature validation failed', [
+    //                 //     'transaction' => $transaction,
+    //                 //     'generated_signature' => $signature,
+    //                 // ]);
+
+    //                 return $this->buildErrorResponse(StatusCode::InvalidSignature);
+    //             }
+    //             // Check if the transaction already exists
+    //             $existingTransaction = Bet::where('bet_id', $transaction['BetId'])->first();
+
+    //             Log::info('Checking BetId For Cancellation', ['BetId' => $transaction['BetId']]);
+
+    //             // Check if there's an associated result, which prevents cancellation
+    //             $associatedResult = Result::where('round_id', $transaction['RoundId'])->first();
+    //             if ($associatedResult) {
+    //                 Log::info('Cancellation not allowed - bet result already processed', ['RoundId' => $transaction['RoundId']]);
+
+    //                 return $this->buildErrorResponse(StatusCode::InternalServerError); // 900500 error if result exists
+    //             }
+
+    //             // Process the cancellation
+    //             if (! $existingTransaction || $existingTransaction->status == 'active') {
+    //                 Log::info('Cancelling Bet Transaction', ['TranId' => $transaction['RoundId']]);
+
+    //                 // Update the existing transaction status to canceled
+
+    //                 $existingTransaction->status = 'cancelled';
+    //                 $existingTransaction->cancelled_at = now();
+    //                 $existingTransaction->save();
+
+    //                 $PlayerBalance = $request->getMember()->balanceFloat;
+
+    //                 // Check for sufficient balance
+    //                 if ($transaction['BetAmount'] > $PlayerBalance) {
+    //                     Log::warning('Insufficient balance detected', [
+    //                         'BetAmount' => $transaction['BetAmount'],
+    //                         'balance' => $PlayerBalance,
+    //                     ]);
+
+    //                     return $this->buildErrorResponse(StatusCode::InsufficientBalance, $PlayerBalance);
+    //                 }
+
+    //                 // Process the bet refund
+    //                 $this->processTransfer(
+    //                     User::adminUser(), // Assuming admin user as the receiving party
+    //                     $player,
+    //                     TransactionName::Refund,
+    //                     $transaction['BetAmount']
+    //                 );
+
+    //                 Log::info('Bet Transaction processed successfully', ['BetID' => $transaction['BetId']]);
+    //             }
+    //             // else {
+    //             //     return $this->buildErrorResponse(StatusCode::DuplicateTransaction);
+    //             // }
+    //         }
+
+    //         DB::commit();
+    //         Log::info('All Bet transactions committed successfully');
+    //         $Balance = $request->getMember()->balanceFloat;
+
+    //         // Build a successful response with the final balance of the last player
+    //         return $this->buildSuccessResponse($Balance);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Failed to handle BetNResult', [
+    //             'error' => $e->getMessage(),
+    //             'line' => $e->getLine(),
+    //             'file' => $e->getFile(),
+    //         ]);
+
+    //         return response()->json(['message' => 'Failed to handle BetNResult'], 500);
+    //     }
+    // }
 
     private function buildSuccessResponse(float $newBalance): JsonResponse
     {
@@ -138,9 +315,12 @@ class CancelBetController extends Controller
 
     private function buildErrorResponse(StatusCode $statusCode, float $balance = 0): JsonResponse
     {
+        $responseDateTime = now()->format('Y-m-d H:i:s');
+
         return response()->json([
             'Status' => $statusCode->value,
             'Description' => $statusCode->name,
+            'ResponseDateTime' => $responseDateTime,
             'Balance' => round($balance, 4),
         ]);
     }

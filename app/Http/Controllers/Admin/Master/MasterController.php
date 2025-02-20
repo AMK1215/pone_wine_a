@@ -13,10 +13,8 @@ use App\Services\WalletService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -25,7 +23,7 @@ class MasterController extends Controller
     /**
      * Display a listing of the resource.
      */
-    private const MASTER_ROLE = 2;
+    private const MASTER_ROLE = 3;
 
     public function index()
     {
@@ -44,23 +42,6 @@ class MasterController extends Controller
             ->get();
 
         return view('admin.master.index', compact('users'));
-    }
-
-    public function masterPlayerList()
-    {
-        abort_if(
-            Gate::denies('master_access'),
-            Response::HTTP_FORBIDDEN,
-            '403 Forbidden | You cannot access this page because you do not have permission'
-        );
-
-        $adminId = auth()->id();
-
-        $agents = User::with(['createdAgents', 'createdAgents.players'])
-            ->where('id', $adminId)
-            ->get();
-
-        return view('admin.player.list', compact('agents'));
     }
 
     /**
@@ -86,8 +67,6 @@ class MasterController extends Controller
                 'password' => Hash::make($inputs['password']),
                 'agent_id' => Auth()->user()->id,
                 'type' => UserType::Master,
-                'site_name' => $inputs['site_name'],
-                'site_link' => $inputs['site_link'],
             ]
         );
 
@@ -95,14 +74,6 @@ class MasterController extends Controller
             throw ValidationException::withMessages([
                 'amount' => 'Insufficient balance for transfer.',
             ]);
-        }
-
-        if ($request->agent_logo) {
-            $image = $request->file('agent_logo');
-            $ext = $image->getClientOriginalExtension();
-            $filename = uniqid('logo') . '.' . $ext;
-            $image->move(public_path('assets/img/logo/'), $filename);
-            $userPrepare['agent_logo'] = $filename;
         }
 
         $user = User::create($userPrepare);
@@ -346,29 +317,7 @@ class MasterController extends Controller
             'user_name' => 'nullable|string|max:255',
             'name' => 'required|string|max:255',
             'phone' => 'required|numeric|digits_between:10,15|unique:users,phone,' . $id,
-            'agent_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'site_link' => 'nullable|string',
-
         ]);
-
-        // Handle file upload
-        if ($request->file('agent_logo')) {
-            Log::info('File uploaded.', [
-                'original_name' => $request->file('agent_logo')->getClientOriginalName(),
-                'size' => $request->file('agent_logo')->getSize(),
-            ]);
-
-            if ($user->agent_logo && File::exists(public_path('assets/img/logo/' . $user->agent_logo))) {
-                File::delete(public_path('assets/img/logo/' . $user->agent_logo));
-            }
-
-            $image = $request->file('agent_logo');
-            $filename = uniqid('logo') . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('assets/img/logo/'), $filename);
-            $user->agent_logo = $filename;
-        } else {
-            Log::info('No file uploaded for agent_logo.');
-        }
 
         $user->update([
             'user_name' => $request->user_name ?? $user->user_name,

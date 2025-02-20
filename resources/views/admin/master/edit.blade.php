@@ -32,10 +32,9 @@
                 <form method="POST" action="{{ route('admin.master.update', $master->id) }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-
                     <div class="card-body">
                         <div class="form-group">
-                            <label>masterId<span class="text-danger">*</span></label>
+                            <label>MasterId<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="user_name" value="{{ $master->user_name }}"
                                 readonly>
                         </div>
@@ -46,18 +45,6 @@
                         <div class="form-group">
                             <label>Phone<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="phone" value="{{ $master->phone }}" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Player Site Title</label>
-                            <input type="text" class="form-control" name="site_link" value="{{ $master->site_link }}">
-                        </div>
-                        <div class="form-group">
-                            <label>master Logo</label>
-                            <input type="file" class="form-control" name="agent_logo">
-                            @if ($master->agent_logo)
-                                <img src="{{ asset('assets/img/logo/' . $master->agent_logo) }}" alt="Logo"
-                                    width="100px">
-                            @endif
                         </div>
                     </div>
 

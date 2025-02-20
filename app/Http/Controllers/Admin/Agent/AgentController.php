@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Agent;
 
 use App\Enums\TransactionName;
-use App\Enums\TransactionType;
 use App\Enums\UserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AgentRequest;
@@ -19,7 +18,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +28,7 @@ class AgentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    private const AGENT_ROLE = 3;
+    private const AGENT_ROLE = 4;
 
     public function index(): View
     {
@@ -249,9 +247,7 @@ class AgentController extends Controller
     {
         $randomNumber = mt_rand(10000000, 99999999);
         
-        $user_name = Auth::user()->name;
-
-        return strtoupper(substr($user_name, 0, 3)) . $randomNumber;    
+        return 'A' . $randomNumber;
     }
 
     public function banAgent($id): RedirectResponse

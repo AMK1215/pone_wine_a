@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contact;
+use App\Models\ContactType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,8 +21,9 @@ class ContactController extends Controller
         $agent = $this->getAgent() ?? Auth::user();
 
         $contacts = Contact::where('agent_id', $agent->id)->get();
+        $types = collect($contacts)->pluck('type_id')->unique();
 
-        return view('admin.contact.index', compact('contacts'));
+        return view('admin.contact.index', compact('contacts', 'types'));
     }
 
     /**
@@ -29,7 +31,9 @@ class ContactController extends Controller
      */
     public function create()
     {
-        return view('admin.contact.create');
+        $types = ContactType::all();
+
+        return view('admin.contact.create', compact('types'));
     }
 
     /**
@@ -40,13 +44,20 @@ class ContactController extends Controller
         $request->validate([
             'name' => 'required',
             'value' => 'required',
+            'type_id' => 'required'
         ]);
         $agent = $this->getAgent() ?? Auth::user();
+        $contact = Contact::where('agent_id', $agent->id)->where('type_id', $request->type_id)->first();
+        
+        if($contact){
+            return redirect()->back()->with('error', 'Already Created for this contact type');
+        }
 
         Contact::create([
             'name' => $request->name,
             'value' => $request->value,
             'agent_id' => $agent->id,
+            'type_id' => $request->type_id
         ]);
 
         return redirect(route('admin.contact.index'))->with('success', 'New Contact Created Successfully.');
@@ -65,7 +76,9 @@ class ContactController extends Controller
      */
     public function edit(Contact $contact)
     {
-        return view('admin.contact.edit', compact('contact'));
+        $types = ContactType::all();
+
+        return view('admin.contact.edit', compact('contact', 'types'));
     }
 
     /**
@@ -81,6 +94,7 @@ class ContactController extends Controller
         $contact->update([
             'name' => $request->name,
             'value' => $request->value,
+            'type_id' => $request->type_id
         ]);
 
         return redirect(route('admin.contact.index'))->with('success', 'New Contact Updated Successfully.');

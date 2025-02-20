@@ -170,7 +170,17 @@
                                 </p>
                             </a>
                         </li>
-                        @can('senior_access')
+                        @can('owner_index')
+                        <li class="nav-item">
+                            <a href="{{ route('admin.owner.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.owner.index' ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <p>
+                                    Owner List
+                                </p>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('master_index')
                         <li class="nav-item">
                             <a href="{{ route('admin.master.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.master.index' ? 'active' : '' }}">
                                 <i class="fas fa-users"></i>
@@ -181,15 +191,15 @@
                         </li>
                         @endcan
                         <li class="nav-item">
-                            <a href="" class="nav-link">
+                            <a href="{{route('admin.report.ponewine')}}" class="nav-link {{ Route::current()->getName() == 'admin.report.ponewine' ? 'active' : '' }}">
                                 <i class="fas fa-user">
-                                    <p>Game Report</p>
+                                    <p>PoneWine Report</p>
                                 </i>
                             </a>
                         </li>
-                        @can('master_access')
+                        @can('owner_access')
                         <li class="nav-item">
-                            <a href="{{ route('admin.GetMasterPlayerList') }}" class="nav-link {{ Route::current()->getName() == 'admin.GetMasterPlayerList' ? 'active' : '' }}">
+                            <a href="{{ route('admin.GetOwnerPlayerList') }}" class="nav-link {{ Route::current()->getName() == 'admin.GetOwnerPlayerList' ? 'active' : '' }}">
                                 <i class="fas fa-user"></i>
                                 <p>
                                     Player List
@@ -265,12 +275,60 @@
                                 </p>
                             </a>
                         </li>
+                        @can('agent_access')
+                        <li class="nav-item">
+                            <a href="{{ route('admin.subacc.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.subacc.index' ? 'active' : '' }}">
+                                <i class="fas fa-user-plus"></i>
+                                <p>
+                                    Sub Account
+                                </p>
+                            </a>
+                        </li>
+                        @endcan
                         @can('senior_access')
-                        <li class="nav-item {{ in_array(Route::currentRouteName(), ['admin.text.index', 'admin.banners.index', 'admin.adsbanners.index','admin.promotions.index']) ? 'menu-open' : '' }}">
+                        <li class="nav-item">
+                            <a href="{{ route('admin.roles.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.roles.index' ? 'active' : '' }}">
+                                <i class="far fa-registered"></i>
+                                <p>
+                                    Role
+                                </p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item {{ in_array(Route::currentRouteName(), ['admin.gameLists.index', 'admin.gametypes.index']) ? 'menu-open' : '' }}">
                             <a href="#" class="nav-link">
                                 <i class="fas fa-tools"></i>
                                 <p>
                                     GSC Settings
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.gameLists.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.gameLists.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>GSC GameList</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.gametypes.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.gametypes.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>GSC GameProvider</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        @endcan
+                        @can('owner_access')
+                        <li class="nav-item {{ in_array(Route::currentRouteName(), ['admin.text.index', 'admin.banners.index', 'admin.adsbanners.index','admin.promotions.index']) ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-tools"></i>
+                                <p>
+                                    General Settings
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>

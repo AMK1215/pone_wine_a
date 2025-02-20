@@ -1,26 +1,23 @@
 <?php
 
-use App\Http\Controllers\Admin\AdsVedioController;
 use App\Http\Controllers\Admin\Agent\AgentController;
 use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\Admin\BannerAds\BannerAdsController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BannerTextController;
-use App\Http\Controllers\Admin\Bonu\BonusController;
 use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\Deposit\DepositRequestController;
 use App\Http\Controllers\Admin\GameListController;
-use App\Http\Controllers\Admin\GameListImageURLUpdateController;
 use App\Http\Controllers\Admin\GameTypeProductController;
-use App\Http\Controllers\Admin\NewGameListController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\Master\MasterController;
+use App\Http\Controllers\Admin\Owner\OwnerController;
 use App\Http\Controllers\Admin\PaymentTypeController;
 use App\Http\Controllers\Admin\Player\PlayerController;
 use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\SubAccountController;
-use App\Http\Controllers\Admin\TopTenWithdrawController;
 use App\Http\Controllers\Admin\TransferLog\TransferLogController;
 use App\Http\Controllers\Admin\WithDraw\WithDrawRequestController;
 use App\Http\Controllers\HomeController;
@@ -96,16 +93,10 @@ Route::group([
     // pp hot
 
     Route::patch('pphotgameLists/{id}/toggleStatus', [GameListController::class, 'PPHotGameStatus'])->name('PPHotGame.toggleStatus');
-
-    Route::get('game-list/{gameList}/edit', [GameListImageURLUpdateController::class, 'edit'])->name('game_list.edit');
-    Route::post('/game-list/{id}/update-image-url', [GameListImageURLUpdateController::class, 'updateImageUrl'])->name('game_list.update_image_url');
+    Route::get('game-list/{gameList}/edit', [GameListController::class, 'edit'])->name('game_list.edit');
+    Route::post('/game-list/{id}/update-image-url', [GameListController::class, 'updateImageUrl'])->name('game_list.update_image_url');
     Route::get('game-list-order/{gameList}/edit', [GameListController::class, 'GameListOrderedit'])->name('game_list_order.edit');
     Route::post('/game-lists/{id}/update-order', [GameListController::class, 'updateOrder'])->name('GameListOrderUpdate');
-    Route::get('/game-lists/search', [GameListController::class, 'searchGames'])->name('gameLists.search');
-    Route::get('/game-lists-search', [GameListController::class, 'GetsearchGames'])->name('gameLists.search_index');
-    Route::post('/game-lists/updateordercolumn', [GameListController::class, 'updateAllOrder'])->name('gameLists.updateOrder');
-
-    Route::resource('gamelistnew', NewGameListController::class);
 
     // game list end
     Route::resource('agent', AgentController::class);
@@ -119,9 +110,20 @@ Route::group([
     Route::post('agent-changepassword/{id}', [AgentController::class, 'makeChangePassword'])->name('agent.makeChangePassword');
     Route::resource('subacc', SubAccountController::class);
     Route::resource('master', MasterController::class);
+    Route::resource('owner', OwnerController::class);
+
     Route::put('subacc/{id}/ban', [SubAccountController::class, 'banSubAcc'])->name('subacc.ban');
     Route::get('subacc-changepassword/{id}', [SubAccountController::class, 'getChangePassword'])->name('subacc.getChangePassword');
     Route::post('subacc-changepassword/{id}', [SubAccountController::class, 'makeChangePassword'])->name('subacc.makeChangePassword');
+    Route::get('owner-player-list', [OwnerController::class, 'OwnerPlayerList'])->name('GetOwnerPlayerList');
+    Route::get('owner-cash-in/{id}', [OwnerController::class, 'getCashIn'])->name('owner.getCashIn');
+    Route::post('owner-cash-in/{id}', [OwnerController::class, 'makeCashIn'])->name('owner.makeCashIn');
+    Route::get('mastownerer/cash-out/{id}', [OwnerController::class, 'getCashOut'])->name('owner.getCashOut');
+    Route::post('owner/cash-out/update/{id}', [OwnerController::class, 'makeCashOut'])
+        ->name('owner.makeCashOut');
+    Route::put('owner/{id}/ban', [OwnerController::class, 'banOwner'])->name('owner.ban');
+    Route::get('owner-changepassword/{id}', [OwnerController::class, 'getChangePassword'])->name('owner.getChangePassword');
+    Route::post('owner-changepassword/{id}', [OwnerController::class, 'makeChangePassword'])->name('owner.makeChangePassword');
 
     Route::get('master-player-list', [MasterController::class, 'MasterPlayerList'])->name('GetMasterPlayerList');
     Route::get('master-cash-in/{id}', [MasterController::class, 'getCashIn'])->name('master.getCashIn');
@@ -144,13 +146,9 @@ Route::group([
 
     Route::get('transer-log', [TransferLogController::class, 'index'])->name('transferLog');
     Route::get('transferlog/{id}', [TransferLogController::class, 'transferLog'])->name('transferLogDetail');
-
-    Route::resource('top-10-withdraws', TopTenWithdrawController::class);
-
-    Route::group(['prefix' => 'bonu'], function () {
-        Route::get('countindex', [BonusController::class, 'index'])->name('bonu_count.index');
+    
+    Route::group(['prefix' => 'report'], function () {
+        Route::get('ponewine', [ReportController::class, 'ponewine'])->name('report.ponewine');
     });
-
-    Route::resource('/product_code', App\Http\Controllers\Admin\ProductCodeController::class);
 
 });

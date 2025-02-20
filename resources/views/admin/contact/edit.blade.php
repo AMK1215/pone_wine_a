@@ -32,6 +32,18 @@
                                 @csrf
                                 @method('PUT')
                                 <div class="mb-3">
+                                    <label class="form-label text-dark fw-bold" for="name">Type</label>
+                                    <select name="type_id" id="" class="form-control">
+                                        <option value="">Select Type</option>
+                                        @foreach($types as $type)
+                                        <option value="{{$type->id}}" {{$type->id == $contact->type_id ? 'selected' : ''}}>{{$type->name}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('type_id')
+                                        <span class="text-danger d-block">*{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label text-dark" for="text">Name</label>
                                     <input type="text" class="form-control border border-1 border-secondary px-3"
                                         id="text" name="name" value="{{ $contact->name }}">
@@ -40,7 +52,7 @@
                                     @enderror
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label text-dark" for="text">Link</label>
+                                    <label class="form-label text-dark" for="text">Phone or Account name</label>
                                     <input type="text" class="form-control border border-1 border-secondary px-3"
                                         id="value" name="value" value="{{ $contact->value }}">
                                     @error('value')

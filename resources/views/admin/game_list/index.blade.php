@@ -32,8 +32,6 @@
      </div>
      <div class="ms-auto my-auto mt-lg-0 mt-4">
       <div class="ms-auto my-auto">
-       {{-- <a href="" class="btn bg-gradient-primary btn-sm mb-0 py-2">+&nbsp; Create New
-        User</a> --}}
 
       </div>
      </div>

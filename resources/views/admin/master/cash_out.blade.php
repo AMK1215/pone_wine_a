@@ -30,7 +30,7 @@
                         <div class="row">
                             <div class="col-lg-12 offset-lg-0 col-md-6 offset-md-3 col-sm-8 offset-sm-2 col-10 offset-1">
                                 <div class="form-group">
-                                    <label>masterId<span class="text-danger">*</span></label>
+                                    <label>MasterId<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="" value="{{$master->user_name}}" readonly>
                                 </div>
                                 <div class="form-group">

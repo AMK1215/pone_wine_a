@@ -26,7 +26,7 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('admin.master.makeChangePassword',$master->id) }}">
+                <form method="POST" action="{{ route('admin.master.makeChangePassword',$owner->id) }}">
                     @csrf
                     <div class="card-body">
                         <div class="row">

@@ -73,23 +73,6 @@
                                         class="badge badge-success">Max:{{ number_format(optional(auth()->user()->wallet)->balanceFloat, 2) }}</span>
                                     <input type="text" class="form-control" name="amount" value="{{ old('amount') }}">
                                 </div>
-                                <div class="form-group">
-                                    <label>Master Site Title</label>
-                                    <input type="text" class="form-control" name="site_name"
-                                        value="{{ old('site_name') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label>Player Site Title</label>
-                                    <input type="text" class="form-control" name="site_link"
-                                        value="{{ old('site_link') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label>Master logo</label>
-                                    <input type="file" class="form-control" name="agent_logo">
-                                    @error('phone')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
                             </div>
                         </div>
 

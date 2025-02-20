@@ -57,6 +57,7 @@ Route::post('Adjustment', [AdjustmentController::class, 'handleAdjustment']);
 Route::post('Reward', [RewardController::class, 'handleReward']);
 Route::post('GetGameProvider', [GetGameProviderController::class, 'fetchGameProviders']);
 Route::post('GetGameListByProvider', [GetGameListByProviderController::class, 'fetchGameListByProvider']);
+Route::post('bet', [PoneWineBetController::class, 'index'])->middleware('transaction');
 
 // for slot
 Route::post('/transaction-details/{tranId}', [TransactionController::class, 'getTransactionDetails']);
@@ -81,7 +82,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('banner', [BannerController::class, 'index']);
     Route::get('videoads', [BannerController::class, 'ApiVideoads']);
     Route::get('toptenwithdraw', [BannerController::class, 'TopTen']);
-    Route::post('bet', [PoneWineBetController::class, 'index']);
 
     Route::get('promotion', [PromotionController::class, 'index']);
     Route::get('bannerText', [BannerController::class, 'bannerText']);

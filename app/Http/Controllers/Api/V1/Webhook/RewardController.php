@@ -97,6 +97,90 @@ class RewardController extends Controller
         }
     }
 
+    // v2
+    //     public function handleReward(RewardWebhoodRequest $request): JsonResponse
+    // {
+    //     $transactions = $request->getTransactions();
+
+    //     DB::beginTransaction();
+    //     try {
+    //         foreach ($transactions as $transaction) {
+    //             $player = User::where('user_name', $transaction['PlayerId'])->first();
+    //             if (!$player) {
+    //                 Log::warning('Invalid player detected', ['PlayerId' => $transaction['PlayerId']]);
+    //                 return $this->buildErrorResponse(StatusCode::InvalidPlayerPassword);
+    //             }
+
+    //             if (!$player->wallet) {
+    //                 Log::error('Player wallet not found', ['PlayerId' => $player->id]);
+    //                 return $this->buildErrorResponse(StatusCode::WalletNotFound);
+    //             }
+
+    //             $signature = $this->generateSignature($transaction);
+    //             if ($signature !== $transaction['Signature']) {
+    //                 Log::warning('Signature validation failed', [
+    //                     'transaction' => $transaction,
+    //                     'generated_signature' => $signature,
+    //                 ]);
+    //                 return $this->buildErrorResponse(StatusCode::InvalidSignature);
+    //             }
+
+    //             $existingTransaction = Reward::where('tran_id', $transaction['TranId'])->first();
+    //             if ($existingTransaction) {
+    //                 Log::warning('Duplicate TranId detected', ['TranId' => $transaction['TranId']]);
+    //                 return $this->buildErrorResponse(StatusCode::DuplicateTransaction, $player->wallet->balanceFloat ?? 0);
+    //             }
+
+    //             $this->processTransfer(
+    //                 User::adminUser(),
+    //                 $player,
+    //                 TransactionName::Bonus,
+    //                 $transaction['Amount']
+    //             );
+
+    //             $player->wallet->refreshBalance();
+    //             if (!is_object($player->wallet) || !isset($player->wallet->balanceFloat)) {
+    //                 Log::error('Wallet balanceFloat property missing after refresh', [
+    //                     'PlayerId' => $player->id,
+    //                     'wallet' => $player->wallet, // Log the wallet object for debugging
+    //                 ]);
+    //                 return $this->buildErrorResponse(StatusCode::WalletUpdateFailed);
+    //             }
+
+    //             $newBalance = $player->wallet->balanceFloat;
+
+    //             $reward = Reward::create([
+    //                 'user_id' => $player->id,
+    //                 'operator_id' => $transaction['OperatorId'],
+    //                 'request_date_time' => $transaction['RequestDateTime'],
+    //                 'signature' => $transaction['Signature'],
+    //                 'player_id' => $transaction['PlayerId'],
+    //                 'currency' => $transaction['Currency'],
+    //                 'tran_id' => $transaction['TranId'],
+    //                 'reward_id' => $transaction['RewardId'],
+    //                 'reward_name' => $transaction['RewardName'],
+    //                 'amount' => $transaction['Amount'],
+    //                 'tran_date_time' => $transaction['TranDateTime'],
+    //                 'reward_detail' => $transaction['RewardDetail'] ?? null,
+    //             ]);
+
+    //             Log::info('Reward transaction processed successfully', ['TranId' => $transaction['TranId']]);
+    //             if (!$reward) {
+    //                 throw new \Exception('Failed to create reward record');
+    //             }
+    //         }
+
+    //         DB::commit();
+    //         Log::info('All reward transactions committed successfully');
+
+    //         return $this->buildSuccessResponse($newBalance);
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Log::error('Failed to handle Reward', ['error' => $e->getMessage()]);
+    //         return response()->json(['message' => 'Failed to handle Reward'], 500);
+    //     }
+    // }
+
     private function buildSuccessResponse(float $newBalance): JsonResponse
     {
         return response()->json([

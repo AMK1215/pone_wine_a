@@ -19,8 +19,10 @@
         <div class="row">
             <div class="col-12">
                 <div class="d-flex justify-content-end mb-3">
+                    @if(count($types) != 2)
                     <a href="{{ route('admin.contact.create') }}" class="btn bg-gradient-success btn-sm mb-0">+&nbsp; New
                         Contact</a>
+                    @endif
                 </div>
                 <div class="card " style="border-radius: 20px;">
                     <div class="card-header">
@@ -32,8 +34,8 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Name</th>
-                                    <th>Link</th>
-                                    <th>Created At</th>
+                                    <th>Value</th>
+                                    <th>Type</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -43,7 +45,7 @@
                                     <td class="text-sm font-weight-normal">{{ ++$key }}</td>
                                     <td>{{ $contact->name }}</td>
                                     <td>{{$contact->value}}</td>
-                                    <td class="text-sm font-weight-normal">{{ $contact->created_at->format('M j, Y') }}
+                                    <td><img src="{{$contact->type->imgUrl}}" alt="" width="50px"></td>
                                     </td>
                                     <td>
                                         <a href="{{ route('admin.contact.edit', $contact->id) }}" data-bs-toggle="tooltip"
@@ -86,7 +88,6 @@
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
                 icon: 'warning',
-                background: 'hsl(230, 40%, 10%)',
                 showCancelButton: true,
                 confirmButtonText: 'Yes, delete it!',
                 cancelButtonText: 'No, cancel!'
@@ -98,16 +99,4 @@
         });
     });
 </script>
-@if (session()->has('success'))
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: '{{ session('
-        success ') }}',
-        showConfirmButton: false,
-        background: 'hsl(230, 40%, 10%)',
-        timer: 1500
-    })
-</script>
-@endif
 @endsection

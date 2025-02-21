@@ -46,7 +46,7 @@ class BannerAdsController extends Controller
         // image
         $image = $request->file('image');
         $ext = $image->getClientOriginalExtension();
-        $filename = uniqid('banner').'.'.$ext; // Generate a unique filename
+        $filename = uniqid('banner') . '.' . $ext; // Generate a unique filename
         $image->move(public_path('assets/img/banners_ads/'), $filename); // Save the file
         BannerAds::create([
             'image' => $filename,
@@ -82,22 +82,19 @@ class BannerAdsController extends Controller
         if (! $adsbanner) {
             return redirect()->back()->with('error', 'Ads Banner Not Found');
         }
-        $request->validate([
-            'image' => 'required',
-        ]);
 
-        // Remove banner from local storage
-        File::delete(public_path('assets/img/banners_ads/'.$adsbanner->image));
-
-        // image
         $image = $request->file('image');
-        $ext = $image->getClientOriginalExtension();
-        $filename = uniqid('banner').'.'.$ext; // Generate a unique filename
-        $image->move(public_path('assets/img/banners_ads/'), $filename); // Save the file
 
-        $adsbanner->update([
-            'image' => $filename,
-        ]);
+        if ($image) {
+            File::delete(public_path('assets/img/banners_ads/' . $adsbanner->image));
+            $ext = $image->getClientOriginalExtension();
+            $filename = uniqid('banner') . '.' . $ext;
+            $image->move(public_path('assets/img/banners_ads/'), $filename);
+
+            $adsbanner->update([
+                'image' => $filename,
+            ]);
+        }
 
         return redirect(route('admin.adsbanners.index'))->with('success', 'Ads Banner Image Updated.');
     }
@@ -112,8 +109,8 @@ class BannerAdsController extends Controller
         if (! $banner) {
             return redirect()->back()->with('error', 'Banner Not Found');
         }
-        //remove banner from localstorage
-        File::delete(public_path('assets/img/banners_ads/'.$banner->image));
+
+        File::delete(public_path('assets/img/banners_ads/' . $banner->image));
         $banner->delete();
 
         return redirect()->back()->with('success', 'Ads Banner Deleted.');

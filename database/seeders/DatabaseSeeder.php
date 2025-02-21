@@ -52,8 +52,7 @@ class DatabaseSeeder extends Seeder
             R88SlotSeeder::class,
             R88ArcadeSeeder::class,
             R88LotterySeeder::class,
-
-
+            ContactTypeSeeder::class
         ]);
     }
 }

@@ -57,12 +57,18 @@ class OwnerController extends Controller
 
         $adminId = auth()->id(); // Get the authenticated admin's ID
 
-        // Fetch agents and their related players for this admin
-        $agents = User::with(['createdAgents', 'createdAgents.players'])
+        $agents = User::with(['createdAgents.createdAgents.players'])
             ->where('id', $adminId) // Only fetch data for the current admin
             ->get();
 
-        return view('admin.player.list', compact('agents'));
+        $players = $agents->pluck('createdAgents')
+            ->flatten()
+            ->pluck('createdAgents')
+            ->flatten()
+            ->pluck('players')
+            ->flatten();
+
+        return view('admin.player.list', compact('players'));
     }
 
     /**
@@ -102,7 +108,7 @@ class OwnerController extends Controller
         if ($request->agent_logo) {
             $image = $request->file('agent_logo');
             $ext = $image->getClientOriginalExtension();
-            $filename = uniqid('logo').'.'.$ext; // Generate a unique filename
+            $filename = uniqid('logo') . '.' . $ext; // Generate a unique filename
             $image->move(public_path('assets/img/logo/'), $filename); // Save the file
             $userPrepare['agent_logo'] = $filename;
         }
@@ -111,11 +117,7 @@ class OwnerController extends Controller
         $user->roles()->sync(self::OWNER_ROLE);
 
         if (isset($inputs['amount'])) {
-            app(WalletService::class)->transfer($admin, $user, $inputs['amount'],
-                TransactionName::CreditTransfer, [
-                    'old_balance' => $user->balanceFloat,
-                    'new_balance' => $user->balanceFloat + $request->amount,
-                ]);
+            app(WalletService::class)->transfer($admin, $user, $inputs['amount'], TransactionName::CreditTransfer);
         }
         session()->forget('user_name');
 
@@ -146,7 +148,7 @@ class OwnerController extends Controller
     {
         $randomNumber = mt_rand(10000000, 99999999);
 
-        return 'O'.$randomNumber;
+        return 'O' . $randomNumber;
     }
 
     /**
@@ -231,12 +233,7 @@ class OwnerController extends Controller
             }
 
             // Transfer money
-            app(WalletService::class)->transfer($admin, $master, $request->validated('amount'),
-                TransactionName::CreditTransfer, [
-                    'note' => $request->note,
-                    'old_balance' => $master->balanceFloat,
-                    'new_balance' => $master->balanceFloat + $request->amount,
-                ]);
+            app(WalletService::class)->transfer($admin, $master, $request->validated('amount'), TransactionName::CreditTransfer, ['note' => $request->note]);
 
             return redirect()->back()->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {
@@ -269,12 +266,7 @@ class OwnerController extends Controller
             }
 
             // Transfer money
-            app(WalletService::class)->transfer($master, $admin, $request->validated('amount'),
-                TransactionName::DebitTransfer, [
-                    'note' => $request->note,
-                    'old_balance' => $master->balanceFloat,
-                    'new_balance' => $master->balanceFloat - $request->amount,
-                ]);
+            app(WalletService::class)->transfer($master, $admin, $request->validated('amount'), TransactionName::DebitTransfer, ['note' => $request->note]);
 
             return redirect()->back()->with('success', 'Money fill request submitted successfully!');
         } catch (Exception $e) {
@@ -315,7 +307,7 @@ class OwnerController extends Controller
 
         return redirect()->back()->with(
             'success',
-            'User '.($user->status == 1 ? 'activate' : 'inactive').' successfully'
+            'User ' . ($user->status == 1 ? 'activate' : 'inactive') . ' successfully'
         );
     }
 
@@ -341,7 +333,7 @@ class OwnerController extends Controller
         $request->validate([
             'user_name' => 'nullable|string|max:255',
             'name' => 'required|string|max:255',
-            'phone' => 'required|numeric|digits_between:10,15|unique:users,phone,'.$id,
+            'phone' => 'required|numeric|digits_between:10,15|unique:users,phone,' . $id,
             'agent_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'site_link' => 'nullable|string',
 
@@ -356,13 +348,13 @@ class OwnerController extends Controller
             ]);
 
             // Delete old logo if exists
-            if ($user->agent_logo && File::exists(public_path('assets/img/logo/'.$user->agent_logo))) {
-                File::delete(public_path('assets/img/logo/'.$user->agent_logo));
+            if ($user->agent_logo && File::exists(public_path('assets/img/logo/' . $user->agent_logo))) {
+                File::delete(public_path('assets/img/logo/' . $user->agent_logo));
             }
 
             // Upload new logo
             $image = $request->file('agent_logo');
-            $filename = uniqid('logo').'.'.$image->getClientOriginalExtension();
+            $filename = uniqid('logo') . '.' . $image->getClientOriginalExtension();
             $image->move(public_path('assets/img/logo/'), $filename);
             $user->agent_logo = $filename;
         } else {
@@ -413,5 +405,24 @@ class OwnerController extends Controller
             ->with('success', 'Owner Change Password successfully')
             ->with('password', $request->password)
             ->with('username', $master->user_name);
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(User $owner)
+    {
+        if (! $owner) {
+            return redirect()->back()->with('error', 'Banner Not Found');
+        }
+
+        $agentIds = User::where('agent_id', $owner->id)->pluck('id');
+        User::whereIn('agent_id', $agentIds)->delete();
+      
+        User::where('agent_id', $owner->id)->delete();
+        $owner->delete();
+
+        return redirect()->back()->with('success', 'Banner Deleted.');
     }
 }

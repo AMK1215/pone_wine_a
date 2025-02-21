@@ -10,4 +10,5 @@ class PoneWineBet extends Model
     use HasFactory;
 
     protected $fillable = ['room_id', 'match_id', 'status', 'win_number'];
+
 }

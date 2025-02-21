@@ -25,23 +25,12 @@ class PermissionsTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'title' => 'game_type_access',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-
-            [
-                'title' => 'admin_access',
+                'title' => 'master_access',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'agent_access',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'title' => 'player_access',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -137,6 +126,26 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'title' => 'owner_delete',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'master_index',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'master_create',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'master_edit',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'master_delete',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

@@ -1,146 +1,155 @@
 @extends('layouts.master')
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>Owner List</h1>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                        <li class="breadcrumb-item active">Owner List</li>
-                    </ol>
-                </div>
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Owner List</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                    <li class="breadcrumb-item active">Owner List</li>
+                </ol>
             </div>
         </div>
-    </section>
-    <!-- Main content -->
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex justify-content-end mb-3">
-                        <a href="{{ route('admin.owner.create') }}" class="btn btn-success " style="width: 100px;"><i
-                                class="fas fa-plus text-white  mr-2"></i>Create</a>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <table id="mytable" class="table table-bordered table-hover">
-                                <thead>
-                                    <th>#</th>
-                                    <th>OwnerName</th>
-                                    <th>OwnerId</th>
-                                    <th>Phone</th>
-                                    <th>Status</th>
-                                    <th>Balance</th>
-                                    <th>Action</th>
-                                    <th>Transfer</th>
-                                </thead>
-                                <tbody>
-                                    {{-- kzt --}}
-                                    @if (isset($users))
-                                        @if (count($users) > 0)
-                                            @foreach ($users as $user)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>
-                                                        <span class="d-block">{{ $user->name }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="d-block">{{ $user->user_name }}</span>
-                                                    </td>
-                                                    {{-- <td>{{ $user->referral_code }}</td> --}}
-                                                    <td>{{ $user->phone }}</td>
-                                                    <td>
-                                                        <small
-                                                            class="badge bg-gradient-{{ $user->status == 1 ? 'success' : 'danger' }}">{{ $user->status == 1 ? 'active' : 'inactive' }}</small>
-
-                                                    </td>
-                                                    <td>{{ number_format($user->balanceFloat) }}</td>
-
-                                                    <td>
-                                                        @if ($user->status == 1)
-                                                            <a onclick="event.preventDefault(); document.getElementById('banUser-{{ $user->id }}').submit();"
-                                                                class="me-2" href="#" data-bs-toggle="tooltip"
-                                                                data-bs-original-title="Active Player">
-                                                                <i class="fas fa-user-check text-success"
-                                                                    style="font-size: 20px;"></i>
-                                                            </a>
-                                                        @else
-                                                            <a onclick="event.preventDefault(); document.getElementById('banUser-{{ $user->id }}').submit();"
-                                                                class="me-2" href="#" data-bs-toggle="tooltip"
-                                                                data-bs-original-title="InActive Player">
-                                                                <i class="fas fa-user-slash text-danger"
-                                                                    style="font-size: 20px;"></i>
-                                                            </a>
-                                                        @endif
-                                                        <form class="d-none" id="banUser-{{ $user->id }}"
-                                                            action="{{ route('admin.agent.ban', $user->id) }}"
-                                                            method="post">
-                                                            @csrf
-                                                            @method('PUT')
-                                                        </form>
-
-                                                        <a class="me-1"
-                                                            href="{{ route('admin.owner.getChangePassword', $user->id) }}"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-original-title="Change Password">
-                                                            <i class="fas fa-lock text-info" style="font-size: 20px;"></i>
-                                                        </a>
-                                                        <a class="me-1" href="{{ route('admin.owner.edit', $user->id) }}"
-                                                            data-bs-toggle="tooltip" data-bs-original-title="Edit Agent">
-                                                            <i class="fas fa-edit text-info" style="font-size: 20px;"></i>
-                                                        </a>
-                                                    </td>
-                                                    <td>
-                                                        <a href="{{ route('admin.owner.getCashIn', $user->id) }}"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-original-title="Deposit To Agent"
-                                                            class="btn btn-info btn-sm">
-                                                            <i class="fas fa-plus text-white mr-1"></i>Deposit
-                                                        </a>
-                                                        <a href="{{ route('admin.owner.getCashOut', $user->id) }}"
-                                                            data-bs-toggle="tooltip"
-                                                            data-bs-original-title="WithDraw To Agent"
-                                                            class="btn btn-info btn-sm">
-                                                            <i class="fas fa-minus text-white mr-1"></i>
-                                                            Withdrawl
-                                                        </a>
-                                                        <a href="{{ route('admin.logs', $user->id) }}"
-                                                            data-bs-toggle="tooltip" data-bs-original-title="Agent logs"
-                                                            class="btn btn-info btn-sm">
-                                                            <i class="fas fa-right-left text-white mr-1"></i>
-                                                            Logs
-                                                        </a>
-                                                        <a href="{{ route('admin.transferLogDetail', $user->id) }}"
-                                                            data-bs-toggle="tooltip" data-bs-original-title="Reports"
-                                                            class="btn btn-info btn-sm">
-                                                            <i class="fa-solid fa-money-bill-transfer"></i>
-                                                            Transfer Logs
-                                                        </a>
-
-
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @else
-                                            <tr>
-                                                <td col-span=8>
-                                                    There was no Agents.
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endif
-                                </tbody>
-
-                            </table>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
+    </div>
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{{ route('admin.owner.create') }}" class="btn btn-success " style="width: 100px;"><i
+                            class="fas fa-plus text-white  mr-2"></i>Create</a>
                 </div>
-                <div class="modal fade" id="credentialsModal" tabindex="-1" role="dialog" aria-labelledby="credentialsModalLabel" aria-hidden="true">
+                <div class="card">
+                    <div class="card-body">
+                        <table id="mytable" class="table table-bordered table-hover">
+                            <thead>
+                                <th>#</th>
+                                <th>OwnerName</th>
+                                <th>OwnerId</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Balance</th>
+                                <th>Action</th>
+                                <th>Transfer</th>
+                            </thead>
+                            <tbody>
+                                {{-- kzt --}}
+                                @if (isset($users))
+                                @if (count($users) > 0)
+                                @foreach ($users as $user)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>
+                                        <span class="d-block">{{ $user->name }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="d-block">{{ $user->user_name }}</span>
+                                    </td>
+                                    {{-- <td>{{ $user->referral_code }}</td> --}}
+                                    <td>{{ $user->phone }}</td>
+                                    <td>
+                                        <small
+                                            class="badge bg-gradient-{{ $user->status == 1 ? 'success' : 'danger' }}">{{ $user->status == 1 ? 'active' : 'inactive' }}</small>
+
+                                    </td>
+                                    <td>{{ number_format($user->balanceFloat) }}</td>
+
+                                    <td>
+                                        @if ($user->status == 1)
+                                        <a onclick="event.preventDefault(); document.getElementById('banUser-{{ $user->id }}').submit();"
+                                            class="me-2" href="#" data-bs-toggle="tooltip"
+                                            data-bs-original-title="Active Player">
+                                            <i class="fas fa-user-check text-success"
+                                                style="font-size: 20px;"></i>
+                                        </a>
+                                        @else
+                                        <a onclick="event.preventDefault(); document.getElementById('banUser-{{ $user->id }}').submit();"
+                                            class="me-2" href="#" data-bs-toggle="tooltip"
+                                            data-bs-original-title="InActive Player">
+                                            <i class="fas fa-user-slash text-danger"
+                                                style="font-size: 20px;"></i>
+                                        </a>
+                                        @endif
+                                        <form class="d-none" id="banUser-{{ $user->id }}"
+                                            action="{{ route('admin.agent.ban', $user->id) }}"
+                                            method="post">
+                                            @csrf
+                                            @method('PUT')
+                                        </form>
+
+                                        <a class="me-1"
+                                            href="{{ route('admin.owner.getChangePassword', $user->id) }}"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-original-title="Change Password">
+                                            <i class="fas fa-lock text-info" style="font-size: 20px;"></i>
+                                        </a>
+                                        <a class="me-1" href="{{ route('admin.owner.edit', $user->id) }}"
+                                            data-bs-toggle="tooltip" data-bs-original-title="Edit Agent">
+                                            <i class="fas fa-edit text-info" style="font-size: 20px;"></i>
+                                        </a>
+                                        <form class="d-inline" action="{{ route('admin.owner.destroy', $user->id) }}"
+                                            method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn transparent-btn" data-bs-toggle="tooltip"
+                                                data-bs-original-title="Delete Banner">
+                                                <i class="fa fa-trash  text-danger" style="font-size: 20px;"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.owner.getCashIn', $user->id) }}"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-original-title="Deposit To Agent"
+                                            class="btn btn-info btn-sm">
+                                            <i class="fas fa-plus text-white mr-1"></i>Deposit
+                                        </a>
+                                        <a href="{{ route('admin.owner.getCashOut', $user->id) }}"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-original-title="WithDraw To Agent"
+                                            class="btn btn-info btn-sm">
+                                            <i class="fas fa-minus text-white mr-1"></i>
+                                            Withdrawl
+                                        </a>
+                                        <a href="{{ route('admin.logs', $user->id) }}"
+                                            data-bs-toggle="tooltip" data-bs-original-title="Agent logs"
+                                            class="btn btn-info btn-sm">
+                                            <i class="fas fa-right-left text-white mr-1"></i>
+                                            Logs
+                                        </a>
+                                        <a href="{{ route('admin.transferLogDetail', $user->id) }}"
+                                            data-bs-toggle="tooltip" data-bs-original-title="Reports"
+                                            class="btn btn-info btn-sm">
+                                            <i class="fa-solid fa-money-bill-transfer"></i>
+                                            Transfer Logs
+                                        </a>
+
+
+                                    </td>
+                                </tr>
+                                @endforeach
+                                @else
+                                <tr>
+                                    <td col-span=8>
+                                        There was no Agents.
+                                    </td>
+                                </tr>
+                                @endif
+                                @endif
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+            <div class="modal fade" id="credentialsModal" tabindex="-1" role="dialog" aria-labelledby="credentialsModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -159,18 +168,38 @@
                     </div>
                 </div>
             </div>
-            </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection
 @section('script')
+<script>
+    $(document).ready(function() {
+        $('.transparent-btn').on('click', function(e) {
+            e.preventDefault();
+            let form = $(this).closest('form');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
 <script>
     var successMessage = @json(session('successMessage'));
     var username = @json(session('username'));
     var password = @json(session('password'));
     var amount = @json(session('amount'));
 
-    @if (session()->has('successMessage'))
+    @if(session() -> has('successMessage'))
     toastr.success(successMessage +
         `
     <div>
@@ -181,8 +210,8 @@
             data-url="https://agdashboard.pro/login" 
             onclick="copyToClipboard(this)">Copy</button>
     </div>`, {
-        allowHtml: true
-    });
+            allowHtml: true
+        });
     @endif
 
     function copyToClipboard(button) {

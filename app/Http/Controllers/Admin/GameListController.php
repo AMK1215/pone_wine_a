@@ -36,25 +36,25 @@ class GameListController extends Controller
                     return $row->hot_status == 1 ? 'This Game is Hot' : 'Game is Normal';
                 })
                 ->addColumn('action', function ($row) {
-                    $btn = '<form action="'.route('admin.gameLists.toggleStatus', $row->id).'" method="POST" style="display:inline;">
-                                '.csrf_field().'
-                                '.method_field('PATCH').'
+                    $btn = '<form action="' . route('admin.gameLists.toggleStatus', $row->id) . '" method="POST" style="display:inline;">
+                                ' . csrf_field() . '
+                                ' . method_field('PATCH') . '
                                 <button type="submit" class="btn btn-warning btn-sm">GameStatus</button>
                             </form>';
-                    $btn .= '<form action="'.route('admin.HotGame.toggleStatus', $row->id).'" method="POST" style="display:inline;">
-                                '.csrf_field().'
-                                '.method_field('PATCH').'
+                    $btn .= '<form action="' . route('admin.HotGame.toggleStatus', $row->id) . '" method="POST" style="display:inline;">
+                                ' . csrf_field() . '
+                                ' . method_field('PATCH') . '
                                 <button type="submit" class="btn btn-success btn-sm">HotGame</button>
                             </form>';
 
-                    $btn .= '<form action="'.route('admin.PPHotGame.toggleStatus', $row->id).'" method="POST" style="display:inline;">
-                                '.csrf_field().'
-                                '.method_field('PATCH').'
+                    $btn .= '<form action="' . route('admin.PPHotGame.toggleStatus', $row->id) . '" method="POST" style="display:inline;">
+                                ' . csrf_field() . '
+                                ' . method_field('PATCH') . '
                                 <button type="submit" class="btn btn-warning btn-sm">PPHot</button>
                             </form>';
 
-                    $btn .= '<a href="'.route('admin.game_list.edit', $row->id).'" class="btn btn-primary btn-sm">EditImageURL</a>';
-                    $btn .= '<a href="'.route('admin.game_list_order.edit', $row->id).'" class="btn btn-primary btn-sm">Order</a>';
+                    $btn .= '<a href="' . route('admin.game_list.edit', $row->id) . '" class="btn btn-primary btn-sm">EditImage</a>';
+                    $btn .= '<a href="' . route('admin.game_list_order.edit', $row->id) . '" class="btn btn-primary btn-sm">Order</a>';
 
                     return $btn;
                 })
@@ -63,30 +63,6 @@ class GameListController extends Controller
         }
 
         return view('admin.game_list.paginate_index');
-    }
-
-    public function edit($gameTypeId, $productId)
-    {
-        $gameType = GameList::with([
-            'products' => function ($query) use ($productId) {
-                $query->where('products.id', $productId);
-            },
-        ])->where('id', $gameTypeId)->first();
-
-        return view('admin.game_type.edit', compact('gameType', 'productId'));
-    }
-
-    public function update(Request $request, $gameTypeId, $productId)
-    {
-        $image = $request->file('image');
-        $ext = $image->getClientOriginalExtension();
-        $filename = uniqid('game_type').'.'.$ext;
-        $image->move(public_path('assets/img/game_logo/'), $filename);
-
-        DB::table('game_type_product')->where('game_type_id', $gameTypeId)->where('product_id', $productId)
-            ->update(['image' => $filename]);
-
-        return redirect()->route('admin.gametypes.index');
     }
 
     public function toggleStatus($id)
@@ -123,90 +99,63 @@ class GameListController extends Controller
 
     public function updateOrder(Request $request, $id)
     {
-        // Validate the form input
         $request->validate([
             'order' => 'required|integer|min:0',
         ]);
 
-        // Find the game list record
         $gameList = GameList::findOrFail($id);
 
-        // Update the order column
         $gameList->order = $request->input('order');
         $gameList->save();
 
         return redirect()->route('admin.gameLists.index')->with('success', 'Game list order  updated successfully.');
-
-        // Return a response
-        // return response()->json([
-        //     'message' => 'Order updated successfully.',
-        //     'data' => $gameList,
-        // ]);
-    }
-
-    public function GetsearchGames(Request $request)
-    {
-        return view('admin.game_list.search_index');
-    }
-
-    public function searchGames(Request $request)
-    {
-        // Validate search input (optional)
-        $request->validate([
-            'game_name' => 'nullable|string',
-        ]);
-
-        // Build query
-        $query = GameList::query();
-
-        // Add filters based on request inputs
-        if ($request->filled('game_name')) {
-            $query->where('game_name', 'LIKE', '%'.$request->input('game_name').'%');
-        }
-
-        // Execute query and get results
-        $games = $query->get();
-
-        return view('admin.game_list.search', compact('games'));
-
     }
 
     public function updateAllOrder(Request $request)
     {
-        // Validate the input
         $request->validate([
             'order' => 'required|integer',
         ]);
 
-        // Get the new order value from the request
         $newOrderValue = $request->input('order');
 
-        // Perform the bulk update
         $updatedCount = GameList::query()->update(['order' => $newOrderValue]);
 
-        // Redirect back with a success message
         return redirect()
             ->back()
             ->with('success', "Order column updated for all rows successfully. Updated rows: $updatedCount.");
     }
-    // public function updateAllOrder(Request $request)
-    // {
-    //     // Validate the input
-    //     $request->validate([
-    //         'order' => 'required|integer',
-    //     ]);
 
-    //     // Get the new order value from the request
-    //     $newOrderValue = $request->input('order');
+    /**
+     * Update the image_url for a specific game.
+     */
+    public function edit(GameList $gameList)
+    {
+        return view('admin.game_list.edit', compact('gameList'));
+    }
 
-    //     // Perform the bulk update
-    //     $updatedCount = GameList::query()->update(['order' => $newOrderValue]);
+    public function updateImageUrl(Request $request, $id)
+    {
+        $game = GameList::findOrFail($id);
 
-    //     // Return a response
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => 'Order column updated for all rows successfully.',
-    //         'updated_rows' => $updatedCount,
-    //     ]);
-    // }
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $image = $request->file('image');
+
+        if ($image && $image->isValid()) {
+            $filename = $image->getClientOriginalName();
+
+            $image->move(public_path('assets/img/game_list/'), $filename);
+
+            $game->update([
+                'image_url' => 'https://delightmyanmarthb.xyz/assets/img/game_list/'.$filename,
+            ]);
+
+            return redirect()->route('admin.gameLists.index')->with('success', 'Image updated successfully.');
+        }
+
+        return redirect()->back()->withErrors('File upload failed.');
+    }
 }

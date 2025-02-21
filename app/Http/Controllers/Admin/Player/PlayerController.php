@@ -23,7 +23,7 @@ class PlayerController extends Controller
 {
     protected $userService;
 
-    private const PLAYER_ROLE = 4;
+    private const PLAYER_ROLE = 5;
 
     protected const SUB_AGENT_ROlE = 'Sub Agent';
 

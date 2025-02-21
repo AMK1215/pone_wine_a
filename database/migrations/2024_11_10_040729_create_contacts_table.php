@@ -16,7 +16,9 @@ return new class extends Migration
             $table->unsignedBigInteger('agent_id');
             $table->string('name');
             $table->string('value');
+            $table->unsignedBigInteger('type_id');
             $table->foreign('agent_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('type_id')->references('id')->on('contact_types')->onDelete('cascade');
             $table->timestamps();
         });
     }

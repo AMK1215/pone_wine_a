@@ -53,7 +53,7 @@ class HomeController extends Controller
             ->when($role[0] === 'Senior', function ($query) {
                 return $query->where('users.agent_id', Auth::id());
             })
-            ->when($role[0] === 'Owner', function ($query) use ($user) {
+            ->when($role[0] === 'Master', function ($query) use ($user) {
                 return $query->where('users.agent_id', $user->id);
             })
             ->when($role[0] === 'Agent', function ($query) use ($user) {

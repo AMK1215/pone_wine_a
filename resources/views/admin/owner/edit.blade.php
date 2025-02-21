@@ -29,40 +29,6 @@
                     </span>
                     </h3>
                 </div>
-                {{-- <form method="POST" action="{{ route('admin.owner.update', $owner->id) }}" enctype="multipart/form-data">
-                    @csrf
-                    @method('PUT')
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-lg-8 offset-lg-2 col-md-8 offset-md-2 col-sm-8 offset-sm-2 col-10 offset-1">
-                                <div class="form-group">
-                                    <label>OwnerId<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="user_name"
-                                        value="{{ $owner->user_name }}" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label>Name<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="name" value="{{ $owner->name }}">
-                                </div>
-                                <div class="form-group">
-                                    <label>Phone<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="phone" value="{{ $owner->phone }}">
-                                </div>
-                                <div class="form-group">
-                                    <label>Owner logo</label>
-                                    <input type="file" class="form-control" name="agent_logo">
-                                    @if ($owner->agent_logo)
-                                        <img src="{{ asset('assets/img/logo') . '/' . $owner->agent_logo }}" alt=""
-                                            width="100px">
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer col-12 bg-white">
-                        <button type="submit" class="btn btn-success float-right">Update</button>
-                    </div>
-                </form> --}}
 
                 <form method="POST" action="{{ route('admin.owner.update', $owner->id) }}" enctype="multipart/form-data">
                     @csrf

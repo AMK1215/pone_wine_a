@@ -12,7 +12,6 @@
             </div>
         </div>
     </section>
-
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
@@ -30,6 +29,18 @@
                             <form role="form" class="text-start" action="{{ route('admin.contact.store') }}" method="post">
                                 @csrf
                                 <div class="mb-3">
+                                    <label class="form-label text-dark fw-bold" for="name">Type</label>
+                                    <select name="type_id" id="" class="form-control">
+                                        <option value="">Select Type</option>
+                                        @foreach($types as $type)
+                                        <option value="{{$type->id}}">{{$type->name}}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('type_id')
+                                        <span class="text-danger d-block">*{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
                                     <label class="form-label text-dark fw-bold" for="name">Name</label>
                                     <input type="text" class="form-control border border-1 border-secondary px-2"
                                         id="name" name="name" placeholder="Enter Name">
@@ -38,9 +49,9 @@
                                     @enderror
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label text-dark fw-bold" for="name">Link</label>
+                                    <label class="form-label text-dark fw-bold" for="name">Phone or Account name</label>
                                     <input type="text" class="form-control border border-1 border-secondary px-2"
-                                        id="value" name="value" placeholder="Enter Link">
+                                        id="value" name="value" placeholder="Enter phone or account name">
                                     @error('value')
                                         <span class="text-danger d-block">*{{ $message }}</span>
                                     @enderror

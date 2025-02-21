@@ -27,6 +27,12 @@ class RolesTableSeeder extends Seeder
             ],
             [
 
+                'title' => 'Master',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+
                 'title' => 'Agent',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -42,13 +48,7 @@ class RolesTableSeeder extends Seeder
                 'title' => 'System Wallet',
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-
-                'title' => 'Sub Agent',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ]
         ];
 
         Role::insert($roles);

@@ -27,9 +27,7 @@
                                 <thead>
                                     <th>#</th>
                                     <th>PlayerId</th>
-                                    <th>RoomId</th>
-                                    <th>MatchId</th>
-                                    <th>Win Number</th>
+                                    <th>Total Bet Amount</th>
                                     <th>Total Win/Lose Amt</th>
                                     <th>Action</th>
                                 </thead>
@@ -38,9 +36,7 @@
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$report->user_name}}</td>
-                                        <td>{{$report->room_id}}</td>
-                                        <td>{{$report->match_id}}</td>
-                                        <td>{{$report->win_number}}</td>
+                                        <td>{{ $report->total_bet_amount }}</td>
                                         <td>{{$report->total_win_lose_amt}}</td>
                                         <td><a href="{{route('admin.report.ponewineDetail', $report->user_id) }}" class="btn btn-primary">Detail</a></td>
                                     </tr>

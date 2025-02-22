@@ -22,15 +22,12 @@ class ReportController extends Controller
                 DB::raw('SUM(pone_wine_bet_infos.bet_amount) as total_bet_amount'),
                 'pone_wine_bets.win_number',
                 'pone_wine_bets.match_id',
-                'pone_wine_bets.room_id'
             ])
             ->where('pone_wine_player_bets.user_id', Auth::id())
             ->groupBy([
                 'pone_wine_player_bets.user_name',
                 'pone_wine_bets.win_number',
-                'pone_wine_bets.room_id',
                 'pone_wine_bets.match_id',
-                'pone_wine_bets.id'
             ])
             ->get();
 

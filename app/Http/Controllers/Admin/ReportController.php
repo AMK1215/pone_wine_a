@@ -7,6 +7,7 @@ use App\Models\PoneWineBet;
 use App\Models\PoneWineBetInfo;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReportController extends Controller
 {
@@ -15,11 +16,44 @@ class ReportController extends Controller
     public function ponewine()
     {
         $agent = $this->getAgent() ?? Auth::user();
-        $reports = PoneWineBetInfo::with(['poneWinePlayerBet', 'poneWinePlayerBet.poneWineBet'])->get();
+        $reports = DB::table('pone_wine_bets')
+            ->join('pone_wine_player_bets', 'pone_wine_player_bets.pone_wine_bet_id', '=', 'pone_wine_bets.id')
+            ->select([
+                DB::raw('SUM(pone_wine_player_bets.win_lose_amt) as total_win_lose_amt'),
+                'pone_wine_player_bets.user_name',
+                'pone_wine_player_bets.user_id',
+                'pone_wine_bets.win_number',
+                'pone_wine_bets.match_id',
+                'pone_wine_bets.room_id'
+            ])
+            ->groupBy([
+                'pone_wine_player_bets.user_id',
+                'pone_wine_player_bets.user_name',
+                'pone_wine_bets.win_number',
+                'pone_wine_bets.room_id',
+                'pone_wine_bets.match_id',
+            ])
+            ->get();
 
         return view('admin.report.ponewine.index', compact('reports'));
     }
 
+
+    public function detail($playerId)
+    {
+        $reports = DB::table('pone_wine_player_bets')
+            ->join('pone_wine_bet_infos', 'pone_wine_bet_infos.pone_wine_player_bet_id', '=', 'pone_wine_bet_infos.id')
+            ->select([
+                'pone_wine_player_bets.user_name',
+                'pone_wine_bet_infos.bet_no',
+                'pone_wine_bet_infos.bet_amount',
+                'pone_wine_player_bets.win_lose_amt'
+            ])
+            ->where('pone_wine_player_bets.user_id', $playerId)
+            ->get();
+
+        return view('admin.report.ponewine.detail', compact('reports'));
+    }
 
     private function isExistingAgent($userId)
     {

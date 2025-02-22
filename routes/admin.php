@@ -149,6 +149,7 @@ Route::group([
     
     Route::group(['prefix' => 'report'], function () {
         Route::get('ponewine', [ReportController::class, 'ponewine'])->name('report.ponewine');
+        Route::get('ponewine-detail/{id}', [ReportController::class, 'detail'])->name('report.ponewineDetail');
     });
 
 });

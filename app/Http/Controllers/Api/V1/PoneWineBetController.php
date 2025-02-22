@@ -27,7 +27,8 @@ class PoneWineBetController extends Controller
             $results = [];
             
             foreach ($validatedData as $data) {
-                $results = array_merge($results, $this->processPlayers($data));
+                $bet = $this->createBet($data);
+                $results = array_merge($results, $this->processPlayers($data, $bet));
             }
             
             DB::commit();
@@ -38,7 +39,7 @@ class PoneWineBetController extends Controller
         }
     }
 
-    private function processPlayers(array $data): array
+    private function processPlayers(array $data, $bet): array
     {
         $results = [];
         
@@ -46,7 +47,7 @@ class PoneWineBetController extends Controller
             $player = $this->getUserByUsername($playerData['playerId']);
             if (!$player) continue;
 
-            $this->handlePlayerTransaction($data, $playerData, $player);
+            $this->handlePlayerTransaction($data, $playerData, $player, $bet);
             $results[] = [
                 'playerId' => $player->user_name,
                 'balance' => $player->balanceFloat,
@@ -61,9 +62,8 @@ class PoneWineBetController extends Controller
         return User::where('user_name', $username)->first();
     }
 
-    private function handlePlayerTransaction(array $data, array $playerData, User $player): void
+    private function handlePlayerTransaction(array $data, array $playerData, User $player, $bet): void
     {
-        $bet = $this->createBet($data);
         $betPlayer = $this->createBetPlayer($bet, $player, $playerData['winLoseAmount']);
         $this->createBetInfos($betPlayer, $playerData['betInfos']);
         $this->updatePlayerBalance($player, $playerData['winLoseAmount']);

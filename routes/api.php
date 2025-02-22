@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\GetBalanceController;
 use App\Http\Controllers\Api\V1\NewVersion\PlaceBetWebhookController;
 use App\Http\Controllers\Api\V1\PoneWineBetController;
 use App\Http\Controllers\Api\V1\PromotionController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\Slot\GameController;
 use App\Http\Controllers\Api\V1\Slot\GetGameListByProviderController;
 use App\Http\Controllers\Api\V1\Slot\GetGameProviderController;
@@ -92,4 +93,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('slotfishgamelist/{provider_id}/{game_type_id}/', [GameController::class, 'JILIgameList']);
     Route::get('gameFilter', [GameController::class, 'gameFilter']);
     Route::get('gamelistTest/{provider_id}/{game_type_id}/', [GameController::class, 'gameListTest']);
+    Route::get('ponewine-report', [ReportController::class, 'index']);
 });

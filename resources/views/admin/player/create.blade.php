@@ -69,7 +69,7 @@
                                 <div class="form-group">
                                     <label>Player Site Link<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="site_link"
-                                        value="{{ $master->site_link }}">
+                                        value="{{ $owner->site_link }}">
                                     @error('site_link')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror

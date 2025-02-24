@@ -24,7 +24,7 @@ class FUNTAGameTableSeeder extends Seeder
                 'game_id' => $game['GameId'],
                 'game_type_id' => 2,  // Fixed value for game_type_id
                 'product_id' => 17,  // Fixed value for product_id
-                'status' => 0,  // Default value for status
+                'status' => 1,  // Default value for status
                 'hot_status' => 0,  // Default value for hot_status
                 'game_code' => $game['GameCode'],
                 'game_name' => $game['GameName'],

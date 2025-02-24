@@ -17,7 +17,7 @@ class ReportController extends Controller
             ->join('pone_wine_player_bets', 'pone_wine_player_bets.pone_wine_bet_id', '=', 'pone_wine_bets.id')
             ->join('pone_wine_bet_infos', 'pone_wine_bet_infos.pone_wine_player_bet_id', '=', 'pone_wine_player_bets.id')
             ->select([
-                DB::raw('SUM(pone_wine_player_bets.win_lose_amt) as total_win_lose_amt'),
+                'pone_wine_player_bets.win_lose_amt',
                 'pone_wine_player_bets.user_name',
                 DB::raw('SUM(pone_wine_bet_infos.bet_amount) as total_bet_amount'),
                 'pone_wine_bets.win_number',
@@ -28,6 +28,7 @@ class ReportController extends Controller
                 'pone_wine_player_bets.user_name',
                 'pone_wine_bets.win_number',
                 'pone_wine_bets.match_id',
+                'pone_wine_player_bets.win_lose_amt'
             ])
             ->get();
 

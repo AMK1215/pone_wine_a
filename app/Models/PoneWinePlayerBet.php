@@ -16,4 +16,8 @@ class PoneWinePlayerBet extends Model
         return $this->belongsTo(PoneWineBet::class);
     }
 
+    public function poneWineBetInfos()
+    {
+        return $this->hasMany(PoneWineBetInfo::class, 'pone_wine_player_bet_id', 'id');
+    }
 }

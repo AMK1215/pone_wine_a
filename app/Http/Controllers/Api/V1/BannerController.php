@@ -19,18 +19,9 @@ class BannerController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $admin = $user->parent->parent;
 
-        // Determine the admin whose banners to fetch
-        if ($user->parent) {
-            // If the user has a parent (Agent or Player), go up the hierarchy
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            // If the user is an Admin, they own the banners
-            $admin = $user;
-        }
-
-        // Fetch banners for the determined admin
-        $data = Banner::where('admin_id', $admin->id)->get();
+        $data = Banner::where('admin_id', $admin->agent_id)->get();
 
         return $this->success($data, 'Banners retrieved successfully.');
     }
@@ -38,54 +29,20 @@ class BannerController extends Controller
     public function TopTen()
     {
         $user = Auth::user();
+        $admin = $user->parent->parent;
 
-        // Determine the admin whose banners to fetch
-        if ($user->parent) {
-            // If the user has a parent (Agent or Player), go up the hierarchy
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            // If the user is an Admin, they own the banners
-            $admin = $user;
-        }
-
-        // Fetch banners for the determined admin
-        $data = TopTenWithdraw::where('admin_id', $admin->id)->get();
+        $data = TopTenWithdraw::where('admin_id', $admin->agent_id)->get();
 
         return $this->success($data, 'TopTen Winner retrieved successfully.');
-    }
-
-    public function ApiVideoads()
-    {
-        $user = Auth::user();
-
-        // Determine the admin whose banners to fetch
-        if ($user->parent) {
-            // If the user has a parent (Agent or Player), go up the hierarchy
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            // If the user is an Admin, they own the banners
-            $admin = $user;
-        }
-
-        // Fetch banners for the determined admin
-        $data = AdsVedio::where('admin_id', $admin->id)->get();
-
-        return $this->success($data, 'AdsVedio retrieved successfully.');
     }
 
     public function bannerText()
     {
         $user = Auth::user();
 
-        if ($user->parent) {
-            // If the user has a parent (Agent or Player), go up the hierarchy
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            // If the user is an Admin, they own the banners
-            $admin = $user;
-        }
+        $admin = $user->parent->parent;
 
-        $data = BannerText::where('admin_id', $admin->id)->get();
+        $data = BannerText::where('admin_id', $admin->agent_id)->get();
 
         return $this->success($data, 'BannerTexts retrieved successfully.');
     }
@@ -93,69 +50,21 @@ class BannerController extends Controller
     public function AdsBannerIndex()
     {
         $user = Auth::user();
-        //dd($user);
 
-        if ($user->parent) {
-            // If the user has a parent (Agent or Player), go up the hierarchy
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            // If the user is an Admin, they own the banners
-            $admin = $user;
-        }
+        $admin = $user->parent->parent;
 
-        // Fetch banners for the determined admin
-        $data = BannerAds::where('admin_id', $admin->id)->get();
+        $data = BannerAds::where('admin_id', $admin->agent_id)->get();
 
         return $this->success($data, 'BannerAds retrieved successfully.');
-    }
-
-    public function AdsBannerTest()
-    {
-        $user = Auth::user();
-        //dd($user);
-
-        if ($user->parent) {
-            // If the user has a parent (Agent or Player), go up the hierarchy
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            // If the user is an Admin, they own the banners
-            $admin = $user;
-        }
-
-        // Fetch banners for the determined admin
-        $data = BannerAds::where('admin_id', $admin->id)->latest()->first();
-
-        return $this->success($data, 'BannerAds retrieved successfully.');
-    }
-
-    public function bannerTest()
-    {
-        $user = Auth::user();
-
-        if ($user->parent) {
-            // If the user has a parent (Agent or Player), go up the hierarchy
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            // If the user is an Admin, they own the banners
-            $admin = $user;
-        }
-
-        $data = BannerText::where('admin_id', $admin->id)->latest()->first();
-
-        return $this->success($data, 'BannerTexts retrieved successfully.');
     }
 
     public function winnerText()
     {
         $user = Auth::user();
 
-        if ($user->parent) {
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            $admin = $user;
-        }
+        $admin = $user->parent->parent;
 
-        $data = WinnerText::where('owner_id', $admin->id)->latest()->first();
+        $data = WinnerText::where('owner_id', $admin->agent_id)->latest()->first();
 
         return $this->success($data, 'Winner Text retrieved successfully.');
 

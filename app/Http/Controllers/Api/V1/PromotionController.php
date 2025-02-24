@@ -15,15 +15,9 @@ class PromotionController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->parent) {
-            // If the user has a parent (Agent or Player), go up the hierarchy
-            $admin = $user->parent->parent ?? $user->parent;
-        } else {
-            // If the user is an Admin, they own the banners
-            $admin = $user;
-        }
+        $admin = $user->parent->parent;
 
-        $data = Promotion::where('admin_id', $admin->id)->get();
+        $data = Promotion::where('admin_id', $admin->agent_id)->get();
 
         return $this->success($data, 'Promotion retrieved successfully.');
     }

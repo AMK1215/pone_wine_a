@@ -74,10 +74,6 @@ class AuthController extends Controller
             return $this->error('', 'Not Found Agent', 401);
         }
 
-        // if ($this->isExistingUserForAgent($request->phone, $agent->id)) {
-        //     return $this->error('', 'Already Exist Account for this number', 401);
-        // }
-
         $inputs = $request->validated();
 
         $user = User::create([
@@ -163,15 +159,6 @@ class AuthController extends Controller
         $player = Auth::user();
 
         return $this->success(new AgentResource($player->parent), 'Agent Information List');
-    }
-
-    public function getContact()
-    {
-        $player = Auth::user();
-
-        $contact = Contact::where('agent_id', $player->agent_id)->get();
-
-        return $this->success($contact, 'Agent Contact list');
     }
 
     private function generateRandomString()

@@ -60,7 +60,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('GameLogin', [LaunchGameController::class, 'LaunchGame']);
     Route::get('wager-logs', [WagerController::class, 'index']);
     Route::get('user', [AuthController::class, 'getUser']);
-    Route::get('contact', [AuthController::class, 'getContact']);
     Route::get('agent', [AuthController::class, 'getAgent']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('change-password', [AuthController::class, 'changePassword']);
@@ -77,11 +76,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('toptenwithdraw', [BannerController::class, 'TopTen']);
 
     Route::get('promotion', [PromotionController::class, 'index']);
-    Route::get('bannerText', [BannerController::class, 'bannerText']);
     Route::get('winnerText', [BannerController::class, 'winnerText']);
-    Route::get('banner_Text', [BannerController::class, 'bannerTest']);
+    Route::get('banner_Text', [BannerController::class, 'bannerText']);
     Route::get('popup-ads-banner', [BannerController::class, 'AdsBannerIndex']);
-    Route::get('ads-banner', [BannerController::class, 'AdsBannerTest']);
 
     //slot
     Route::get('gameTypeProducts/{id}', [GameController::class, 'gameTypeProducts']);

@@ -118,7 +118,6 @@
             data-username="${userName}"
             data-password="${password}"
             data-amount="${amount}"
-            data-url="https://agdashboard.pro/login"
             onclick="copyToClipboard(this)">Copy</button>
     </div>`, {
                     allowHtml: true
@@ -131,7 +130,7 @@
             var amount = $(button).data('amount');
             var url = $(button).data('url');
 
-            var textToCopy = "Username: " + username + "\nPassword: " + password + "\nAmount: " + amount + "\nURL: " + url;
+            var textToCopy = "Username: " + username + "\nPassword: " + password + "\nAmount: " + amount;
 
             navigator.clipboard.writeText(textToCopy).then(function() {
                 toastr.success("Credentials copied to clipboard!");
@@ -141,3 +140,5 @@
         }
     </script>
 @endsection
+
+{{--  data-url="https://agdashboard.pro/login" --}}

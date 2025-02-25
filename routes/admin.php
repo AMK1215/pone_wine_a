@@ -146,10 +146,12 @@ Route::group([
 
     Route::get('transer-log', [TransferLogController::class, 'index'])->name('transferLog');
     Route::get('transferlog/{id}', [TransferLogController::class, 'transferLog'])->name('transferLogDetail');
-    
+
     Route::group(['prefix' => 'report'], function () {
         Route::get('ponewine', [ReportController::class, 'ponewine'])->name('report.ponewine');
         Route::get('ponewine-detail/{id}', [ReportController::class, 'detail'])->name('report.ponewineDetail');
+        Route::get('report', [ReportController::class, 'index'])->name('report.index');
+        Route::get('reports/details/{player_id}', [ReportController::class, 'getReportDetails'])->name('reports.details');
     });
 
 });

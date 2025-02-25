@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\Product;
 use App\Models\PoneWineBet;
 use App\Models\PoneWineBetInfo;
 use App\Models\PoneWinePlayerBet;
 use App\Models\User;
+use App\Models\Webhook\BetNResult;
+use App\Models\Webhook\Result;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -54,6 +59,25 @@ class ReportController extends Controller
         return view('admin.report.ponewine.detail', compact('reports'));
     }
 
+    public function index(Request $request)
+    {
+        $adminId = auth()->id();
+
+        $report = $this->buildQuery($request, $adminId);
+
+        return view('admin.report.index', compact('report'));
+    }
+
+    public function getReportDetails(Request $request, $playerId)
+    {
+
+        $details = $this->getPlayerDetails($playerId, $request);
+
+        $productTypes = Product::where('is_active', 1)->get();
+
+        return view('admin.report.detail', compact('details','productTypes', 'playerId'));
+    }
+
     private function isExistingAgent($userId)
     {
         $user = User::find($userId);
@@ -65,4 +89,67 @@ class ReportController extends Controller
     {
         return $this->isExistingAgent(Auth::id());
     }
+
+    private function buildQuery(Request $request, $adminId)
+    {
+        $startDate = $request->start_date ??  Carbon::today()->startOfDay()->toDateString();
+        $endDate = $request->end_date ?? Carbon::today()->endOfDay()->toDateString() ;
+
+        $resultsSubquery = Result::select(
+            'results.user_id',
+            DB::raw('SUM(results.total_bet_amount) as total_bet_amount'),
+            DB::raw('SUM(results.win_amount) as win_amount'),
+            DB::raw('SUM(results.net_win) as net_win'),
+            DB::raw('COUNT(results.game_code) as total_count'),
+        )
+            ->groupBy('results.user_id')
+            ->whereBetween('results.created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+
+        $betsSubquery = BetNResult::select(
+            'bet_n_results.user_id',
+            DB::raw('SUM(bet_n_results.bet_amount) as bet_total_bet_amount'),
+            DB::raw('SUM(bet_n_results.win_amount) as bet_total_win_amount'),
+            DB::raw('SUM(bet_n_results.net_win) as bet_total_net_amount'),
+            DB::raw('COUNT(bet_n_results.game_code) as total_count'),
+
+        )
+            ->groupBy('bet_n_results.user_id')
+            ->whereBetween('bet_n_results.created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+
+        $query = DB::table('users as players')
+            ->select(
+                'players.id as user_id',
+                'players.name as player_name',
+                'players.user_name as user_name',
+                'agents.name as agent_name',
+                DB::raw('IFNULL(results.total_bet_amount, 0) + IFNULL(bets.bet_total_bet_amount, 0) as total_bet_amount'),
+                DB::raw('IFNULL(results.win_amount, 0) + IFNULL(bets.bet_total_win_amount, 0) as total_win_amount'),
+                DB::raw('IFNULL(results.net_win, 0) + IFNULL(bets.bet_total_net_amount, 0) as total_net_win'),
+                DB::raw('IFNULL(results.total_count, 0) + IFNULL(bets.total_count, 0) as total_count'),
+                DB::raw('MAX(wallets.balance) as balance'),
+            )
+            ->leftJoin('users as agents', 'players.agent_id', '=', 'agents.id')
+            ->leftJoin('wallets', 'wallets.holder_id', '=', 'players.id')
+            ->leftJoinSub($resultsSubquery, 'results', 'results.user_id', '=', 'players.id') // Fixed alias
+            ->leftJoinSub($betsSubquery, 'bets', 'bets.user_id', '=', 'players.id') // Fixed alias
+            ->when($request->player_id, fn ($query) => $query->where('players.user_name', $request->player_id))
+            ->where(function ($query) {
+                $query->whereNotNull('results.user_id')
+                    ->orWhereNotNull('bets.user_id');
+            });
+
+        $this->applyRoleFilter($query, $adminId);
+
+        return $query->groupBy('players.id', 'players.name', 'players.user_name', 'agents.name')->get();
+    }
+
+    private function applyRoleFilter($query, $adminId)
+    {
+        if (Auth::user()->hasRole('Owner')) {
+            $query->where('agents.agent_id', $adminId);
+        } elseif (Auth::user()->hasRole('Agent')) {
+            $query->where('agents.id', $adminId);
+        }
+    }
+
 }

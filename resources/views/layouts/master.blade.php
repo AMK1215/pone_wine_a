@@ -170,6 +170,15 @@
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item menu-open">
+                            <a href="{{ route('admin.report.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.report.index' ? 'active' : '' }}">
+                            <i class="fas fa-file-invoice"></i>
+                                <p>
+                                    Win/Lose Report
+                                </p>
+                            </a>
+                        </li>
+                        
                         @can('owner_index')
                         <li class="nav-item">
                             <a href="{{ route('admin.owner.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.owner.index' ? 'active' : '' }}">

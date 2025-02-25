@@ -33,30 +33,4 @@ class GetAdminSiteLogoNameController extends Controller
 
         return $this->error('Unauthorized', null, 401);
     }
-
-    // public function getDetails()
-    // {
-    //     if (Auth::check()) {
-    //         $user = Auth::user();
-
-    //         $adminLogo = $user->agent_logo
-    //             ? asset('assets/img/logo/' . $user->agent_logo)
-    //             : asset('assets/img/logo/default-logo.jpg');
-
-    //         $siteName = $user->site_name ?? 'GoldenJack';
-
-    //         return response()->json([
-    //             'status' => 200,
-    //             'data' => [
-    //                 'adminLogo' => $adminLogo,
-    //                 'siteName' => $siteName,
-    //             ],
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'status' => 401,
-    //         'message' => 'Unauthorized',
-    //     ], 401);
-    // }
 }

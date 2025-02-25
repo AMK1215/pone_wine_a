@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ContactResource;
 use App\Models\Contact;
 use App\Models\User;
 use App\Traits\HttpResponses;
@@ -16,8 +17,9 @@ class ContactController extends Controller
     public function get()
     {
         $player = Auth::user();
+
         $contact = Contact::where('agent_id', $player->agent_id)->get();
 
-        return $this->success($contact, 'Contact List');
+        return $this->success(ContactResource::collection($contact));
     }
 }

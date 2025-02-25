@@ -31,7 +31,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/player-change-password', [AuthController::class, 'playerChangePassword']);
 Route::post('/logout', [AuthController::class, 'logout']);
-Route::get('contact', [ContactController::class, 'get']);
 
 // sameless route
 Route::post('Seamless/Test', [TransactionController::class, 'SystemWalletTest']);
@@ -75,6 +74,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('videoads', [BannerController::class, 'ApiVideoads']);
     Route::get('toptenwithdraw', [BannerController::class, 'TopTen']);
 
+    Route::get('contact', [ContactController::class, 'get']);
     Route::get('promotion', [PromotionController::class, 'index']);
     Route::get('winnerText', [BannerController::class, 'winnerText']);
     Route::get('banner_Text', [BannerController::class, 'bannerText']);

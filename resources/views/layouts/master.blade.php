@@ -170,15 +170,7 @@
                                 </p>
                             </a>
                         </li>
-                        <li class="nav-item menu-open">
-                            <a href="{{ route('admin.report.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.report.index' ? 'active' : '' }}">
-                            <i class="fas fa-file-invoice"></i>
-                                <p>
-                                    Win/Lose Report
-                                </p>
-                            </a>
-                        </li>
-                        
+
                         @can('owner_index')
                         <li class="nav-item">
                             <a href="{{ route('admin.owner.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.owner.index' ? 'active' : '' }}">
@@ -199,13 +191,6 @@
                             </a>
                         </li>
                         @endcan
-                        <li class="nav-item">
-                            <a href="{{route('admin.report.ponewine')}}" class="nav-link {{ Route::current()->getName() == 'admin.report.ponewine' ? 'active' : '' }}">
-                                <i class="fas fa-user">
-                                    <p>PoneWine Report</p>
-                                </i>
-                            </a>
-                        </li>
                         @can('owner_access')
                         <li class="nav-item">
                             <a href="{{ route('admin.GetOwnerPlayerList') }}" class="nav-link {{ Route::current()->getName() == 'admin.GetOwnerPlayerList' ? 'active' : '' }}">
@@ -332,6 +317,32 @@
                             </ul>
                         </li>
                         @endcan
+                        <li class="nav-item {{ in_array(Route::currentRouteName(), ['admin.report.index', 'admin.report.ponewine']) ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-file-invoice"></i>
+                                <p>
+                                    Reports
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item menu-open">
+                                    <a href="{{ route('admin.report.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.report.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>
+                                            Win/Lose Report
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{route('admin.report.ponewine')}}" class="nav-link {{ Route::current()->getName() == 'admin.report.ponewine' ? 'active' : '' }}">
+                                        <i class="fas fa-user">
+                                            <p>PoneWine Report</p>
+                                        </i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         @can('owner_access')
                         <li class="nav-item {{ in_array(Route::currentRouteName(), ['admin.text.index', 'admin.banners.index', 'admin.adsbanners.index','admin.promotions.index']) ? 'menu-open' : '' }}">
                             <a href="#" class="nav-link">

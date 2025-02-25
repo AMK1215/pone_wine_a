@@ -128,7 +128,7 @@
             var username = $(button).data('username');
             var password = $(button).data('password');
             var amount = $(button).data('amount');
-            var url = $(button).data('url');
+            //var url = $(button).data('url');
 
             var textToCopy = "Username: " + username + "\nPassword: " + password + "\nAmount: " + amount;
 

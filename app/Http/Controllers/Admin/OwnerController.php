@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Owner;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\TransactionName;
 use App\Enums\UserType;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Deposit;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\TransactionName;
 use App\Http\Controllers\Controller;

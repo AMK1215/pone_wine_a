@@ -6,7 +6,7 @@
                 <div class="col-sm-12">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                        <li class="breadcrumb-item active">create Player</li>
+                        <li class="breadcrumb-item active">create Super</li>
                     </ol>
                 </div>
             </div>
@@ -16,26 +16,26 @@
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
-            <div class="card col-lg-6 offset-lg-3 col-md-6 offset-md-3 col-sm-8 offset-sm-2 col-10 offset-1"
+            <div class="card  col-lg-6 offset-lg-3 col-md-6 offset-md-3 col-sm-8 offset-sm-2 col-10 offset-1"
                 style="border-radius: 15px;">
                 <div class="card-header">
                     <div class="card-title col-12">
                         <h5 class="d-inline fw-bold">
-                            Create Player
+                            Create Super
                         </h5>
-                        <a href="{{ route('admin.player.index') }}" class="btn btn-primary d-inline float-right">
+                        <a href="{{ route('admin.super.index') }}" class="btn btn-primary d-inline float-right">
                             <i class="fas fa-arrow-left mr-2"></i> Back
                         </a>
                     </div>
                 </div>
-                <form action="{{ route('admin.player.store') }}" method="POST">
+                <form action="{{ route('admin.super.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="card-body mt-2">
                         <div class="row">
-                            <div class="col-lg-12 offset-lg-0 col-md-6 offset-md-3 col-sm-8 offset-sm-2 col-10 offset-1 ">
+                            <div class="col-lg-12 offset-lg-0 col-md-6 offset-md-3 col-sm-8 offset-sm-2 col-10 offset-1">
                                 <div class="form-group">
-                                    <label>PlayerId<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="user_name" value="{{ $player_name }}"
+                                    <label>SuperId<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" name="user_name" value="{{ $user_name }}"
                                         readonly>
                                     @error('user_name')
                                         <div class="text-danger">{{ $message }}</div>
@@ -56,8 +56,9 @@
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+
                             </div>
-                            <div class="col-lg-12 offset-lg-0 col-md-6 offset-md-3 col-sm-8 offset-sm-2 col-10 offset-1 ">
+                            <div class="col-lg-12 offset-lg-0 col-md-6 offset-md-3 col-sm-8 offset-sm-2 col-10 offset-1">
                                 <div class="form-group">
                                     <label>Password<span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" name="password"
@@ -67,20 +68,11 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label>Player Site Link<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="site_link"
-                                        value="{{ $owner->site_link }}">
-                                    @error('site_link')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
                                     <label>Amount</label>
                                     <span
-                                        class="badge badge-sm bg-gradient-success">{{ auth()->user()->balanceFloat }}</span>
+                                        class="badge badge-success">Max:{{ number_format(optional(auth()->user()->wallet)->balanceFloat, 2) }}</span>
                                     <input type="text" class="form-control" name="amount" value="{{ old('amount') }}">
                                 </div>
-
                             </div>
                         </div>
 
@@ -93,44 +85,4 @@
         </div>
         </div>
     </section>
-@endsection
-@section('script')
-    <script>
-        var successMessage = @json(session('successMessage'));
-        var user_name = @json(session('user_name'));
-        var password = @json(session('password'));
-        var amount = @json(session('amount'));
-        var site_link = @json(session('site_link'));
-
-        @if (session()->has('successMessage'))
-            toastr.success(successMessage +
-                `
-    <div>
-        <button class="btn btn-primary btn-sm" data-toggle="modal"
-            data-user_name="${user_name}"
-            data-password="${password}"
-            data-amount="${amount}"
-            data-url="${site_link}"
-            onclick="copyToClipboard(this)">Copy</button>
-    </div>`, {
-                    allowHtml: true
-                });
-        @endif
-
-        function copyToClipboard(button) {
-            var user_name = $(button).data('user_name');
-            var password = $(button).data('password');
-            var amount = $(button).data('amount');
-            var url = $(button).data('url');
-
-            // var textToCopy = "Phone: " + phone + "\nPassword: " + password + "\nAmount: " + amount + "\nURL: " + url;
-            var textToCopy = "URL: " + url + "\nLogin ID: " + user_name + "\nPassword: " + password + "\nAmount: " + amount;
-
-            navigator.clipboard.writeText(textToCopy).then(function() {
-                toastr.success("Credentials copied to clipboard!");
-            }).catch(function(err) {
-                toastr.error("Failed to copy text: " + err);
-            });
-        }
-    </script>
 @endsection

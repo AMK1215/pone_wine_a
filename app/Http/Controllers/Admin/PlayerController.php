@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Player;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\TransactionName;
 use App\Enums\UserType;
@@ -23,7 +23,7 @@ class PlayerController extends Controller
 {
     protected $userService;
 
-    private const PLAYER_ROLE = 5;
+    private const PLAYER_ROLE = 7;
 
     protected const SUB_AGENT_ROlE = 'Sub Agent';
 

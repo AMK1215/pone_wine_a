@@ -22,7 +22,7 @@
                 <div class="card-header ">
                     <div class="card-title  col-12 my-3">
                         <h5 class="d-inline">Change Password</h5>
-                        <a href="{{ route('admin.player.index') }}" class="btn btn-danger float-right">
+                        <a href="{{ route('admin.player.index') }}" class="btn btn-primary float-right">
                             <i class="fas fa-arrow-left"></i> Back
                         </a>
 

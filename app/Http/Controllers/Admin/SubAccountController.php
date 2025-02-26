@@ -18,7 +18,7 @@ class SubAccountController extends Controller
     /**
      * Display a listing of the resource.
      */
-    protected const SUB_AGENT_ROlE = 6;
+    protected const SUB_AGENT_ROlE = 8;
 
     public function index()
     {

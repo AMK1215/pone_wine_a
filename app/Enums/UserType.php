@@ -4,32 +4,38 @@ namespace App\Enums;
 
 enum UserType: int
 {
-    case Senior = 10;
+    case SeniorOwner = 10;
     case Owner = 20;
-    case Master = 30;
-    case Agent = 40;
-    case Player = 50;
-    case SystemWallet = 60;
-    case subAgent = 70;
+    case Super = 30;
+    case Senior =  40;
+    case Master = 50;
+    case Agent = 60;
+    case Player = 70;
+    case SystemWallet = 80;
+    case subAgent = 90;
 
     public static function usernameLength(UserType $type)
     {
         return match ($type) {
-            self::Senior => 1,
+            self::SeniorOwner => 1,
             self::Owner => 2,
-            self::Master => 3,
-            self::Agent => 4,
-            self::Player => 5,
-            self::SystemWallet => 6,
-            self::subAgent => 7
+            self::Super => 3,
+            self::Senior => 4,
+            self::Master => 5,
+            self::Agent => 6,
+            self::Player => 7,
+            self::SystemWallet => 8,
+            self::subAgent => 9
         };
     }
 
     public static function childUserType(UserType $type)
     {
         return match ($type) {
-            self::Senior => self::Owner,
-            self::Owner => self::Master,
+            self::SeniorOwner => self::Owner,
+            self::Owner => self::Super,
+            self::Super => self::Senior,
+            self::Senior => self::Master,
             self::Master => self::Agent,
             self::Agent => self::subAgent,
             self::Agent => self::Player,

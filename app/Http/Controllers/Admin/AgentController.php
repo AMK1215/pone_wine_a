@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Agent;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\TransactionName;
 use App\Enums\UserType;
@@ -28,7 +28,7 @@ class AgentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    private const AGENT_ROLE = 4;
+    private const AGENT_ROLE = 6;
 
     public function index(): View
     {

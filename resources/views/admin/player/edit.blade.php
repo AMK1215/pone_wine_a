@@ -21,7 +21,7 @@
 
             <div class="card-title col-12">
                 <h5 class="d-inline fw-bold">Edit Agent</h5>
-                <a href="{{ route('admin.player.index') }}" class="btn btn-danger float-right">
+                <a href="{{ route('admin.player.index') }}" class="btn btn-primary float-right">
                     <i class="fas fa-arrow-left" style="font-size: 20px;"></i> Back
                 </a>
 

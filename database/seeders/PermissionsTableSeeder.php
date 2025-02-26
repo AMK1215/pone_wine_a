@@ -15,12 +15,22 @@ class PermissionsTableSeeder extends Seeder
     {
         $permissions = [
             [
-                'title' => 'senior_access',
+                'title' => 'senior_owner_access',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'title' => 'owner_access',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'super_access',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'senior_access',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
@@ -146,6 +156,46 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'title' => 'master_delete',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'super_index',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'super_create',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'super_edit',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'super_delete',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'senior_index',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'senior_create',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'senior_edit',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'title' => 'senior_delete',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

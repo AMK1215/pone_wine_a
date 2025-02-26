@@ -181,22 +181,32 @@
                             </a>
                         </li>
                         @endcan
+                        @can('super_index')
+                        <li class="nav-item">
+                            <a href="{{ route('admin.super.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.super.index' ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <p>
+                                    Super List
+                                </p>
+                            </a>
+                        </li>
+                        @endcan
+                        @can('senior_index')
+                        <li class="nav-item">
+                            <a href="{{ route('admin.senior.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.senior.index' ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <p>
+                                    Senior List
+                                </p>
+                            </a>
+                        </li>
+                        @endcan
                         @can('master_index')
                         <li class="nav-item">
                             <a href="{{ route('admin.master.index') }}" class="nav-link {{ Route::current()->getName() == 'admin.master.index' ? 'active' : '' }}">
                                 <i class="fas fa-users"></i>
                                 <p>
                                     Master List
-                                </p>
-                            </a>
-                        </li>
-                        @endcan
-                        @can('owner_access')
-                        <li class="nav-item">
-                            <a href="{{ route('admin.GetOwnerPlayerList') }}" class="nav-link {{ Route::current()->getName() == 'admin.GetOwnerPlayerList' ? 'active' : '' }}">
-                                <i class="fas fa-user"></i>
-                                <p>
-                                    Player List
                                 </p>
                             </a>
                         </li>
@@ -280,7 +290,7 @@
                             </a>
                         </li>
                         @endcan
-                        @can('senior_access')
+                        @can('senior_owner_access')
                         <li class="nav-item">
                             <a href="{{ route('admin.roles.index') }}"
                                 class="nav-link {{ Route::current()->getName() == 'admin.roles.index' ? 'active' : '' }}">

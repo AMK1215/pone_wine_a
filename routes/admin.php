@@ -1,26 +1,28 @@
 <?php
 
-use App\Http\Controllers\Admin\Agent\AgentController;
+use App\Http\Controllers\Admin\AgentController;
 use App\Http\Controllers\Admin\BankController;
-use App\Http\Controllers\Admin\BannerAds\BannerAdsController;
+use App\Http\Controllers\Admin\BannerAdsController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BannerTextController;
 use App\Http\Controllers\Admin\ContactController;
-use App\Http\Controllers\Admin\Deposit\DepositRequestController;
+use App\Http\Controllers\Admin\DepositRequestController;
 use App\Http\Controllers\Admin\GameListController;
 use App\Http\Controllers\Admin\GameTypeProductController;
 use App\Http\Controllers\Admin\NotificationController;
-use App\Http\Controllers\Admin\Master\MasterController;
-use App\Http\Controllers\Admin\Owner\OwnerController;
+use App\Http\Controllers\Admin\MasterController;
+use App\Http\Controllers\Admin\OwnerController;
 use App\Http\Controllers\Admin\PaymentTypeController;
-use App\Http\Controllers\Admin\Player\PlayerController;
+use App\Http\Controllers\Admin\PlayerController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RolesController;
+use App\Http\Controllers\Admin\SeniorController;
 use App\Http\Controllers\Admin\SubAccountController;
 use App\Http\Controllers\Admin\TransferLog\TransferLogController;
-use App\Http\Controllers\Admin\WithDraw\WithDrawRequestController;
+use App\Http\Controllers\Admin\WithDrawRequestController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\SuperController;
 use Illuminate\Support\Facades\Route;
 
 Route::group([
@@ -111,6 +113,8 @@ Route::group([
     Route::resource('subacc', SubAccountController::class);
     Route::resource('master', MasterController::class);
     Route::resource('owner', OwnerController::class);
+    Route::resource('super', SuperController::class);
+    Route::resource('senior', SeniorController::class);
 
     Route::put('subacc/{id}/ban', [SubAccountController::class, 'banSubAcc'])->name('subacc.ban');
     Route::get('subacc-changepassword/{id}', [SubAccountController::class, 'getChangePassword'])->name('subacc.getChangePassword');
@@ -124,6 +128,24 @@ Route::group([
     Route::put('owner/{id}/ban', [OwnerController::class, 'banOwner'])->name('owner.ban');
     Route::get('owner-changepassword/{id}', [OwnerController::class, 'getChangePassword'])->name('owner.getChangePassword');
     Route::post('owner-changepassword/{id}', [OwnerController::class, 'makeChangePassword'])->name('owner.makeChangePassword');
+
+    Route::get('super-cash-in/{id}', [SuperController::class, 'getCashIn'])->name('super.getCashIn');
+    Route::post('super-cash-in/{id}', [SuperController::class, 'makeCashIn'])->name('super.makeCashIn');
+    Route::get('super/cash-out/{id}', [SuperController::class, 'getCashOut'])->name('super.getCashOut');
+    Route::post('super/cash-out/update/{id}', [SuperController::class, 'makeCashOut'])
+        ->name('super.makeCashOut');
+    Route::put('super/{id}/ban', [SuperController::class, 'banSuper'])->name('super.ban');
+    Route::get('super-changepassword/{id}', [SuperController::class, 'getChangePassword'])->name('super.getChangePassword');
+    Route::post('super-changepassword/{id}', [SuperController::class, 'makeChangePassword'])->name('super.makeChangePassword');
+
+    Route::get('senior-cash-in/{id}', [SeniorController::class, 'getCashIn'])->name('senior.getCashIn');
+    Route::post('senior-cash-in/{id}', [SeniorController::class, 'makeCashIn'])->name('senior.makeCashIn');
+    Route::get('senior/cash-out/{id}', [SeniorController::class, 'getCashOut'])->name('senior.getCashOut');
+    Route::post('senior/cash-out/update/{id}', [SeniorController::class, 'makeCashOut'])
+        ->name('senior.makeCashOut');
+    Route::put('senior/{id}/ban', [SeniorController::class, 'banSenior'])->name('senior.ban');
+    Route::get('senior-changepassword/{id}', [SeniorController::class, 'getChangePassword'])->name('senior.getChangePassword');
+    Route::post('senior-changepassword/{id}', [SeniorController::class, 'makeChangePassword'])->name('senior.makeChangePassword');
 
     Route::get('master-player-list', [MasterController::class, 'MasterPlayerList'])->name('GetMasterPlayerList');
     Route::get('master-cash-in/{id}', [MasterController::class, 'getCashIn'])->name('master.getCashIn');

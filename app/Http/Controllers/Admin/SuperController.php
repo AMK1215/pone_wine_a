@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Master;
+namespace App\Http\Controllers\Admin;
 
 use App\Enums\TransactionName;
 use App\Enums\UserType;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\MasterRequest;
+use App\Http\Requests\SuperRequest;
 use App\Http\Requests\TransferLogRequest;
 use App\Models\Admin\TransferLog;
 use App\Models\User;
@@ -18,55 +18,52 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
-class MasterController extends Controller
+class SuperController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    private const MASTER_ROLE = 3;
+    private const SUPER_ROLE = 3;
 
     public function index()
     {
         abort_if(
-            Gate::denies('master_index'),
+            Gate::denies('super_index'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
         $users = User::with('roles')
             ->whereHas('roles', function ($query) {
-                $query->where('role_id', self::MASTER_ROLE);
+                $query->where('role_id', self::SUPER_ROLE);
             })
             ->where('agent_id', auth()->id())
             ->orderBy('id', 'desc')
             ->get();
 
-        return view('admin.master.index', compact('users'));
+        return view('admin.super.index', compact('users'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(MasterRequest $request)
+    public function store(SuperRequest $request)
     {
         abort_if(
-            Gate::denies('master_create'),
+            Gate::denies('super_create'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
         $admin = Auth::user();
-
-        $user_name = session()->get('user_name');
 
         $inputs = $request->validated();
 
         $userPrepare = array_merge(
             $inputs,
             [
-                'user_name' => $user_name,
                 'password' => Hash::make($inputs['password']),
                 'agent_id' => Auth()->user()->id,
-                'type' => UserType::Master,
+                'type' => UserType::Super,
             ]
         );
 
@@ -77,7 +74,7 @@ class MasterController extends Controller
         }
 
         $user = User::create($userPrepare);
-        $user->roles()->sync(self::MASTER_ROLE);
+        $user->roles()->sync(self::SUPER_ROLE);
 
         if (isset($inputs['amount'])) {
             app(WalletService::class)->transfer(
@@ -91,10 +88,9 @@ class MasterController extends Controller
                 ]
             );
         }
-        session()->forget('user_name');
 
-        return redirect()->route('admin.master.index')
-            ->with('successMessage', 'Master created successfully')
+        return redirect()->route('admin.super.index')
+            ->with('successMessage', 'Super created successfully')
             ->with('password', $request->password)
             ->with('username', $user->user_name)
             ->with('amount', $request->amount);
@@ -106,22 +102,20 @@ class MasterController extends Controller
     public function create()
     {
         abort_if(
-            Gate::denies('master_create'),
+            Gate::denies('super_create'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
         $user_name = $this->generateRandomString();
 
-        session()->put('user_name', $user_name);
-
-        return view('admin.master.create', compact('user_name', 'user_name'));
+        return view('admin.super.create', compact('user_name', 'user_name'));
     }
 
     private function generateRandomString()
     {
         $randomNumber = mt_rand(10000000, 99999999);
 
-        return 'M' . $randomNumber;
+        return 'S' . $randomNumber;
     }
 
     /**
@@ -130,14 +124,14 @@ class MasterController extends Controller
     public function show(string $id)
     {
         abort_if(
-            Gate::denies('master_show'),
+            Gate::denies('super_show'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        $master = User::find($id);
+        $super = User::find($id);
 
-        return view('admin.master.show', compact('master'));
+        return view('admin.super.show', compact('super'));
     }
 
     /**
@@ -146,14 +140,14 @@ class MasterController extends Controller
     public function edit(string $id)
     {
         abort_if(
-            Gate::denies('master_edit'),
+            Gate::denies('super_edit'),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        $master = User::find($id);
+        $super = User::find($id);
 
-        return view('admin.master.edit', compact('master'));
+        return view('admin.super.edit', compact('super'));
     }
 
     /**
@@ -167,9 +161,9 @@ class MasterController extends Controller
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        $master = User::find($id);
+        $super = User::find($id);
 
-        return view('admin.master.cash_in', compact('master'));
+        return view('admin.super.cash_in', compact('super'));
     }
 
     public function getCashOut(string $id)
@@ -180,9 +174,9 @@ class MasterController extends Controller
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        $master = User::findOrFail($id);
+        $super = User::findOrFail($id);
 
-        return view('admin.master.cash_out', compact('master'));
+        return view('admin.super.cash_out', compact('super'));
     }
 
     public function makeCashIn(TransferLogRequest $request, $id)
@@ -197,7 +191,7 @@ class MasterController extends Controller
         try {
 
             $inputs = $request->validated();
-            $master = User::findOrFail($id);
+            $super = User::findOrFail($id);
             $admin = Auth::user();
             $cashIn = $inputs['amount'];
             if ($cashIn > $admin->balanceFloat) {
@@ -207,13 +201,13 @@ class MasterController extends Controller
             // Transfer money
             app(WalletService::class)->transfer(
                 $admin,
-                $master,
+                $super,
                 $request->validated('amount'),
                 TransactionName::CreditTransfer,
                 [
                     'note' => $request->note,
-                    'old_balance' => $master->balanceFloat,
-                    'new_balance' => $master->balanceFloat + $request->amount,
+                    'old_balance' => $super->balanceFloat,
+                    'new_balance' => $super->balanceFloat + $request->amount,
                 ]
             );
 
@@ -238,25 +232,25 @@ class MasterController extends Controller
         try {
             $inputs = $request->validated();
 
-            $master = User::findOrFail($id);
+            $super = User::findOrFail($id);
             $admin = Auth::user();
             $cashOut = $inputs['amount'];
 
-            if ($cashOut > $master->balanceFloat) {
+            if ($cashOut > $super->balanceFloat) {
 
                 return redirect()->back()->with('error', 'You do not have enough balance to transfer!');
             }
 
             // Transfer money
             app(WalletService::class)->transfer(
-                $master,
+                $super,
                 $admin,
                 $request->validated('amount'),
                 TransactionName::DebitTransfer,
                 [
                     'note' => $request->note,
-                    'old_balance' => $master->balanceFloat,
-                    'new_balance' => $master->balanceFloat - $request->amount,
+                    'old_balance' => $super->balanceFloat,
+                    'new_balance' => $super->balanceFloat - $request->amount,
                 ]
             );
 
@@ -283,10 +277,10 @@ class MasterController extends Controller
             ->orWhere('to_user_id', $id)
             ->get();
 
-        return view('admin.master.transfer_detail', compact('transfer_detail'));
+        return view('admin.super.transfer_detail', compact('transfer_detail'));
     }
 
-    public function banmaster($id)
+    public function banSuper($id)
     {
         abort_if(
             ! $this->ifChildOfParent(request()->user()->id, $id),
@@ -306,36 +300,23 @@ class MasterController extends Controller
     public function update(Request $request, string $id)
     {
         abort_if(
-            Gate::denies('master_edit') || ! $this->ifChildOfParent($request->user()->id, $id),
+            Gate::denies('super_edit') || ! $this->ifChildOfParent($request->user()->id, $id),
             Response::HTTP_FORBIDDEN,
             '403 Forbidden | You cannot access this page because you do not have permission'
         );
 
         $user = User::findOrFail($id);
 
-        $request->validate([
-            'user_name' => 'nullable|string|max:255',
-            'name' => 'required|string|max:255',
-            'phone' => 'required|numeric|digits_between:10,15|unique:users,phone,' . $id,
-        ]);
-
-        $user->update([
-            'user_name' => $request->user_name ?? $user->user_name,
-            'name' => $request->name,
-            'phone' => $request->phone,
-            'agent_logo' => $user->agent_logo, // Updated logo
-            'site_link' => $request->site_link,
-        ]);
-
-        return redirect()->back()
-            ->with('success', 'master updated successfully!');
+        $user->update($request->all());
+       
+        return redirect()->back()->with('success', 'Super updated successfully!');
     }
 
     public function getChangePassword($id)
     {
-        $master = User::find($id);
+        $super = User::find($id);
 
-        return view('admin.master.change_password', compact('master'));
+        return view('admin.super.change_password', compact('super'));
     }
 
     public function makeChangePassword($id, Request $request)
@@ -350,14 +331,14 @@ class MasterController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
 
-        $master = User::find($id);
-        $master->update([
+        $super = User::find($id);
+        $super->update([
             'password' => Hash::make($request->password),
         ]);
 
         return redirect()->back()
-            ->with('success', 'master Change Password successfully')
+            ->with('success', 'Super Change Password successfully')
             ->with('password', $request->password)
-            ->with('username', $master->user_name);
+            ->with('username', $super->user_name);
     }
 }

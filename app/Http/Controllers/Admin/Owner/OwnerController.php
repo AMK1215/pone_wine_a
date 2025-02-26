@@ -119,12 +119,12 @@ class OwnerController extends Controller
         if (isset($inputs['amount'])) {
             app(WalletService::class)->transfer($admin, $user, $inputs['amount'], TransactionName::CreditTransfer);
         }
-        session()->forget('user_name');
 
-        return redirect()->back()
-            ->with('success', 'Owner created successfully')
+        return redirect()->route('admin.owner.index')
+            ->with('successMessage', 'Owner created successfully')
             ->with('password', $request->password)
-            ->with('username', $user->user_name);
+            ->with('username', $user->user_name)
+            ->with('amount', $request->amount);
     }
 
     /**

@@ -334,11 +334,12 @@
                                         </p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
+                                <li class="nav-item menu-open">
                                     <a href="{{route('admin.report.ponewine')}}" class="nav-link {{ Route::current()->getName() == 'admin.report.ponewine' ? 'active' : '' }}">
-                                        <i class="fas fa-user">
-                                            <p>PoneWine Report</p>
-                                        </i>
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>
+                                            PoneWine Report
+                                        </p>
                                     </a>
                                 </li>
                             </ul>

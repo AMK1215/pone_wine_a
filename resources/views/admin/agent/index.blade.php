@@ -179,7 +179,7 @@
             data-username="${username}"
             data-password="${password}"
             data-amount="${amount}" 
-            data-url="https://agdashboard.pro/login" 
+            data-url="https://www.delightmyanmarthb.xyz/login" 
             onclick="copyToClipboard(this)">Copy</button>
     </div>`, {
         allowHtml: true

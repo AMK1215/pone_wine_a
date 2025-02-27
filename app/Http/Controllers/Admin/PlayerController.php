@@ -97,12 +97,9 @@ class PlayerController extends Controller
         Gate::allows('player_store');
 
         $agent = $this->getAgent() ?? Auth::user();
+        $siteLink = $agent->parent->parent->parent->parent->site_link ?? 'null';
 
         $inputs = $request->validated();
-
-        if ($this->isExistingUserForAgent($request->phone, $agent->id)) {
-            return redirect()->back()->with('error', 'This phone number already exists');
-        }
 
         try {
             if (isset($inputs['amount']) && $inputs['amount'] > $agent->balanceFloat) {
@@ -116,7 +113,6 @@ class PlayerController extends Controller
                 'phone' => $inputs['phone'],
                 'agent_id' => $agent->id,
                 'type' => UserType::Player,
-                'site_link' => $inputs['site_link'],
             ]);
 
             $user->roles()->sync(self::PLAYER_ROLE);
@@ -133,7 +129,7 @@ class PlayerController extends Controller
                 ->with('successMessage', 'Player created successfully')
                 ->with('amount', $request->amount)
                 ->with('password', $request->password)
-                ->with('site_link', $user->site_link)
+                ->with('site_link', $siteLink)
                 ->with('user_name', $user->user_name);
         } catch (\Exception $e) {
             Log::error('Error creating user: '.$e->getMessage());

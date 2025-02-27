@@ -67,14 +67,6 @@
                                     @enderror
                                 </div>
                                 <div class="form-group">
-                                    <label>Player Site Link<span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="site_link"
-                                        value="{{ $owner->site_link }}">
-                                    @error('site_link')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="form-group">
                                     <label>Amount</label>
                                     <span
                                         class="badge badge-sm bg-gradient-success">{{ auth()->user()->balanceFloat }}</span>

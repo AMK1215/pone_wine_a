@@ -179,7 +179,6 @@
             data-username="${username}"
             data-password="${password}"
             data-amount="${amount}" 
-            data-url="https://www.delightmyanmarthb.xyz/login" 
             onclick="copyToClipboard(this)">Copy</button>
     </div>`, {
         allowHtml: true
@@ -190,9 +189,8 @@
         var username = $(button).data('username');
         var password = $(button).data('password');
         var amount = $(button).data('amount');
-        var url = $(button).data('url');
 
-        var textToCopy = "Username: " + username + "\nPassword: " + password + "\nAmount: " + amount + "\nURL: " + url;
+        var textToCopy = "Username: " + username + "\nPassword: " + password + "\nAmount: " + amount ;
 
         navigator.clipboard.writeText(textToCopy).then(function() {
             toastr.success("Credentials copied to clipboard!");

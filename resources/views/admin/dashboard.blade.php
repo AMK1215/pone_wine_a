@@ -94,7 +94,7 @@
 
                 {{-- senior balance update start  --}}
 
-                @can('senior_access')
+                @can('senior_owner_access')
                     <div class="col-lg-4 col-6">
                         <!-- small box -->
                         <div class="small-box bg-warning">

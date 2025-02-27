@@ -15,49 +15,49 @@ class RolesTableSeeder extends Seeder
         $roles = [
             [
 
-                'title' => 'Senior Owner',
+                'title' => 'Senior Owner', // 1
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
 
-                'title' => 'Owner',
+                'title' => 'Owner', //2
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
 
-                'title' => 'Super',
+                'title' => 'Super', //3
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
 
-                'title' => 'Senior',
+                'title' => 'Senior', //4
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
 
-                'title' => 'Master',
+                'title' => 'Master', //5
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
 
-                'title' => 'Agent',
+                'title' => 'Agent', // 6
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
 
-                'title' => 'Player',
+                'title' => 'Player', // 7
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
 
-                'title' => 'System Wallet',
+                'title' => 'System Wallet', // 8
                 'created_at' => now(),
                 'updated_at' => now(),
             ]

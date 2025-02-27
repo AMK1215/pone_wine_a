@@ -31,7 +31,6 @@
                                     <th>Win Number</th>
                                     <th>BetNo</th>
                                     <th>Bet Amount</th>
-                                    <th>Win/Lose Amount</th>
                                 </thead>
                                 <tbody>
                                     @foreach($reports as $report)
@@ -42,14 +41,6 @@
                                         <td>{{$report->win_number}}</td>
                                         <td>{{$report->bet_no}}</td>
                                         <td>{{$report->bet_amount}}</td>
-                                        <?php
-                                            $net_amt = $report->win_lose_amt - $report->bet_amount;
-                                        ?>
-                                        @if($net_amt == 0)
-                                        <td>{{-$report->bet_amount}}</td>
-                                        @else
-                                        <td>{{$net_amt}}</td>
-                                        @endif
                                     </tr>
                                     @endforeach
                                 </tbody>

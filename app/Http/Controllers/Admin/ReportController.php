@@ -151,5 +151,49 @@ class ReportController extends Controller
             $query->where('agents.id', $adminId);
         }
     }
+    
+    private function getPlayerDetails($playerId, $request)
+    {
+        $startDate = $request->start_date ??  Carbon::today()->startOfDay()->toDateString();
+        $endDate = $request->end_date ?? Carbon::today()->endOfDay()->toDateString() ;
 
+        $combinedSubquery = DB::table('results')
+            ->select(
+                'user_id',
+                'total_bet_amount',
+                'win_amount',
+                'net_win',
+                'game_lists.game_name',
+                'products.provider_name',
+                'results.created_at as date',
+                'round_id'
+            )
+            ->join('game_lists', 'game_lists.game_id', '=', 'results.game_code')
+            ->join('products', 'products.id', '=', 'game_lists.product_id')
+            ->whereBetween('results.created_at', [$startDate . ' 00:00:00', $endDate .' 23:59:59'])
+            ->when($request->product_id, fn ($query) => $query->where('products.id', $request->product_id))
+            ->unionAll(
+                DB::table('bet_n_results')
+                    ->select(
+                        'user_id',
+                        'bet_amount as total_bet_amount',
+                        'win_amount',
+                        'net_win',
+                        'game_lists.game_name',
+                        'products.provider_name',
+                        'bet_n_results.created_at as date',
+                        'tran_id as round_id'
+                    )
+                    ->join('game_lists', 'game_lists.game_id', '=', 'bet_n_results.game_code')
+                    ->join('products', 'products.id', '=', 'game_lists.product_id')
+                    ->whereBetween('bet_n_results.created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+                    ->when($request->product_id, fn ($query) => $query->where('products.id', $request->product_id))
+            );
+
+        $query = DB::table('users as players')
+            ->joinSub($combinedSubquery, 'combined', 'combined.user_id', '=', 'players.id')
+            ->where('players.id', $playerId);
+      
+        return $query->orderBy('date', 'desc')->get();
+    }
 }

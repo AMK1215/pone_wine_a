@@ -22,20 +22,29 @@ class ReportController extends Controller
     public function ponewine()
     {
         $agent = $this->getAgent() ?? Auth::user();
-        $reports = DB::table('pone_wine_bets')
-            ->join('pone_wine_player_bets', 'pone_wine_player_bets.pone_wine_bet_id', '=', 'pone_wine_bets.id')
-            ->join('pone_wine_bet_infos', 'pone_wine_bet_infos.pone_wine_player_bet_id', '=', 'pone_wine_player_bets.id') // Fixed join
+        
+        $playerTotals = DB::table('pone_wine_player_bets')
             ->select([
-                DB::raw('SUM(pone_wine_player_bets.win_lose_amt) as total_win_lose_amt'),
-                DB::raw('SUM(pone_wine_bet_infos.bet_amount) as total_bet_amount'),
-                'pone_wine_player_bets.user_name',
-                'pone_wine_player_bets.user_id',
+                'user_id',
+                'user_name',
+                DB::raw('SUM(win_lose_amt) as total_win_lose_amt')
             ])
-            ->groupBy([
-                'pone_wine_player_bets.user_id',
-                'pone_wine_player_bets.user_name',
+            ->groupBy('user_id', 'user_name');
+
+        $reports = DB::table('pone_wine_bet_infos')
+            ->join('pone_wine_player_bets', 'pone_wine_player_bets.id', '=', 'pone_wine_bet_infos.pone_wine_player_bet_id')
+            ->joinSub($playerTotals, 'player_totals', function ($join) {
+                $join->on('player_totals.user_id', '=', 'pone_wine_player_bets.user_id');
+            })
+            ->select([
+                'player_totals.user_id',
+                'player_totals.user_name',
+                'player_totals.total_win_lose_amt',
+                DB::raw('SUM(pone_wine_bet_infos.bet_amount) as total_bet_amount')
             ])
+            ->groupBy('player_totals.user_id', 'player_totals.user_name', 'player_totals.total_win_lose_amt')
             ->get();
+
 
         return view('admin.report.ponewine.index', compact('reports'));
     }
@@ -55,7 +64,7 @@ class ReportController extends Controller
             ])
             ->where('pone_wine_player_bets.user_id', $playerId)
             ->get();
-      
+
         return view('admin.report.ponewine.detail', compact('reports'));
     }
 
@@ -75,7 +84,7 @@ class ReportController extends Controller
 
         $productTypes = Product::where('is_active', 1)->get();
 
-        return view('admin.report.detail', compact('details','productTypes', 'playerId'));
+        return view('admin.report.detail', compact('details', 'productTypes', 'playerId'));
     }
 
     private function isExistingAgent($userId)
@@ -93,7 +102,7 @@ class ReportController extends Controller
     private function buildQuery(Request $request, $adminId)
     {
         $startDate = $request->start_date ??  Carbon::today()->startOfDay()->toDateString();
-        $endDate = $request->end_date ?? Carbon::today()->endOfDay()->toDateString() ;
+        $endDate = $request->end_date ?? Carbon::today()->endOfDay()->toDateString();
 
         $resultsSubquery = Result::select(
             'results.user_id',
@@ -132,7 +141,7 @@ class ReportController extends Controller
             ->leftJoin('wallets', 'wallets.holder_id', '=', 'players.id')
             ->leftJoinSub($resultsSubquery, 'results', 'results.user_id', '=', 'players.id') // Fixed alias
             ->leftJoinSub($betsSubquery, 'bets', 'bets.user_id', '=', 'players.id') // Fixed alias
-            ->when($request->player_id, fn ($query) => $query->where('players.user_name', $request->player_id))
+            ->when($request->player_id, fn($query) => $query->where('players.user_name', $request->player_id))
             ->where(function ($query) {
                 $query->whereNotNull('results.user_id')
                     ->orWhereNotNull('bets.user_id');
@@ -151,11 +160,11 @@ class ReportController extends Controller
             $query->where('agents.id', $adminId);
         }
     }
-    
+
     private function getPlayerDetails($playerId, $request)
     {
         $startDate = $request->start_date ??  Carbon::today()->startOfDay()->toDateString();
-        $endDate = $request->end_date ?? Carbon::today()->endOfDay()->toDateString() ;
+        $endDate = $request->end_date ?? Carbon::today()->endOfDay()->toDateString();
 
         $combinedSubquery = DB::table('results')
             ->select(
@@ -170,8 +179,8 @@ class ReportController extends Controller
             )
             ->join('game_lists', 'game_lists.game_id', '=', 'results.game_code')
             ->join('products', 'products.id', '=', 'game_lists.product_id')
-            ->whereBetween('results.created_at', [$startDate . ' 00:00:00', $endDate .' 23:59:59'])
-            ->when($request->product_id, fn ($query) => $query->where('products.id', $request->product_id))
+            ->whereBetween('results.created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
+            ->when($request->product_id, fn($query) => $query->where('products.id', $request->product_id))
             ->unionAll(
                 DB::table('bet_n_results')
                     ->select(
@@ -187,13 +196,13 @@ class ReportController extends Controller
                     ->join('game_lists', 'game_lists.game_id', '=', 'bet_n_results.game_code')
                     ->join('products', 'products.id', '=', 'game_lists.product_id')
                     ->whereBetween('bet_n_results.created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59'])
-                    ->when($request->product_id, fn ($query) => $query->where('products.id', $request->product_id))
+                    ->when($request->product_id, fn($query) => $query->where('products.id', $request->product_id))
             );
 
         $query = DB::table('users as players')
             ->joinSub($combinedSubquery, 'combined', 'combined.user_id', '=', 'players.id')
             ->where('players.id', $playerId);
-      
+
         return $query->orderBy('date', 'desc')->get();
     }
 }

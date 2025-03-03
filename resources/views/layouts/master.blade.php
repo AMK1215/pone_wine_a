@@ -450,13 +450,15 @@
             $('.select2bs4').select2({
                 theme: 'bootstrap4'
             });
+            $('#ponewineTable').DataTable();
+            $('#slotTable').DataTable();
+
             $("#mytable").DataTable({
                 "responsive": true,
                 "lengthChange": false,
                 "autoWidth": false,
                 "order": true,
                 "pageLength": 10,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
     </script>

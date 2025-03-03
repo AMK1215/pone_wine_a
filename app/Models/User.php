@@ -280,4 +280,9 @@ class User extends Authenticatable implements Wallet
     {
         return $this->hasMany(Bet::class, 'user_id');
     }
+
+    public function poneWinePlayer()
+    {
+        return $this->hasMany(PoneWinePlayerBet::class);
+    }
 }

@@ -35,6 +35,7 @@
                                     <th>Phone</th>
                                     <th>Status</th>
                                     <th>Balance</th>
+                                    <th>Total Win/Lose</th>
                                     <th>CreatedAt</th>
                                     <th>Action</th>
                                     <th>Transaction</th>
@@ -56,6 +57,7 @@
                                                             class="badge bg-gradient-{{ $user->status == 1 ? 'success' : 'danger' }}">{{ $user->status == 1 ? 'active' : 'inactive' }}</small>
                                                     </td>
                                                     <td>{{ number_format($user->balanceFloat) }}</td>
+                                                    <td>{{ number_format($user->poneWinePlayer->sum('win_lose_amt') + $user->results->sum('net_win') + $user->betNResults->sum('net_win'), 2)}}</td>
                                                     <td>{{ $user->created_at->setTimezone('Asia/Yangon')->format('d-m-Y H:i:s') }}
                                                     </td>
                                                     <td>
@@ -119,6 +121,12 @@
                                                             class="btn btn-info btn-sm">
                                                             <i class="fas fa-right-left text-white me-1"></i>
                                                             transferLogs
+                                                        </a>
+                                                        <a href="{{ route('admin.reports.player.index', $user->id) }}"
+                                                            data-bs-toggle="tooltip" data-bs-original-title="Reports"
+                                                            class="btn btn-info btn-sm">
+                                                            <i class="fas fa-right-left text-white me-1"></i>
+                                                            Reports
                                                         </a>
                                                     </td>
                                                 </tr>

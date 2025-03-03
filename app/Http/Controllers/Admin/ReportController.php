@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Product;
-use App\Models\PoneWineBet;
-use App\Models\PoneWineBetInfo;
-use App\Models\PoneWinePlayerBet;
 use App\Models\User;
 use App\Models\Webhook\BetNResult;
 use App\Models\Webhook\Result;
@@ -22,7 +19,7 @@ class ReportController extends Controller
     public function ponewine()
     {
         $agent = $this->getAgent() ?? Auth::user();
-        
+
         $playerTotals = DB::table('pone_wine_player_bets')
             ->select([
                 'user_id',
@@ -86,6 +83,69 @@ class ReportController extends Controller
 
         return view('admin.report.detail', compact('details', 'productTypes', 'playerId'));
     }
+
+    public function getPlayer($playerId)
+    {
+        $poneWineReport = DB::table('pone_wine_bets')
+            ->join('pone_wine_player_bets', 'pone_wine_player_bets.pone_wine_bet_id', '=', 'pone_wine_bets.id')
+            ->join('pone_wine_bet_infos', 'pone_wine_bet_infos.pone_wine_player_bet_id', '=', 'pone_wine_player_bets.id')
+            ->select([
+                'pone_wine_player_bets.win_lose_amt',
+                'pone_wine_player_bets.user_name',
+                DB::raw('SUM(pone_wine_bet_infos.bet_amount) as total_bet_amount'),
+                'pone_wine_bets.win_number',
+                'pone_wine_bets.match_id',
+            ])
+            ->where('pone_wine_player_bets.user_id', $playerId)
+            ->groupBy([
+                'pone_wine_player_bets.user_name',
+                'pone_wine_bets.win_number',
+                'pone_wine_bets.match_id',
+                'pone_wine_player_bets.win_lose_amt'
+            ])
+            ->get();
+
+
+        $combinedSubquery = DB::table('results')
+            ->select(
+                'user_id',
+                DB::raw('MIN(tran_date_time) as from_date'),
+                DB::raw('MAX(tran_date_time) as to_date'),
+                DB::raw('COUNT(results.game_code) as total_count'),
+                DB::raw('SUM(total_bet_amount) as total_bet_amount'),
+                DB::raw('SUM(win_amount) as win_amount'),
+                DB::raw('SUM(net_win) as net_win'),
+                'products.provider_name'
+            )
+            ->join('game_lists', 'game_lists.game_id', '=', 'results.game_code')
+            ->join('products', 'products.id', '=', 'game_lists.product_id')
+            ->groupBy('products.provider_name', 'user_id')
+            ->unionAll(
+                DB::table('bet_n_results')
+                    ->select(
+                        'user_id',
+                        DB::raw('MIN(tran_date_time) as from_date'),
+                        DB::raw('MAX(tran_date_time) as to_date'),
+                        DB::raw('COUNT(bet_n_results.game_code) as total_count'),
+                        DB::raw('SUM(bet_amount) as total_bet_amount'),
+                        DB::raw('SUM(win_amount) as win_amountwin_amount'),
+                        DB::raw('SUM(net_win) as net_win'),
+                        'products.provider_name'
+                    )
+                    ->join('game_lists', 'game_lists.game_id', '=', 'bet_n_results.game_code')
+                    ->join('products', 'products.id', '=', 'game_lists.product_id')
+                    ->groupBy('products.provider_name', 'user_id')
+            );
+
+        $slotReports = DB::table('users as players')
+            ->joinSub($combinedSubquery, 'combined', 'combined.user_id', '=', 'players.id')
+            ->where('players.id', $playerId)
+            ->orderBy('players.id', 'desc')
+            ->get();
+        
+        return view('admin.report.player.index', compact('poneWineReport', 'slotReports' ));
+    }
+
 
     private function isExistingAgent($userId)
     {

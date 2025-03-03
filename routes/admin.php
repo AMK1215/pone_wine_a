@@ -174,6 +174,8 @@ Route::group([
         Route::get('ponewine-detail/{id}', [ReportController::class, 'detail'])->name('report.ponewineDetail');
         Route::get('report', [ReportController::class, 'index'])->name('report.index');
         Route::get('reports/details/{player_id}', [ReportController::class, 'getReportDetails'])->name('reports.details');
+        Route::get('reports/player/{player_id}', [ReportController::class, 'getPlayer'])->name('reports.player.index');
+
     });
 
 });

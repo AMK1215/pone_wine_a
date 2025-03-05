@@ -30,6 +30,8 @@ class AgentController extends Controller
      */
     private const AGENT_ROLE = 6;
 
+    private const PLAYER_ROLE = 7;
+
     public function index(): View
     {
         if (! Gate::allows('agent_index')) {
@@ -37,17 +39,16 @@ class AgentController extends Controller
         }
 
         //kzt
-        $users = User::with('roles')
+        $users = User::with(['roles', 'children.poneWinePlayer', 'children.results', 'children.betNResults'])
             ->whereHas('roles', function ($query) {
                 $query->where('role_id', self::AGENT_ROLE);
             })
             ->where('agent_id', auth()->id())
             ->orderBy('id', 'desc')
             ->get();
-
-        //kzt
         return view('admin.agent.index', compact('users'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -456,6 +457,20 @@ class AgentController extends Controller
         return view('admin.agent.auth_win_lose_details', compact('details'));
     }
 
+
+    public function getPlayerReports($id)
+    {
+        $users = User::with('roles', 'poneWinePlayer', 'results', 'betNResults')
+            ->whereHas('roles', function ($query) {
+                $query->where('role_id', self::PLAYER_ROLE);
+            })
+            ->where('agent_id', $id)
+            ->orderBy('id', 'desc')
+            ->get();
+       
+        return view('admin.agent.player_report', compact('users'));
+    }
+    
     private function generateReferralCode($length = 8)
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

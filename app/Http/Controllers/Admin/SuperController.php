@@ -33,10 +33,15 @@ class SuperController extends Controller
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        $users = User::with('roles')
-            ->whereHas('roles', function ($query) {
-                $query->where('role_id', self::SUPER_ROLE);
-            })
+        $users = User::with([
+            'roles',
+            'children.children.children.children.poneWinePlayer',
+            'children.children.children.children.results',
+            'children.children.children.children.betNResults'
+        ])
+        ->whereHas('roles', function ($query) {
+            $query->where('role_id', self::SUPER_ROLE);
+        })
             ->where('agent_id', auth()->id())
             ->orderBy('id', 'desc')
             ->get();
@@ -308,7 +313,7 @@ class SuperController extends Controller
         $user = User::findOrFail($id);
 
         $user->update($request->all());
-       
+
         return redirect()->back()->with('success', 'Super updated successfully!');
     }
 

@@ -33,7 +33,7 @@ class MasterController extends Controller
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
 
-        $users = User::with('roles')
+        $users = User::with(['roles', 'children.children.poneWinePlayer', 'children.children.results', 'children.children.betNResults'])
             ->whereHas('roles', function ($query) {
                 $query->where('role_id', self::MASTER_ROLE);
             })

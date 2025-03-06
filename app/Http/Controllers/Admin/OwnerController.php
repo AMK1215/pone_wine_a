@@ -35,10 +35,15 @@ class OwnerController extends Controller
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
         //kzt
-        $users = User::with('roles')
-            ->whereHas('roles', function ($query) {
-                $query->where('role_id', self::OWNER_ROLE);
-            })
+        $users = User::with([
+            'roles',
+            'children.children.children.children.children.poneWinePlayer',
+            'children.children.children.children.children.results',
+            'children.children.children.children.children.betNResults'
+        ]
+        )->whereHas('roles', function ($query) {
+            $query->where('role_id', self::OWNER_ROLE);
+        })
             ->where('agent_id', auth()->id())
             ->orderBy('id', 'desc')
             ->get();
@@ -398,7 +403,7 @@ class OwnerController extends Controller
 
         $agentIds = User::where('agent_id', $owner->id)->pluck('id');
         User::whereIn('agent_id', $agentIds)->delete();
-      
+
         User::where('agent_id', $owner->id)->delete();
         $owner->delete();
 

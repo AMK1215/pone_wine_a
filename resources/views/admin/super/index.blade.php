@@ -34,6 +34,7 @@
                                 <th>Phone</th>
                                 <th>Status</th>
                                 <th>Balance</th>
+                                <th>Total Winlos Amt</th>
                                 <th>Action</th>
                                 <th>Transfer</th>
                             </thead>
@@ -57,7 +58,14 @@
 
                                     </td>
                                     <td>{{ number_format($user->balanceFloat) }}</td>
+                                    <?php
+                                        $poneWintAmt = $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->poneWinePlayer->sum('win_lose_amt');
+                                        $result = $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->results->sum('net_win');
+                                        $betNResults = $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->results->sum('betNResults');
 
+                                        $totalAmt = $poneWintAmt + $result + $betNResults;
+                                    ?>
+                                    <td>{{number_format($totalAmt, 2)}}</td>
                                     <td>
                                         @if ($user->status == 1)
                                         <a onclick="event.preventDefault(); document.getElementById('banUser-{{ $user->id }}').submit();"

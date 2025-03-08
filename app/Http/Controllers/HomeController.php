@@ -24,7 +24,8 @@ class HomeController extends Controller
      *
      * @return void
      */
-    private const PLAYER_ROLE = 4;
+
+    private const PLAYER_ROLE = 7;
 
     public function __construct()
     {
@@ -41,10 +42,11 @@ class HomeController extends Controller
         $user = Auth::user();
         $role = $user->roles->pluck('title');
         $totalAgent = $user->children->count();
-        $totalPlayer = User::with('roles')->whereIn('agent_id', $user->children->pluck('id'))
-            ->whereHas('roles', function ($query) {
-                $query->where('role_id', self::PLAYER_ROLE);
-            })->count();
+        $totalPlayer = $user->children->count();
+        $totalWinlose = 0;
+        $todayWinlose = 0;
+        $todayDeposit = 0;
+        $todayWithdraw = 0;
 
         $totalBalance = DB::table('users')
             ->join('role_user', 'role_user.user_id', '=', 'users.id')
@@ -52,6 +54,15 @@ class HomeController extends Controller
             ->join('wallets', 'wallets.holder_id', '=', 'users.id')
             ->when($role[0] === 'Senior', function ($query) {
                 return $query->where('users.agent_id', Auth::id());
+            })
+            ->when($role[0] === 'Owner', function ($query) use ($user) {
+                return $query->where('users.agent_id', $user->id);
+            })
+            ->when($role[0] === 'Super', function ($query) use ($user) {
+                return $query->where('users.agent_id', $user->id);
+            })
+            ->when($role[0] === 'Senior', function ($query) use ($user) {
+                return $query->where('users.agent_id', $user->id);
             })
             ->when($role[0] === 'Master', function ($query) use ($user) {
                 return $query->where('users.agent_id', $user->id);
@@ -64,6 +75,13 @@ class HomeController extends Controller
             })
             ->select(DB::raw('SUM(wallets.balance) as balance'))
             ->first();
+
+        if ($role[0] === 'Agent') {
+            $todayWinlose = $this->getTodayWinlose();
+            $totalWinlose = $this->getTotalWinlose();
+            $todayDeposit = $this->fetchTotalAmount($user, 'deposit');
+            $todayWithdraw = $this->fetchTotalAmount($user, 'withdraw');
+        }
 
         $playerBalance = DB::table('users')
             ->join('wallets', 'wallets.holder_id', '=', 'users.id')
@@ -78,7 +96,11 @@ class HomeController extends Controller
             'role',
             'playerBalance',
             'totalAgent',
-            'totalPlayer'
+            'totalPlayer',
+            'totalWinlose',
+            'todayWinlose',
+            'todayDeposit',
+            'todayWithdraw'
         ));
     }
 
@@ -175,5 +197,57 @@ class HomeController extends Controller
             ->get();
 
         return view('admin.player_list', compact('users'));
+    }
+
+    private function getTodayWinlose()
+    {
+        return User::withSum([
+            'poneWinePlayer as pone_wine_player_win_lose_amt' => function ($query) {
+                $query->whereDate('created_at', today());
+            }
+        ], 'win_lose_amt')
+            ->withSum([
+                'results as results_net_win' => function ($query) {
+                    $query->whereDate('created_at', today());
+                }
+            ], 'net_win')
+            ->withSum([
+                'betNResults as bet_n_results_net_win' => function ($query) {
+                    $query->whereDate('created_at', today());
+                }
+            ], 'net_win')
+            ->whereHas('roles', function ($query) {
+                $query->where('role_id', self::PLAYER_ROLE);
+            })
+            ->where('agent_id', Auth::id())
+            ->get()
+            ->sum(fn($user) => ($user->pone_wine_player_win_lose_amt ?? 0)
+                + ($user->results_net_win ?? 0)
+                + ($user->bet_n_results_net_win ?? 0));
+    }
+
+    private function getTotalWinlose()
+    {
+        return User::withSum('poneWinePlayer as pone_wine_player_win_lose_amt', 'win_lose_amt')
+            ->withSum('results as results_net_win', 'net_win')
+            ->withSum('betNResults as bet_n_results_net_win', 'net_win')
+            ->whereHas('roles', function ($query) {
+                $query->where('role_id', self::PLAYER_ROLE);
+            })
+            ->where('agent_id', Auth::id())
+            ->get()
+            ->sum(fn($user) => $user->pone_wine_player_win_lose_amt
+                + $user->results_net_win
+                + $user->bet_n_results_net_win);
+    }
+
+    private function fetchTotalAmount(User $agent, string $type): float
+    {
+        return $agent->transactions()
+            ->with('targetUser')
+            ->where('type', $type)
+            ->whereDate('created_at', today())
+            ->whereIn('name', ['credit_transfer', 'debit_transfer'])
+            ->sum('amount');
     }
 }

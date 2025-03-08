@@ -110,7 +110,7 @@
                     </li>
 
                     <!-- Add the audio element -->
-                    <button id="enableSound">Enable Notification Sound</button>
+                    <button id="enableSound" style="display: none">Enable Notification Sound</button>
                     <audio id="notificationSound" src="{{ asset('sounds/noti.wav') }}" preload="auto"></audio>
                 @endcan
                 <!--end::Messages Dropdown Menu-->

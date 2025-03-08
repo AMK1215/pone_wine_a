@@ -482,7 +482,6 @@
             }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
         });
     </script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
@@ -502,50 +501,22 @@
                     },
                     success: function() {
                         $('#notificationCount').text(0);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error marking notifications as read:', error);
                     }
                 });
             });
         });
     </script>
-
-    <!-- JavaScript to play the sound -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const notificationSound = document.getElementById('notificationSound');
-            const notificationCount = document.getElementById('notificationCount');
-            const initialCount = parseInt(notificationCount.innerText);
-
-            function playNotificationSound() {
-                notificationSound.play();
-            }
-
-            function checkForNewNotifications() {
-                fetch(
-                        '{{ route('admin.notifications.count') }}'
-                    )
-                    .then(response => response.json())
-                    .then(data => {
-                        const newCount = data.count;
-                        if (newCount > initialCount) {
-                            playNotificationSound();
-                            initialCount = newCount;
-                        }
-                    });
-            }
-
-            // Check for new notifications every 10 seconds
-            setInterval(checkForNewNotifications, 10000);
-        });
-    </script>
-
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
-        // Enable pusher logging - don't include this in production
         Pusher.logToConsole = true;
 
         // Initialize Pusher
         var pusher = new Pusher('29b71b17d47621df4504', {
-            cluster: 'ap1'
+            cluster: 'ap1',
+            encrypted: true
         });
 
         // Dynamically subscribe to the agent's channel
@@ -588,11 +559,23 @@
 
             // Remove the "No new notifications" message if it exists
             $('.dropdown-item.text-center.text-muted').remove();
+
+            // Play the notification sound
+            var notificationSound = document.getElementById('notificationSound');
+            if (notificationSound) {
+                notificationSound.play().catch(error => {
+                    console.error('Error playing notification sound:', error);
+                });
+            }
         });
 
         // Log Pusher connection status
         pusher.connection.bind('state_change', function(states) {
             console.log('Pusher connection state changed:', states.current);
+        });
+
+        pusher.connection.bind('error', function(error) {
+            console.error('Pusher connection error:', error);
         });
     </script>
 

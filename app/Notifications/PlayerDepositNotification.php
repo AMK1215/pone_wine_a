@@ -1,44 +1,36 @@
 <?php
-
 namespace App\Notifications;
 
-use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
-class PlayerDepositNotification extends Notification implements ShouldBroadcast, ShouldQueue
+
+class PlayerDepositNotification extends Notification implements ShouldQueue
 {
-    use InteractsWithSockets, Queueable;
+    use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
     protected $deposit;
 
-    /**
-     * Create a new notification instance.
-     */
     public function __construct($deposit)
     {
         $this->deposit = $deposit;
     }
 
-    /**
-     * Determine how the notification will be delivered.
-     */
     public function via($notifiable)
     {
         return ['database', 'broadcast'];
     }
 
-    /**
-     * Store notification in the database.
-     */
     public function toDatabase($notifiable)
     {
+         Log::info('Storing notification in database:', [
+        'player_name' => $this->deposit->user->user_name,
+        'amount' => $this->deposit->amount,
+        'refrence_no' => $this->deposit->refrence_no,
+    ]);
         return [
             'player_name' => $this->deposit->user->user_name,
             'amount' => $this->deposit->amount,
@@ -47,9 +39,6 @@ class PlayerDepositNotification extends Notification implements ShouldBroadcast,
         ];
     }
 
-    /**
-     * Broadcast the notification (for real-time updates).
-     */
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
@@ -58,13 +47,5 @@ class PlayerDepositNotification extends Notification implements ShouldBroadcast,
             'refrence_no' => $this->deposit->refrence_no,
             'message' => "Player {$this->deposit->user->user_name} has deposited {$this->deposit->amount}.",
         ]);
-    }
-
-    /**
-     * Get the broadcast channel.
-     */
-    public function broadcastOn()
-    {
-        return new PrivateChannel('agent.'.$this->deposit->agent_id);
     }
 }

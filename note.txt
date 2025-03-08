@@ -1,3 +1,5 @@
+https://www.youtube.com/watch?v=ZKo3jn5L0yY&t=123s
+
 php artisan migrate --path=/database/migrations/2025_01_11_075203_add_after_before_column_to_results_table.php
 php artisan make:migration add_order_column_to_game_lists_table --table=game_lists
 
@@ -5,7 +7,7 @@ php artisan make:migration make_name_and_phone_nullable_in_users_table --table=u
 
 
 // to remove laravel log
-php -r "file_put_contents('/var/www/slot_multi_banner_prod/storage/logs/laravel.log', '');"
+php -r "file_put_contents('/var/www/pone_wine_a/storage/logs/laravel.log', '');"
 // created dev branch for kzt
 
 tail -f /var/www/slot_multi_banner_prod/storage/logs/laravel.log

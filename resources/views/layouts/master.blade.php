@@ -538,6 +538,64 @@
         });
     </script>
 
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+
+        // Initialize Pusher
+        var pusher = new Pusher('29b71b17d47621df4504', {
+            cluster: 'ap1'
+        });
+
+        // Dynamically subscribe to the agent's channel
+        var agentId = "{{ auth()->user()->id }}"; // Replace with the dynamic agent ID
+        var channel = pusher.subscribe('agent.' + agentId);
+
+        console.log('Subscribed to channel: agent.' + agentId);
+
+        // Bind to the event
+        channel.bind('deposit.notify', function(data) {
+            console.log('New deposit notification received:', data);
+
+            // Update the notification count
+            var notificationCount = parseInt($('#notificationCount').text());
+            $('#notificationCount').text(notificationCount + 1);
+
+            // Prepend the new notification to the dropdown
+            var newNotification = `
+            <li class="notification-item">
+                <a href="#" class="dropdown-item d-flex align-items-start p-3" style="background-color: #ffeeba; border-left: 4px solid #ff6f00; border-radius: 5px;">
+                    <div class="flex-grow-1">
+                        <h6 class="dropdown-item-title fw-bold text-dark">
+                            ${data.player_name}
+                        </h6>
+                        <p class="fs-7 text-dark mb-1">${data.message}</p>
+                        <p class="fs-7 text-muted">
+                            <i class="bi bi-clock-fill me-1"></i>
+                            Just now
+                        </p>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+        `;
+
+            // Append the new notification to the dropdown
+            $('.dropdown-menu').prepend(newNotification);
+
+            // Remove the "No new notifications" message if it exists
+            $('.dropdown-item.text-center.text-muted').remove();
+        });
+
+        // Log Pusher connection status
+        pusher.connection.bind('state_change', function(states) {
+            console.log('Pusher connection state changed:', states.current);
+        });
+    </script>
+
 </body>
 
 </html>

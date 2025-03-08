@@ -25,6 +25,11 @@
     <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.dataTables.min.css">
+
     {{-- @vite(['resources/js/app.js']) --}}
 
 
@@ -105,6 +110,7 @@
                     </li>
 
                     <!-- Add the audio element -->
+                    <button id="enableSound">Enable Notification Sound</button>
                     <audio id="notificationSound" src="{{ asset('sounds/noti.wav') }}" preload="auto"></audio>
                 @endcan
                 <!--end::Messages Dropdown Menu-->
@@ -454,6 +460,13 @@
     <script src="{{ asset('plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+
+    <!-- DataTables JS -->
+    <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+
     @yield('script')
     <script>
         var errorMessage = @json(session('error'));
@@ -509,10 +522,109 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationSound = document.getElementById('notificationSound');
+            const enableSoundButton = document.getElementById('enableSound');
+            let soundEnabled = false;
+
+            // Enable sound when the user clicks the button
+            enableSoundButton.addEventListener('click', function() {
+                notificationSound.play().then(() => {
+                    notificationSound.pause();
+                    notificationSound.currentTime = 0;
+                    soundEnabled = true; // Mark sound as enabled
+                    enableSoundButton.style.display =
+                        'none'; // Hide the button after enabling sound
+                }).catch(error => {
+                    console.error('Error enabling sound:', error);
+                });
+            });
+
+            // Function to play notification sound
+            function playNotificationSound() {
+                if (soundEnabled) {
+                    notificationSound.play().catch(error => {
+                        console.error('Error playing notification sound:', error);
+                    });
+                }
+            }
+
+            // Use playNotificationSound() in your Pusher event handler
+            channel.bind('deposit.notify', function(data) {
+                console.log('New deposit notification received:', data);
+                playNotificationSound(); // Play sound automatically
+            });
+        });
+    </script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <script>
         Pusher.logToConsole = true;
 
+        // Initialize Pusher
+        // var pusher = new Pusher('29b71b17d47621df4504', {
+        //     cluster: 'ap1',
+        //     encrypted: true
+        // });
+
+        // // Dynamically subscribe to the agent's channel
+        // var agentId = "{{ auth()->user()->id }}"; // Replace with the dynamic agent ID
+        // var channel = pusher.subscribe('agent.' + agentId);
+
+        // console.log('Subscribed to channel: agent.' + agentId);
+
+        // // Bind to the event
+        // channel.bind('deposit.notify', function(data) {
+        //     console.log('New deposit notification received:', data);
+
+        //     // Update the notification count
+        //     var notificationCount = parseInt($('#notificationCount').text());
+        //     $('#notificationCount').text(notificationCount + 1);
+
+        //     // Prepend the new notification to the dropdown
+        //     var newNotification = `
+    //     <li class="notification-item">
+    //         <a href="#" class="dropdown-item d-flex align-items-start p-3" style="background-color: #ffeeba; border-left: 4px solid #ff6f00; border-radius: 5px;">
+    //             <div class="flex-grow-1">
+    //                 <h6 class="dropdown-item-title fw-bold text-dark">
+    //                     ${data.player_name}
+    //                 </h6>
+    //                 <p class="fs-7 text-dark mb-1">${data.message}</p>
+    //                 <p class="fs-7 text-muted">
+    //                     <i class="bi bi-clock-fill me-1"></i>
+    //                     Just now
+    //                 </p>
+    //             </div>
+    //         </a>
+    //     </li>
+    //     <li>
+    //         <hr class="dropdown-divider">
+    //     </li>
+    // `;
+
+        //     // Append the new notification to the dropdown
+        //     $('.dropdown-menu').prepend(newNotification);
+
+        //     // Remove the "No new notifications" message if it exists
+        //     $('.dropdown-item.text-center.text-muted').remove();
+
+        //     // Play the notification sound
+        //     var notificationSound = document.getElementById('notificationSound');
+        //     if (notificationSound) {
+        //         notificationSound.play().catch(error => {
+        //             console.error('Error playing notification sound:', error);
+        //         });
+        //     }
+        // });
+
+        // // Log Pusher connection status
+        // pusher.connection.bind('state_change', function(states) {
+        //     console.log('Pusher connection state changed:', states.current);
+        // });
+
+        // pusher.connection.bind('error', function(error) {
+        //     console.error('Pusher connection error:', error);
+        // });
         // Initialize Pusher
         var pusher = new Pusher('29b71b17d47621df4504', {
             cluster: 'ap1',
@@ -535,24 +647,24 @@
 
             // Prepend the new notification to the dropdown
             var newNotification = `
-            <li class="notification-item">
-                <a href="#" class="dropdown-item d-flex align-items-start p-3" style="background-color: #ffeeba; border-left: 4px solid #ff6f00; border-radius: 5px;">
-                    <div class="flex-grow-1">
-                        <h6 class="dropdown-item-title fw-bold text-dark">
-                            ${data.player_name}
-                        </h6>
-                        <p class="fs-7 text-dark mb-1">${data.message}</p>
-                        <p class="fs-7 text-muted">
-                            <i class="bi bi-clock-fill me-1"></i>
-                            Just now
-                        </p>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <hr class="dropdown-divider">
-            </li>
-        `;
+        <li class="notification-item">
+            <a href="#" class="dropdown-item d-flex align-items-start p-3" style="background-color: #ffeeba; border-left: 4px solid #ff6f00; border-radius: 5px;">
+                <div class="flex-grow-1">
+                    <h6 class="dropdown-item-title fw-bold text-dark">
+                        ${data.player_name}
+                    </h6>
+                    <p class="fs-7 text-dark mb-1">${data.message}</p>
+                    <p class="fs-7 text-muted">
+                        <i class="bi bi-clock-fill me-1"></i>
+                        Just now
+                    </p>
+                </div>
+            </a>
+        </li>
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+    `;
 
             // Append the new notification to the dropdown
             $('.dropdown-menu').prepend(newNotification);
@@ -561,21 +673,7 @@
             $('.dropdown-item.text-center.text-muted').remove();
 
             // Play the notification sound
-            var notificationSound = document.getElementById('notificationSound');
-            if (notificationSound) {
-                notificationSound.play().catch(error => {
-                    console.error('Error playing notification sound:', error);
-                });
-            }
-        });
-
-        // Log Pusher connection status
-        pusher.connection.bind('state_change', function(states) {
-            console.log('Pusher connection state changed:', states.current);
-        });
-
-        pusher.connection.bind('error', function(error) {
-            console.error('Pusher connection error:', error);
+            playNotificationSound();
         });
     </script>
 

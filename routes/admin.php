@@ -83,6 +83,7 @@ Route::group([
 
     Route::get('/notifications/count', [NotificationController::class, 'count'])->name('notifications.count');
 
+
     // game list start
     Route::get('all-game-lists', [GameListController::class, 'index'])->name('gameLists.index');
     Route::get('all-game-lists/{id}', [GameListController::class, 'edit'])->name('gameLists.edit');

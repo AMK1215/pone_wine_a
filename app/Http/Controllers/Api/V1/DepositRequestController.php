@@ -11,6 +11,8 @@ use App\Traits\HttpResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+
 
 class DepositRequestController extends Controller
 {
@@ -48,6 +50,10 @@ class DepositRequestController extends Controller
 
         $agent = User::find($player->agent_id);
         if ($agent) {
+            Log::info('Triggering PlayerDepositNotification for agent:', [
+                'agent_id' => $player->agent_id,
+                'deposit_id' => $deposit->id,
+            ]);
             $agent->notify(new PlayerDepositNotification($deposit));
         }
 

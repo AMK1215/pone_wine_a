@@ -7,7 +7,6 @@ use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 
-
 class PlayerDepositNotification extends Notification implements ShouldQueue
 {
     use Queueable;
@@ -26,11 +25,11 @@ class PlayerDepositNotification extends Notification implements ShouldQueue
 
     public function toDatabase($notifiable)
     {
-         Log::info('Storing notification in database:', [
-        'player_name' => $this->deposit->user->user_name,
-        'amount' => $this->deposit->amount,
-        'refrence_no' => $this->deposit->refrence_no,
-    ]);
+        Log::info('Storing notification in database:', [
+            'player_name' => $this->deposit->user->user_name,
+            'amount' => $this->deposit->amount,
+            'refrence_no' => $this->deposit->refrence_no,
+        ]);
         return [
             'player_name' => $this->deposit->user->user_name,
             'amount' => $this->deposit->amount,

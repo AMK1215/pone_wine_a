@@ -20,13 +20,31 @@ class ReportController extends Controller
     {
         $agent = $this->getAgent() ?? Auth::user();
 
-        $playerTotals = DB::table('pone_wine_player_bets')
+        // Define role hierarchy
+        $hierarchy = [
+            'Owner' => ['Super', 'Senior', 'Master', 'Agent'],
+            'Super' => ['Senior', 'Master', 'Agent'],
+            'Senior' => ['Master', 'Agent'],
+            'Master' => ['Agent'],
+        ];
+
+        $playerTotalsQuery = DB::table('pone_wine_player_bets')
             ->select([
                 'user_id',
                 'user_name',
                 DB::raw('SUM(win_lose_amt) as total_win_lose_amt')
             ])
             ->groupBy('user_id', 'user_name');
+
+        if ($agent->hasRole('Senior Owner')) {
+            $playerTotals = $playerTotalsQuery;
+        } elseif ($agent->hasRole('Agent')) {
+            $agentChildrenIds = $agent->children->pluck('id')->toArray();
+            $playerTotals = $playerTotalsQuery->whereIn('user_id', $agentChildrenIds);
+        } else {
+            $agentChildrenIds = $this->getAgentChildrenIds($agent, $hierarchy);
+            $playerTotals = $playerTotalsQuery->whereIn('user_id', $agentChildrenIds);
+        }
 
         $reports = DB::table('pone_wine_bet_infos')
             ->join('pone_wine_player_bets', 'pone_wine_player_bets.id', '=', 'pone_wine_bet_infos.pone_wine_player_bet_id')
@@ -142,8 +160,8 @@ class ReportController extends Controller
             ->where('players.id', $playerId)
             ->orderBy('players.id', 'desc')
             ->get();
-        
-        return view('admin.report.player.index', compact('poneWineReport', 'slotReports' ));
+
+        return view('admin.report.player.index', compact('poneWineReport', 'slotReports'));
     }
 
 
@@ -264,5 +282,27 @@ class ReportController extends Controller
             ->where('players.id', $playerId);
 
         return $query->orderBy('date', 'desc')->get();
+    }
+
+    private function getAgentChildrenIds($agent, array $hierarchy)
+    {
+        foreach ($hierarchy as $role => $levels) {
+            if ($agent->hasRole($role)) {
+                return collect([$agent])
+                    ->flatMap(fn($levelAgent) => $this->getChildrenRecursive($levelAgent, $levels))
+                    ->pluck('id')
+                    ->toArray();
+            }
+        }
+        return [];
+    }
+
+    private function getChildrenRecursive($agent, array $levels)
+    {
+        $children = collect([$agent]);
+        foreach ($levels as $level) {
+            $children = $children->flatMap->children;
+        }
+        return $children->flatMap->children;
     }
 }

@@ -129,7 +129,7 @@
                                             <i class="fa-solid fa-money-bill-transfer"></i>
                                             Transfer Logs
                                         </a>
-                                        <a href="{{ route('admin.agent.getPlayerReports', $user->id) }}"
+                                        <a href="{{ route('admin.reports.agent.index', $user->id) }}"
                                             data-bs-toggle="tooltip" data-bs-original-title="Reports"
                                             class="btn btn-info btn-sm mt-2">
                                             <i class="fa-solid fa-money-bill-transfer"></i>

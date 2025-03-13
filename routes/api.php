@@ -73,6 +73,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('banner', [BannerController::class, 'index']);
     Route::get('videoads', [BannerController::class, 'ApiVideoads']);
     Route::get('toptenwithdraw', [BannerController::class, 'TopTen']);
+    Route::get('shan-transactions', [TransactionController::class, 'GetPlayerShanReport']);
 
     Route::get('contact', [ContactController::class, 'get']);
     Route::get('promotion', [PromotionController::class, 'index']);

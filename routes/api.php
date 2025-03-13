@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\NewVersion\PlaceBetWebhookController;
 use App\Http\Controllers\Api\V1\PoneWineBetController;
 use App\Http\Controllers\Api\V1\PromotionController;
 use App\Http\Controllers\Api\V1\ReportController;
+use App\Http\Controllers\Api\V1\ShanTransactionController;
 use App\Http\Controllers\Api\V1\Slot\GameController;
 use App\Http\Controllers\Api\V1\Slot\GetGameListByProviderController;
 use App\Http\Controllers\Api\V1\Slot\GetGameProviderController;
@@ -50,6 +51,7 @@ Route::post('Reward', [RewardController::class, 'handleReward']);
 Route::post('GetGameProvider', [GetGameProviderController::class, 'fetchGameProviders']);
 Route::post('GetGameListByProvider', [GetGameListByProviderController::class, 'fetchGameListByProvider']);
 Route::post('bet', [PoneWineBetController::class, 'index'])->middleware('transaction');
+Route::post('transactions', [ShanTransactionController::class, 'index'])->middleware('transaction');
 
 // for slot
 Route::post('/transaction-details/{tranId}', [TransactionController::class, 'getTransactionDetails']);

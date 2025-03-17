@@ -118,7 +118,9 @@
                     <a class="nav-link"
                         href="{{ route('admin.changePassword', \Illuminate\Support\Facades\Auth::id()) }}">
                         {{ auth()->user()->name }}
-
+                        @if ( auth()->user()->referral_code )
+                        | {{ auth()->user()->referral_code }}
+                 @endif
                     </a>
                 </li>
 

@@ -171,8 +171,13 @@
                     <div class="icon">
                         <i class="ion ion-pie-graph"></i>
                     </div>
-                    <a href="{{ route('admin.player.index') }}" class="small-box-footer">More info <i
-                            class="fas fa-arrow-circle-right"></i></a>
+                    <div class="d-flex justify-content-around small-box-footer ">
+                        <a href="{{ route('admin.report.index') }}" class=" text-decoration-none text-white">Slots more info  <i
+                            class="fas fa-arrow-circle-right text-white "></i></a>
+                            <span>|</span>
+                    <a href="{{ route('admin.report.ponewine') }}" class=" text-decoration-none text-white">Pone Wine  more info  <i
+                             class="fas fa-arrow-circle-right text-white "></i></a>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-3 col-6">
@@ -185,7 +190,7 @@
                     <div class="icon">
                         <i class="ion ion-pie-graph"></i>
                     </div>
-                    <a href="{{ route('admin.player.index') }}" class="small-box-footer">More info <i
+                    <a href="{{ route('admin.agent.deposit') }}" class="small-box-footer">More info <i
                             class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>
@@ -199,7 +204,7 @@
                     <div class="icon">
                         <i class="ion ion-pie-graph"></i>
                     </div>
-                    <a href="{{ route('admin.player.index') }}" class="small-box-footer">More info <i
+                    <a href="{{ route('admin.agent.withdraw') }}" class="small-box-footer">More info <i
                             class="fas fa-arrow-circle-right"></i></a>
                 </div>
             </div>

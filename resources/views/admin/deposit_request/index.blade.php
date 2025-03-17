@@ -61,6 +61,7 @@
                             <table id="mytable" class="table table-bordered table-hover">
                                 <thead>
                                     <th>#</th>
+                                    <th>PlayerId</th>
                                     <th>PlayerName</th>
                                     <th>Requested Amount</th>
                                     <th>RefrenceNo</th>
@@ -73,6 +74,7 @@
                                     @foreach ($deposits as $deposit)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $deposit->user->user_name }}</td>
                                             <td>{{ $deposit->user->name }}</td>
                                             <td>{{ number_format($deposit->amount) }}</td>
                                             <td>{{ $deposit->refrence_no }}</td>

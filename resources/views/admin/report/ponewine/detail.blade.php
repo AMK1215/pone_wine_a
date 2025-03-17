@@ -27,7 +27,7 @@
                                 <thead>
                                     <th>#</th>
                                     <th>PlayerId</th>
-                                    <th>MatchId</th>
+                                    {{-- <th>MatchId</th> --}}
                                     <th>Win Number</th>
                                     <th>BetNo</th>
                                     <th>Bet Amount</th>
@@ -37,7 +37,7 @@
                                     <tr>
                                         <td>{{$loop->iteration}}</td>
                                         <td>{{$report->user_name}}</td>
-                                        <td>{{ substr($report->match_id, -7) }}</td>
+                                        {{-- <td>{{ substr($report->match_id, -7) }}</td> --}}
                                         <td>{{$report->win_number}}</td>
                                         <td>{{$report->bet_no}}</td>
                                         <td>{{$report->bet_amount}}</td>

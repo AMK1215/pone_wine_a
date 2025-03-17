@@ -101,7 +101,6 @@ class ReportController extends Controller
             'total_net_win_sum'    => $total_net_win_sum
         ];
 
-
         return view('admin.report.index', compact('report','total_sum'));
     }
 
@@ -245,17 +244,19 @@ class ReportController extends Controller
 
     private function applyRoleFilter($query, $adminId)
     {
-        if (Auth::user()->hasRole('Owner')) {
-            $query->where('agents.id', $adminId);
-        } elseif (Auth::user()->hasRole('Super')) {
-            $query->where('agents.super_id', $adminId);
-        } elseif (Auth::user()->hasRole('Senior')) {
-            $query->where('agents.senior_id', $adminId);
-        } elseif (Auth::user()->hasRole('Master')) {
-            $query->where('agents.master_id', $adminId);
-        } elseif (Auth::user()->hasRole('Agent')) {
-            $query->where('agents.id', $adminId);
-        }
+            $user = Auth::user();
+            if ($user->hasRole('Owner')) {
+                $query->where('agents.agent_id', 1);
+            } elseif ($user->hasRole('Super')) {
+                $query->where('agents.agent_id', 2);
+            } elseif ($user->hasRole('Senior')) {
+                $query->where('agents.agent_id', 3);
+            } elseif ($user->hasRole('Master')) {
+                $query->where('agents.agent_id', 4);
+            } elseif ($user->hasRole('Agent')) {
+                $query->where('agents.id', $adminId);
+            }
+
     }
 
     private function getPlayerDetails($playerId, $request)

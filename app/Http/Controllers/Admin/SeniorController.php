@@ -362,7 +362,7 @@ class SeniorController extends Controller
             'poneWineTotalAmt' => $poneWineAmt,
             'slotTotalAmt'  => $slotTotalAmt,
         ];
-        dd($report);
+
 
         return view('admin.senior.report_index', compact('report'));
     }

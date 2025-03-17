@@ -361,7 +361,7 @@ class MasterController extends Controller
             ->with('username', $master->user_name);
     }
 
-       // KS Upgrade RPIndex
+    // KS Upgrade RPIndex
     public function masterReportIndex($id) {
         $user = User::with([
             'roles',
@@ -380,7 +380,7 @@ class MasterController extends Controller
             'poneWineTotalAmt' => $poneWineAmt,
             'slotTotalAmt'  => $slotTotalAmt,
         ];
-        dd($report);
+
 
         return view('admin.master.report_index',compact('report'));
     }

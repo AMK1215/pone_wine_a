@@ -347,6 +347,7 @@ class SuperController extends Controller
             ->with('username', $super->user_name);
     }
 
+   // KS Upgrade RPIndex
     public function superReportIndex($id) {
         $user = User::with([
             'roles',
@@ -365,7 +366,6 @@ class SuperController extends Controller
             'poneWineTotalAmt' => $poneWineAmt,
             'slotTotalAmt'  => $slotTotalAmt,
         ];
-        dd($report);
 
         return view('admin.owner.report_index',compact('report'));
     }

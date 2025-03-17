@@ -89,7 +89,19 @@ class ReportController extends Controller
 
         $report = $this->buildQuery($request, $adminId);
 
-        return view('admin.report.index', compact('report'));
+        $total_count_sum = $report->sum('total_count');
+        $total_bet_amount_sum = $report->sum('total_bet_amount');
+        $total_win_amount_sum = $report->sum('total_win_amount');
+        $total_net_win_sum = $report->sum('total_net_win');
+
+        $total_sum = [
+            'total_count_sum' => $total_count_sum,
+            'total_bet_amount_sum' => $total_bet_amount_sum,
+            'total_win_amount_sum'  => $total_win_amount_sum,
+            'total_net_win_sum'    => $total_net_win_sum
+        ];
+
+        return view('admin.report.index', compact('report','total_sum'));
     }
 
     public function getReportDetails(Request $request, $playerId)

@@ -64,7 +64,7 @@
                                                     $poneWintAmt = $user->children->flatMap->poneWinePlayer->sum('win_lose_amt');
                                                     $result = $user->children->flatMap->results->sum('net_win');
                                                     $betNResults = $user->children->flatMap->results->sum('betNResults');
-                                                    
+
                                                     $totalAmt = $poneWintAmt + $result + $betNResults;
                                                     ?>
                                                     <td>{{ number_format($totalAmt, 2) }}</td>
@@ -129,18 +129,18 @@
                                                             <i class="fa-solid fa-money-bill-transfer"></i>
                                                             Transfer Logs
                                                         </a>
+                                                        <a href="{{ route('admin.agent.report', $user->id) }}"
+                                                            data-bs-toggle="tooltip" data-bs-original-title="Reports"
+                                                            class="btn btn-info btn-sm">
+                                                            <i class="fa-solid fa-money-bill-transfer"></i>
+                                                            Reports
+                                                        </a>
                                                         {{-- <a href="{{ route('admin.reports.agent.index', $user->id) }}"
                                             data-bs-toggle="tooltip" data-bs-original-title="Reports"
                                             class="btn btn-info btn-sm mt-2">
                                             <i class="fa-solid fa-money-bill-transfer"></i>
                                             Reports
                                         </a> --}}
-                                                        <a href="{{ route('admin.report.index', $user->id) }}"
-                                                            data-bs-toggle="tooltip" data-bs-original-title="Reports"
-                                                            class="btn btn-info btn-sm mt-2">
-                                                            <i class="fa-solid fa-money-bill-transfer"></i>
-                                                            Reports
-                                                        </a>
 
                                                     </td>
                                                 </tr>

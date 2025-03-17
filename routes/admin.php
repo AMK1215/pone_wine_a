@@ -180,4 +180,14 @@ Route::group([
 
     });
 
+    Route::get('/owner-report/{id}',[OwnerController::class,'ownerReportIndex'])->name('owner.report');
+    Route::get('/super-report/{id}',[SuperController::class,'superReportIndex'])->name('super.report');
+    Route::get('/senior-report/{id}',[SeniorController::class,'seniorReportIndex'])->name('senior.report');
+    Route::get('/master-report/{id}',[MasterController::class,'MasterReportIndex'])->name('master.report');
+    Route::get('/agent-report/{id}',[AgentController::class,'agentReportIndex'])->name('agent.report');
+
+
+
+
+
 });

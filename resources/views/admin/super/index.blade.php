@@ -135,7 +135,12 @@
                                             <i class="fa-solid fa-money-bill-transfer"></i>
                                             Transfer Logs
                                         </a>
-
+                                        <a href="{{ route('admin.super.report', $user->id) }}"
+                                            data-bs-toggle="tooltip" data-bs-original-title="Reports"
+                                            class="btn btn-info btn-sm">
+                                            <i class="fa-solid fa-money-bill-transfer"></i>
+                                            Reports
+                                        </a>
 
                                     </td>
                                 </tr>
@@ -213,7 +218,7 @@
         <button class="btn btn-primary btn-sm" data-toggle="modal"
             data-username="${username}"
             data-password="${password}"
-            data-amount="${amount}" 
+            data-amount="${amount}"
             onclick="copyToClipboard(this)">Copy</button>
     </div>`, {
             allowHtml: true

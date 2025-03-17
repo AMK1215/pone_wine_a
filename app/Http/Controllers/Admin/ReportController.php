@@ -284,6 +284,7 @@ class ReportController extends Controller
         return $query->orderBy('date', 'desc')->get();
     }
 
+
     private function getAgentChildrenIds($agent, array $hierarchy)
     {
         foreach ($hierarchy as $role => $levels) {

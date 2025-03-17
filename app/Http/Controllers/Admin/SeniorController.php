@@ -160,7 +160,7 @@ class SeniorController extends Controller
             Response::HTTP_FORBIDDEN,
             '403 Forbidden |You cannot  Access this page because you do not have permission'
         );
-        
+
         $senior = User::find($id);
 
         return view('admin.senior.cash_in', compact('senior'));
@@ -308,7 +308,7 @@ class SeniorController extends Controller
         $user = User::findOrFail($id);
 
         $user->update($request->all());
-       
+
         return redirect()->back()->with('success', 'senior updated successfully!');
     }
 
@@ -340,5 +340,30 @@ class SeniorController extends Controller
             ->with('success', 'senior Change Password successfully')
             ->with('password', $request->password)
             ->with('username', $senior->user_name);
+    }
+
+    // KS Upgrade RPIndex
+    public function seniorReportIndex($id)
+    {
+        $user = User::with([
+            'roles',
+            'children.children.children.poneWinePlayer',
+            'children.children.children.results',
+            'children.children.children.betNResults'
+        ])->find($id);
+
+        $poneWineAmt = $user->children->flatMap->children->flatMap->children->flatMap->poneWinePlayer->sum('win_lose_amt');
+        $result =      $user->children->flatMap->children->flatMap->children->flatMap->results->sum('net_win');
+        $betNResults = $user->children->flatMap->children->flatMap->children->flatMap->results->sum('betNResults');
+
+        $slotTotalAmt = $result + $betNResults;
+
+        $report = [
+            'poneWineTotalAmt' => $poneWineAmt,
+            'slotTotalAmt'  => $slotTotalAmt,
+        ];
+        dd($report);
+
+        return view('admin.senior.report_index', compact('report'));
     }
 }

@@ -109,7 +109,7 @@
                                                             <i class="fas fa-minus text-white me-1"></i>
                                                             Withdrawl
                                                         </a>
-                                                      
+
                                                         <a href="{{ route('admin.logs', $user->id) }}"
                                                             data-bs-toggle="tooltip" data-bs-original-title="Reports"
                                                             class="btn btn-info btn-sm">
@@ -124,7 +124,7 @@
                                                         </a>
                                                         <a href="{{ route('admin.reports.player.index', $user->id) }}"
                                                             data-bs-toggle="tooltip" data-bs-original-title="Reports"
-                                                            class="btn btn-info btn-sm mt-2">
+                                                            class="btn btn-info btn-sm ">
                                                             <i class="fas fa-right-left text-white me-1"></i>
                                                             Reports
                                                         </a>

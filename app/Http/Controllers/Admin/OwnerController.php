@@ -409,4 +409,28 @@ class OwnerController extends Controller
 
         return redirect()->back()->with('success', 'Banner Deleted.');
     }
+
+       // KS Upgrade RPIndex
+       public function ownerReportIndex($id) {
+        $user = User::with([
+            'roles',
+            'children.children.children.children.children.poneWinePlayer',
+            'children.children.children.children.children.results',
+            'children.children.children.children.children.betNResults'
+        ])->find($id);
+
+        $poneWineAmt = $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->children->flatMap->poneWinePlayer->sum('win_lose_amt');
+        $result = $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->children->flatMap->results->sum('net_win');
+        $betNResults = $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->results->sum('betNResults');
+
+        $slotTotalAmt = $result + $betNResults;
+
+        $report = [
+            'poneWineTotalAmt' => $poneWineAmt,
+            'slotTotalAmt'  => $slotTotalAmt,
+        ];
+
+        return view('admin.owner.report_index',compact('report'));
+    }
+
 }

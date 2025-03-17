@@ -346,4 +346,27 @@ class SuperController extends Controller
             ->with('password', $request->password)
             ->with('username', $super->user_name);
     }
+
+    public function superReportIndex($id) {
+        $user = User::with([
+            'roles',
+            'children.children.children.children.poneWinePlayer',
+            'children.children.children.children.results',
+            'children.children.children.children.betNResults'
+        ])->find($id);
+
+        $poneWineAmt = $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->poneWinePlayer->sum('win_lose_amt');
+        $result =      $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->results->sum('net_win');
+        $betNResults = $user->children->flatMap->children->flatMap->children->flatMap->children->flatMap->results->sum('betNResults');
+
+        $slotTotalAmt = $result + $betNResults;
+
+        $report = [
+            'poneWineTotalAmt' => $poneWineAmt,
+            'slotTotalAmt'  => $slotTotalAmt,
+        ];
+        dd($report);
+
+        return view('admin.owner.report_index',compact('report'));
+    }
 }

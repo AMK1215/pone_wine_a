@@ -247,7 +247,7 @@ class AgentController extends Controller
     private function generateRandomString()
     {
         $randomNumber = mt_rand(10000000, 99999999);
-        
+
         return 'A' . $randomNumber;
     }
 
@@ -467,10 +467,29 @@ class AgentController extends Controller
             ->where('agent_id', $id)
             ->orderBy('id', 'desc')
             ->get();
-       
+
         return view('admin.agent.player_report', compact('users'));
     }
-    
+
+    // KS Upgrade RPIndex
+    public function agentReportIndex($id) {
+        $user = User::with(['roles', 'children.poneWinePlayer', 'children.results', 'children.betNResults'])
+                        ->find($id);
+
+                        $poneWineAmt = $user->children->flatMap->poneWinePlayer->sum('win_lose_amt');
+                        $result = $user->children->flatMap->results->sum('net_win');
+                        $betNResults = $user->children->flatMap->results->sum('betNResults');
+
+                        $slotTotalAmt = $result + $betNResults;
+
+                        $report = [
+                            'poneWineTotalAmt' => $poneWineAmt,
+                            'slotTotalAmt'  => $slotTotalAmt,
+                        ];
+
+                  return view('admin.agent.report_index',compact('report'));
+    }
+
     private function generateReferralCode($length = 8)
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

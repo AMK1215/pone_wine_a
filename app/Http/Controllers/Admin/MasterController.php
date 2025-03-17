@@ -360,4 +360,30 @@ class MasterController extends Controller
             ->with('password', $request->password)
             ->with('username', $master->user_name);
     }
+
+       // KS Upgrade RPIndex
+    public function masterReportIndex($id) {
+        $user = User::with([
+            'roles',
+            'children.children.poneWinePlayer',
+            'children.children.results',
+            'children.children.betNResults'
+        ])->find($id);
+
+        $poneWineAmt = $user->children->flatMap->children->flatMap->poneWinePlayer->sum('win_lose_amt');
+        $result =      $user->children->flatMap->children->flatMap->results->sum('net_win');
+        $betNResults = $user->children->flatMap->children->flatMap->results->sum('betNResults');
+
+        $slotTotalAmt = $result + $betNResults;
+
+        $report = [
+            'poneWineTotalAmt' => $poneWineAmt,
+            'slotTotalAmt'  => $slotTotalAmt,
+        ];
+        dd($report);
+
+        return view('admin.master.report_index',compact('report'));
+    }
+
+
 }

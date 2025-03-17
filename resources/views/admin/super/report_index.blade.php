@@ -32,10 +32,10 @@
                                 </thead>
                                 <tbody>
                                     <tr class="text-center">
-                                        <td class="{{ $report['poneWineTotalAmt'] >= 0 ? 'text-success' : 'text-danger' }}">
-                                            {{ number_format( $report['poneWineTotalAmt'] ) }}</td>
                                         <td class="{{$report['slotTotalAmt'] >= 0 ? 'text-success' : 'text-danger'}}">
                                             {{ number_format( $report['slotTotalAmt']) }}</td>
+                                        <td class="{{ $report['poneWineTotalAmt'] >= 0 ? 'text-success' : 'text-danger' }}">
+                                            {{ number_format( $report['poneWineTotalAmt'] ) }}</td>
                                     </tr>
 
 

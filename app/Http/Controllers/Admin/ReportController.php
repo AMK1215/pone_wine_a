@@ -246,15 +246,15 @@ class ReportController extends Controller
     {
             $user = Auth::user();
             if ($user->hasRole('Owner')) {
-             $query->where('user_id', $adminId);
+             $query->where('players.id', $adminId);
             } elseif ($user->hasRole('Super')) {
-                $query->where('user_id', $adminId);
+                $query->where('players.id', $adminId);
             } elseif ($user->hasRole('Senior')) {
-                $query->where('user_id', $adminId);
+                $query->where('players.id', $adminId);
             } elseif ($user->hasRole('Master')) {
-                $query->where('user_id', $adminId);
+                $query->where('players.id', $adminId);
             } elseif ($user->hasRole('Agent')) {
-                $query->where('user_id', $adminId);
+                $query->where('players.id', $adminId);
             }
     }
 

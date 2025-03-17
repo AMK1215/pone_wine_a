@@ -244,18 +244,11 @@ class ReportController extends Controller
 
     private function applyRoleFilter($query, $adminId)
     {
-            $user = Auth::user();
-            if ($user->hasRole('Owner')) {
-             $query->where('players.id', $adminId);
-            } elseif ($user->hasRole('Super')) {
-                $query->where('players.id', $adminId);
-            } elseif ($user->hasRole('Senior')) {
-                $query->where('players.id', $adminId);
-            } elseif ($user->hasRole('Master')) {
-                $query->where('players.id', $adminId);
-            } elseif ($user->hasRole('Agent')) {
-                $query->where('players.id', $adminId);
-            }
+        if (Auth::user()->hasRole('Owner')) {
+            $query->where('agents.agent_id', $adminId);
+        } elseif (Auth::user()->hasRole('Agent')) {
+            $query->where('agents.id', $adminId);
+        }
     }
 
     private function getPlayerDetails($playerId, $request)

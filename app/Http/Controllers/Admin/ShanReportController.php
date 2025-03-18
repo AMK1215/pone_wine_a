@@ -33,7 +33,7 @@ class ShanReportController extends Controller
             })
             ->get();
 
-        return view('admin.shan.reports.index', compact('reportTransactions'));
+        return view('admin.report.shan.index', compact('reportTransactions'));
     }
 
     public function show($user_id)
@@ -60,7 +60,7 @@ class ShanReportController extends Controller
             });
 
         // Pass the data to the view
-        return view('admin.shan.reports.show', compact(
+        return view('admin.report.shan.show', compact(
             'userTransactions',
             'user_id',
             'totalBet',

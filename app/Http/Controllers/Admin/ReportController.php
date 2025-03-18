@@ -93,7 +93,7 @@ class ReportController extends Controller
         $total_bet_amount_sum = $report->sum('total_bet_amount');
         $total_win_amount_sum = $report->sum('total_win_amount');
         $total_net_win_sum = $report->sum('total_net_win');
-        dd($report);
+
         $total_sum = [
             'total_count_sum' => $total_count_sum,
             'total_bet_amount_sum' => $total_bet_amount_sum,

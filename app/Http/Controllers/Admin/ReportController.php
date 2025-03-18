@@ -93,7 +93,7 @@ class ReportController extends Controller
         $total_bet_amount_sum = $report->sum('total_bet_amount');
         $total_win_amount_sum = $report->sum('total_win_amount');
         $total_net_win_sum = $report->sum('total_net_win');
-
+        dd($report);
         $total_sum = [
             'total_count_sum' => $total_count_sum,
             'total_bet_amount_sum' => $total_bet_amount_sum,
@@ -245,14 +245,8 @@ class ReportController extends Controller
     private function applyRoleFilter($query, $adminId)
     {
         if (Auth::user()->hasRole('Owner')) {
-            $query->where('agents.id', $adminId);
-        } elseif(Auth::user()->hasRole('Super')) {
-            $query->where('agents.id', $adminId);
-        } elseif (Auth::user()->hasRole('Senior')) {
-            $query->where('agents.id', $adminId);
-        } elseif(Auth::user()->hasRole('Master')) {
-            $query->where('agents.id', $adminId);
-        } elseif (Auth::user()->hasRole('Agent')) {
+            $query->where('agents.agent_id', $adminId);
+        } elseif(Auth::user()->hasRole('Agent')) {
             $query->where('agents.id', $adminId);
         }
     }

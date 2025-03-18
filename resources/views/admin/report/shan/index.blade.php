@@ -25,7 +25,7 @@
                     <div class="card-header">
                         <h3>Shan Win / Lose </h3>
                     </div>
-                    <form role="form" class="text-start" action="{{ route('admin.shan.reports.index') }}" method="GET">
+                    <form role="form" class="text-start" action="{{ route('admin.report.shan.index') }}" method="GET">
                         <div class="row ml-5">
                             <div class="col-lg-3">
                                 <div class="mb-3">

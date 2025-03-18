@@ -1,29 +1,30 @@
 <?php
 
-use App\Http\Controllers\Admin\AgentController;
-use App\Http\Controllers\Admin\BankController;
-use App\Http\Controllers\Admin\BannerAdsController;
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\BannerTextController;
-use App\Http\Controllers\Admin\ContactController;
-use App\Http\Controllers\Admin\DepositRequestController;
-use App\Http\Controllers\Admin\GameListController;
-use App\Http\Controllers\Admin\GameTypeProductController;
-use App\Http\Controllers\Admin\NotificationController;
-use App\Http\Controllers\Admin\MasterController;
-use App\Http\Controllers\Admin\OwnerController;
-use App\Http\Controllers\Admin\PaymentTypeController;
-use App\Http\Controllers\Admin\PlayerController;
-use App\Http\Controllers\Admin\PromotionController;
-use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\RolesController;
-use App\Http\Controllers\Admin\SeniorController;
-use App\Http\Controllers\Admin\SubAccountController;
-use App\Http\Controllers\Admin\TransferLog\TransferLogController;
-use App\Http\Controllers\Admin\WithDrawRequestController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Admin\SuperController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Admin\BankController;
+use App\Http\Controllers\Admin\AgentController;
+use App\Http\Controllers\Admin\OwnerController;
+use App\Http\Controllers\Admin\RolesController;
+use App\Http\Controllers\Admin\SuperController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\MasterController;
+use App\Http\Controllers\Admin\PlayerController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SeniorController;
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\GameListController;
+use App\Http\Controllers\Admin\BannerAdsController;
+use App\Http\Controllers\Admin\PromotionController;
+use App\Http\Controllers\Admin\BannerTextController;
+use App\Http\Controllers\Admin\ShanReportController;
+use App\Http\Controllers\Admin\SubAccountController;
+use App\Http\Controllers\Admin\PaymentTypeController;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\DepositRequestController;
+use App\Http\Controllers\Admin\GameTypeProductController;
+use App\Http\Controllers\Admin\WithDrawRequestController;
+use App\Http\Controllers\Admin\TransferLog\TransferLogController;
 
 Route::group([
     'prefix' => 'admin',
@@ -170,6 +171,8 @@ Route::group([
 
     Route::get('transer-log', [TransferLogController::class, 'index'])->name('transferLog');
     Route::get('transferlog/{id}', [TransferLogController::class, 'transferLog'])->name('transferLogDetail');
+    Route::get('shan-report', [ShanReportController::class, 'index'])->name('report.shan.index');
+    Route::get('shan-reports/{user_id}', [ShanReportController::class, 'show'])->name('report.shan.show');
 
     Route::group(['prefix' => 'report'], function () {
         Route::get('ponewine', [ReportController::class, 'ponewine'])->name('report.ponewine');
@@ -177,17 +180,11 @@ Route::group([
         Route::get('report', [ReportController::class, 'index'])->name('report.index');
         Route::get('reports/details/{player_id}', [ReportController::class, 'getReportDetails'])->name('reports.details');
         Route::get('reports/player/{player_id}', [ReportController::class, 'getPlayer'])->name('reports.player.index');
-
     });
 
-    Route::get('/owner-report/{id}',[OwnerController::class,'ownerReportIndex'])->name('owner.report');
-    Route::get('/super-report/{id}',[SuperController::class,'superReportIndex'])->name('super.report');
-    Route::get('/senior-report/{id}',[SeniorController::class,'seniorReportIndex'])->name('senior.report');
-    Route::get('/master-report/{id}',[MasterController::class,'MasterReportIndex'])->name('master.report');
-    Route::get('/agent-report/{id}',[AgentController::class,'agentReportIndex'])->name('agent.report');
-
-
-
-
-
+    Route::get('/owner-report/{id}', [OwnerController::class, 'ownerReportIndex'])->name('owner.report');
+    Route::get('/super-report/{id}', [SuperController::class, 'superReportIndex'])->name('super.report');
+    Route::get('/senior-report/{id}', [SeniorController::class, 'seniorReportIndex'])->name('senior.report');
+    Route::get('/master-report/{id}', [MasterController::class, 'MasterReportIndex'])->name('master.report');
+    Route::get('/agent-report/{id}', [AgentController::class, 'agentReportIndex'])->name('agent.report');
 });

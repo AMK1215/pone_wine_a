@@ -69,49 +69,49 @@
 
                 <!--begin::Messages Dropdown Menu-->
                 @can('deposit')
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationDropdown"
-                            role="button" data-toggle="dropdown">
-                            <i class="bi bi-bell"></i>
-                            <span class="navbar-badge badge bg-danger text-white rounded-circle" id="notificationCount">
-                                {{ auth()->user()->unreadNotifications->count() }}
-                            </span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end shadow-lg p-3 mb-5 bg-white rounded"
-                            aria-labelledby="notificationDropdown">
-                            @forelse (auth()->user()->unreadNotifications as $notification)
-                                <li class="notification-item">
-                                    <a href="#" class="dropdown-item d-flex align-items-start p-3"
-                                        style="background-color: #ffeeba; border-left: 4px solid #ff6f00; border-radius: 5px;">
-                                        <div class="flex-grow-1">
-                                            <h6 class="dropdown-item-title fw-bold text-dark">
-                                                {{ $notification->data['player_name'] }}
-                                            </h6>
-                                            <p class="fs-7 text-dark mb-1">{{ $notification->data['message'] }}</p>
-                                            <p class="fs-7 text-muted">
-                                                <i class="bi bi-clock-fill me-1"></i>
-                                                {{ $notification->created_at->diffForHumans() }}
-                                            </p>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                            @empty
-                                <li class="dropdown-item text-center text-muted">No new notifications</li>
-                            @endforelse
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle position-relative" href="#" id="notificationDropdown"
+                        role="button" data-toggle="dropdown">
+                        <i class="bi bi-bell"></i>
+                        <span class="navbar-badge badge bg-danger text-white rounded-circle" id="notificationCount">
+                            {{ auth()->user()->unreadNotifications->count() }}
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end shadow-lg p-3 mb-5 bg-white rounded"
+                        aria-labelledby="notificationDropdown">
+                        @forelse (auth()->user()->unreadNotifications as $notification)
+                        <li class="notification-item">
+                            <a href="#" class="dropdown-item d-flex align-items-start p-3"
+                                style="background-color: #ffeeba; border-left: 4px solid #ff6f00; border-radius: 5px;">
+                                <div class="flex-grow-1">
+                                    <h6 class="dropdown-item-title fw-bold text-dark">
+                                        {{ $notification->data['player_name'] }}
+                                    </h6>
+                                    <p class="fs-7 text-dark mb-1">{{ $notification->data['message'] }}</p>
+                                    <p class="fs-7 text-muted">
+                                        <i class="bi bi-clock-fill me-1"></i>
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </p>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        @empty
+                        <li class="dropdown-item text-center text-muted">No new notifications</li>
+                        @endforelse
 
-                            <li>
-                                <a href="#" class="dropdown-item dropdown-footer text-center text-primary fw-bold">See
-                                    All Notifications</a>
-                            </li>
-                        </ul>
-                    </li>
+                        <li>
+                            <a href="#" class="dropdown-item dropdown-footer text-center text-primary fw-bold">See
+                                All Notifications</a>
+                        </li>
+                    </ul>
+                </li>
 
-                    <!-- Add the audio element -->
-                    <button id="enableSound" style="display: none">Enable Notification Sound</button>
-                    <audio id="notificationSound" src="{{ asset('sounds/noti.wav') }}" preload="auto"></audio>
+                <!-- Add the audio element -->
+                <button id="enableSound" style="display: none">Enable Notification Sound</button>
+                <audio id="notificationSound" src="{{ asset('sounds/noti.wav') }}" preload="auto"></audio>
                 @endcan
                 <!--end::Messages Dropdown Menu-->
                 <li class="nav-item">
@@ -120,7 +120,7 @@
                         {{ auth()->user()->name }}
                         @if ( auth()->user()->referral_code )
                         | {{ auth()->user()->referral_code }}
-                 @endif
+                        @endif
                     </a>
                 </li>
 
@@ -180,114 +180,114 @@
                         </li>
 
                         @can('owner_index')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.owner.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.owner.index' ? 'active' : '' }}">
-                                    <i class="fas fa-users"></i>
-                                    <p>
-                                        Owner List
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.owner.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.owner.index' ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <p>
+                                    Owner List
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('super_index')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.super.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.super.index' ? 'active' : '' }}">
-                                    <i class="fas fa-users"></i>
-                                    <p>
-                                        Super List
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.super.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.super.index' ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <p>
+                                    Super List
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('senior_index')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.senior.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.senior.index' ? 'active' : '' }}">
-                                    <i class="fas fa-users"></i>
-                                    <p>
-                                        Senior List
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.senior.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.senior.index' ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <p>
+                                    Senior List
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('master_index')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.master.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.master.index' ? 'active' : '' }}">
-                                    <i class="fas fa-users"></i>
-                                    <p>
-                                        Master List
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.master.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.master.index' ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <p>
+                                    Master List
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('agent_index')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.agent.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.agent.index' ? 'active' : '' }}">
-                                    <i class="fas fa-users"></i>
-                                    <p>
-                                        Agent List
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.agent.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.agent.index' ? 'active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <p>
+                                    Agent List
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('player_index')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.player.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.player.index' ? 'active' : '' }}">
-                                    <i class="far fa-user"></i>
-                                    <p>
-                                        Player List
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.player.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.player.index' ? 'active' : '' }}">
+                                <i class="far fa-user"></i>
+                                <p>
+                                    Player List
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('contact')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.contact.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.contact.index' ? 'active' : '' }}">
-                                    <i class="fas fa-address-book"></i>
-                                    <p>
-                                        Contact
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.contact.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.contact.index' ? 'active' : '' }}">
+                                <i class="fas fa-address-book"></i>
+                                <p>
+                                    Contact
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('bank')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.bank.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.bank.index' ? 'active' : '' }}">
-                                    <i class="fas fa-university"></i>
-                                    <p>
-                                        Bank
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.bank.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.bank.index' ? 'active' : '' }}">
+                                <i class="fas fa-university"></i>
+                                <p>
+                                    Bank
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('withdraw')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.agent.withdraw') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.agent.withdraw' ? 'active' : '' }}">
-                                    <i class="fas fa-comment-dollar"></i>
-                                    <p>
-                                        WithDraw Request
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.agent.withdraw') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.agent.withdraw' ? 'active' : '' }}">
+                                <i class="fas fa-comment-dollar"></i>
+                                <p>
+                                    WithDraw Request
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('deposit')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.agent.deposit') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.agent.deposit' ? 'active' : '' }}">
-                                    <i class="fab fa-dochub"></i>
-                                    <p>
-                                        Deposit Request
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.agent.deposit') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.agent.deposit' ? 'active' : '' }}">
+                                <i class="fab fa-dochub"></i>
+                                <p>
+                                    Deposit Request
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         <li class="nav-item">
                             <a href="{{ route('admin.transferLog') }}"
@@ -299,53 +299,53 @@
                             </a>
                         </li>
                         @can('agent_access')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.subacc.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.subacc.index' ? 'active' : '' }}">
-                                    <i class="fas fa-user-plus"></i>
-                                    <p>
-                                        Sub Account
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.subacc.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.subacc.index' ? 'active' : '' }}">
+                                <i class="fas fa-user-plus"></i>
+                                <p>
+                                    Sub Account
+                                </p>
+                            </a>
+                        </li>
                         @endcan
                         @can('senior_owner_access')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.roles.index') }}"
-                                    class="nav-link {{ Route::current()->getName() == 'admin.roles.index' ? 'active' : '' }}">
-                                    <i class="far fa-registered"></i>
-                                    <p>
-                                        Role
-                                    </p>
-                                </a>
-                            </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.roles.index') }}"
+                                class="nav-link {{ Route::current()->getName() == 'admin.roles.index' ? 'active' : '' }}">
+                                <i class="far fa-registered"></i>
+                                <p>
+                                    Role
+                                </p>
+                            </a>
+                        </li>
 
-                            <li
-                                class="nav-item {{ in_array(Route::currentRouteName(), ['admin.gameLists.index', 'admin.gametypes.index']) ? 'menu-open' : '' }}">
-                                <a href="#" class="nav-link">
-                                    <i class="fas fa-tools"></i>
-                                    <p>
-                                        GSC Settings
-                                        <i class="fas fa-angle-left right"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.gameLists.index') }}"
-                                            class="nav-link {{ Route::current()->getName() == 'admin.gameLists.index' ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>GSC GameList</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.gametypes.index') }}"
-                                            class="nav-link {{ Route::current()->getName() == 'admin.gametypes.index' ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>GSC GameProvider</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                        <li
+                            class="nav-item {{ in_array(Route::currentRouteName(), ['admin.gameLists.index', 'admin.gametypes.index']) ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-tools"></i>
+                                <p>
+                                    GSC Settings
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.gameLists.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.gameLists.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>GSC GameList</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.gametypes.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.gametypes.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>GSC GameProvider</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         @endcan
                         <li
                             class="nav-item {{ in_array(Route::currentRouteName(), ['admin.report.index', 'admin.report.ponewine']) ? 'menu-open' : '' }}">
@@ -375,49 +375,58 @@
                                         </p>
                                     </a>
                                 </li>
+                                <li class="nav-item menu-open">
+                                    <a href="{{ route('admin.report.shan.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.report.shan.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>
+                                            Shan Report
+                                        </p>
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         @can('owner_access')
-                            <li
-                                class="nav-item {{ in_array(Route::currentRouteName(), ['admin.text.index', 'admin.banners.index', 'admin.adsbanners.index', 'admin.promotions.index']) ? 'menu-open' : '' }}">
-                                <a href="#" class="nav-link">
-                                    <i class="fas fa-tools"></i>
-                                    <p>
-                                        General Settings
-                                        <i class="fas fa-angle-left right"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.text.index') }}"
-                                            class="nav-link {{ Route::current()->getName() == 'admin.text.index' ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>BannerText</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.banners.index') }}"
-                                            class="nav-link {{ Route::current()->getName() == 'admin.banners.index' ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Banner</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.adsbanners.index') }}"
-                                            class="nav-link {{ Route::current()->getName() == 'admin.adsbanners.index' ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Banner Ads</p>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="{{ route('admin.promotions.index') }}"
-                                            class="nav-link {{ Route::current()->getName() == 'admin.promotions.index' ? 'active' : '' }}">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Promotions</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                        <li
+                            class="nav-item {{ in_array(Route::currentRouteName(), ['admin.text.index', 'admin.banners.index', 'admin.adsbanners.index', 'admin.promotions.index']) ? 'menu-open' : '' }}">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-tools"></i>
+                                <p>
+                                    General Settings
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.text.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.text.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>BannerText</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.banners.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.banners.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Banner</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.adsbanners.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.adsbanners.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Banner Ads</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.promotions.index') }}"
+                                        class="nav-link {{ Route::current()->getName() == 'admin.promotions.index' ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Promotions</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         @endcan
 
                 </nav>
@@ -474,10 +483,10 @@
         var errorMessage = @json(session('error'));
         var successMessage = @json(session('success'));
 
-        @if (session()->has('success'))
-            toastr.success(successMessage)
-        @elseif (session()->has('error'))
-            toastr.error(errorMessage)
+        @if(session() - > has('success'))
+        toastr.success(successMessage)
+        @elseif(session() - > has('error'))
+        toastr.error(errorMessage)
         @endif
     </script>
     <script>
@@ -585,24 +594,24 @@
 
         //     // Prepend the new notification to the dropdown
         //     var newNotification = `
-    //     <li class="notification-item">
-    //         <a href="#" class="dropdown-item d-flex align-items-start p-3" style="background-color: #ffeeba; border-left: 4px solid #ff6f00; border-radius: 5px;">
-    //             <div class="flex-grow-1">
-    //                 <h6 class="dropdown-item-title fw-bold text-dark">
-    //                     ${data.player_name}
-    //                 </h6>
-    //                 <p class="fs-7 text-dark mb-1">${data.message}</p>
-    //                 <p class="fs-7 text-muted">
-    //                     <i class="bi bi-clock-fill me-1"></i>
-    //                     Just now
-    //                 </p>
-    //             </div>
-    //         </a>
-    //     </li>
-    //     <li>
-    //         <hr class="dropdown-divider">
-    //     </li>
-    // `;
+        //     <li class="notification-item">
+        //         <a href="#" class="dropdown-item d-flex align-items-start p-3" style="background-color: #ffeeba; border-left: 4px solid #ff6f00; border-radius: 5px;">
+        //             <div class="flex-grow-1">
+        //                 <h6 class="dropdown-item-title fw-bold text-dark">
+        //                     ${data.player_name}
+        //                 </h6>
+        //                 <p class="fs-7 text-dark mb-1">${data.message}</p>
+        //                 <p class="fs-7 text-muted">
+        //                     <i class="bi bi-clock-fill me-1"></i>
+        //                     Just now
+        //                 </p>
+        //             </div>
+        //         </a>
+        //     </li>
+        //     <li>
+        //         <hr class="dropdown-divider">
+        //     </li>
+        // `;
 
         //     // Append the new notification to the dropdown
         //     $('.dropdown-menu').prepend(newNotification);

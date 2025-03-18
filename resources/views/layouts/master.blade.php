@@ -483,9 +483,9 @@
         var errorMessage = @json(session('error'));
         var successMessage = @json(session('success'));
 
-        @if(session() - > has('success'))
+        @if(session() -> has('success'))
         toastr.success(successMessage)
-        @elseif(session() - > has('error'))
+        @elseif(session() -> has('error'))
         toastr.error(errorMessage)
         @endif
     </script>

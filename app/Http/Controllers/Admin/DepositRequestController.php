@@ -8,6 +8,7 @@ use App\Models\DepositRequest;
 use App\Models\User;
 use App\Models\WithDrawRequest;
 use App\Services\WalletService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,15 +21,34 @@ class DepositRequestController extends Controller
     {
         $agent = $this->getAgent() ?? Auth::user();
 
-        $deposits = DepositRequest::with(['user', 'bank', 'agent'])
-            ->where('agent_id', $agent->id)
-            ->when($request->filled('status') && $request->input('status') !== 'all', function ($query) use ($request) {
-                $query->where('status', $request->input('status'));
-            })
-            ->orderBy('id', 'desc')
-            ->get();
+        $start_date = $request->start_date ?? Carbon::today()->startOfDay()->toDateString();
+        $end_date   = $request->end_date   ?? Carbon::today()->endOfDay()->toDateString();
 
-        return view('admin.deposit_request.index', compact('deposits'));
+
+        $deposits = DepositRequest::with(['user', 'bank', 'agent'])
+        ->where('agent_id', $agent->id)
+        ->when($request->filled('status') && $request->input('status') !== 'all', function ($query) use ($request) {
+            $query->where('status', $request->input('status'));
+        })
+        ->whereBetween('created_at', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
+
+       if ($request->filled('start_date') && $request->filled('end_date') ) {
+        $deposits->orderBy('id', 'asc');
+       } else {
+        $deposits->orderBy('id', 'desc');
+       };
+
+       $deposits = $deposits->get();
+
+      $totalDeposits = $deposits->sum('amount');
+      $totalDepositsCount = $deposits->count();
+      $totalDepositsAndCounts = [
+        'totalDeposits' => $totalDeposits,
+        'totalDepositsCount' => $totalDepositsCount
+      ];
+
+
+        return view('admin.deposit_request.index', compact('deposits','totalDepositsAndCounts'));
     }
 
     public function statusChangeIndex(Request $request, DepositRequest $deposit)

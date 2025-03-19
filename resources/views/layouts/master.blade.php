@@ -347,7 +347,7 @@
                             </ul>
                         </li>
                         @endcan
-                        @canany(['senior_owner_access','agent_access'])
+                        {{-- @canany(['senior_owner_access','agent_access']) --}}
                         <li
                         class="nav-item {{ in_array(Route::currentRouteName(), ['admin.report.index', 'admin.report.ponewine']) ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
@@ -387,7 +387,7 @@
                             </li>
                         </ul>
                     </li>
-                        @endcanany
+                        {{-- @endcanany --}}
 
                         @can('owner_access')
                         <li

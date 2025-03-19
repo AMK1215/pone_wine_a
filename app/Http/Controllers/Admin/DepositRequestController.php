@@ -40,7 +40,7 @@ class DepositRequestController extends Controller
 
        $deposits = $deposits->get();
 
-      $totalDeposits = $deposits->sum('amount');
+      $totalDeposits = $deposits->where('status','1')->sum('amount');
       $totalDepositsCount = $deposits->count();
       $totalDepositsAndCounts = [
         'totalDeposits' => $totalDeposits,

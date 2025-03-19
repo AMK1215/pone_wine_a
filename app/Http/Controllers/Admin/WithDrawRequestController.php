@@ -37,7 +37,7 @@ class WithDrawRequestController extends Controller
 
         $withdraws = $withdraws->get();
 
-        $totalWithdraws = $withdraws->sum('amount');
+        $totalWithdraws = $withdraws->where('status',1)->sum('amount');
         $totalWithdrawsCount = count($withdraws);
 
         $totalWithdrawsAndCounts = [

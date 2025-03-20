@@ -68,7 +68,7 @@
                                 @foreach ($reportTransactions as $transaction)
                                 <tr>
                                     <td>{{ $transaction->user_id }}</td>
-                                    <td>{{ $transaction->agent_name }} @ </td> <!-- Display agent name -->
+                                    <td>{{ $transaction->agent_name }}</td> <!-- Display agent name -->
 
                                     <td>{{ $transaction->player_name }}</td> <!-- Display player name -->
                                     <td>{{ $transaction->transaction_count }}</td>

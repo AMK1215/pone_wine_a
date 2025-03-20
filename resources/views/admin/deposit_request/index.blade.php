@@ -31,9 +31,10 @@
                             <form action="{{ route('admin.agent.deposit') }}" method="GET">
                                 <div class="row mt-3">
                                     <div class="col-md-3">
-                                        <div class="input-group input-group-static mb-4">
-                                            <label for="exampleFormControlSelect1" class="ms-0">Select Status</label>
-                                            <select class="form-control" id="" name="status">
+                                        <div class=" mb-2">
+                                            <label for="exampleFormControlSelect1">Select Status</label>
+                                            <select class="form-control border border-1 border-secondary px-2"
+                                                id="" name="status">
                                                 <option value="all"
                                                     {{ request()->get('status') == 'all' ? 'selected' : '' }}>All
                                                 </option>
@@ -49,12 +50,26 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <button class="btn btn-sm btn-primary" id="search" type="submit">Search</button>
-                                        <a href="{{ route('admin.agent.deposit') }}"
-                                            class="btn btn-link text-primary ms-auto border-0" >
-                                            <i class="fas fa-refresh">refresh</i>
-                                        </a>
+
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark fw-bold" for="inputEmail1">From Date</label>
+                                            <input type="date" class="form-control border border-1 border-secondary px-2"
+                                                name="start_date" value="{{ request()->start_date }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark fw-bold" for="inputEmail1">To Date</label>
+                                            <input type="date" class="form-control border border-1 border-secondary px-2"
+                                                id="" name="end_date" value="{{ request()->end_date }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-log-3">
+                                        <button type="submit" class="btn btn-primary"
+                                            style="margin-top: 32px;">Search</button>
+                                        <a href="{{ route('admin.agent.deposit') }}" class="btn btn-warning"
+                                            style="margin-top: 32px;">Refresh</a>
                                     </div>
                                 </div>
                             </form>
@@ -99,7 +114,25 @@
                                         </tr>
                                     @endforeach
                                 </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th>Total Deposit:</th>
 
+                                        <th>
+
+                                            <span class="text-success">
+                                                {{ number_format($totalDepositsAndCounts['totalDeposits']) }}
+                                            </span>
+                                        </th>
+                                        <th>Total Deposit Request</th>
+                                        <th>{{ $totalDepositsAndCounts['totalDepositsCount']}} </th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <!-- /.card-body -->

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\WithDrawRequest;
 use App\Services\WalletService;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,14 +20,32 @@ class WithDrawRequestController extends Controller
     {
         $agent = $this->getAgent() ?? Auth::user();
 
+        $start_date = $request->start_date ?? Carbon::today()->startOfDay()->toDateString();
+        $end_date   = $request->end_date   ?? Carbon::today()->endOfDay()->toDateString();
+
         $withdraws = WithDrawRequest::where('agent_id', $agent->id)
             ->when($request->filled('status') && $request->input('status') !== 'all', function ($query) use ($request) {
                 $query->where('status', $request->input('status'));
             })
-            ->orderBy('id', 'desc')
-            ->get();
+            ->whereBetween('created_at', [$start_date . ' 00:00:00', $end_date . ' 23:59:59']);
 
-        return view('admin.withdraw_request.index', compact('withdraws'));
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $withdraws->orderBy('id', 'asc');
+        } else {
+            $withdraws->orderBy('id', 'desc');
+        }
+
+        $withdraws = $withdraws->get();
+
+        $totalWithdraws = $withdraws->where('status',1)->sum('amount');
+        $totalWithdrawsCount = count($withdraws);
+
+        $totalWithdrawsAndCounts = [
+            'totalWithdraws' => $totalWithdraws,
+            'totalWithdrawsCount' => $totalWithdrawsCount
+        ];
+
+        return view('admin.withdraw_request.index', compact('withdraws', 'totalWithdrawsAndCounts'));
     }
 
     public function statusChangeIndex(Request $request, WithDrawRequest $withdraw)
@@ -44,11 +63,16 @@ class WithDrawRequestController extends Controller
         ]);
 
         if ($request->status == 1) {
-            app(WalletService::class)->transfer($player, $agent, $request->amount,
-                TransactionName::DebitTransfer, [
+            app(WalletService::class)->transfer(
+                $player,
+                $agent,
+                $request->amount,
+                TransactionName::DebitTransfer,
+                [
                     'old_balance' => $player->balanceFloat,
                     'new_balance' => $player->balanceFloat - $request->amount,
-                ]);
+                ]
+            );
         }
 
         return redirect()->route('admin.agent.withdraw')->with('success', 'Withdraw status updated successfully!');

@@ -79,21 +79,21 @@
                                         </tr>
                                     @endforeach
                                 </tbody>
-                                <tr>
-                                    <td></td>
-                                    <td class="font-weight-bold">Total </td>
-                                    <td class="font-weight-bold">{{ $total_sum['total_count_sum'] }}</td>
-                                    <td
-                                        class="{{ $total_sum['total_bet_amount_sum'] >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
-                                        {{ number_format($total_sum['total_bet_amount_sum'], 2) }}</td>
-                                    <td
-                                        class="{{ $total_sum['total_win_amount_sum'] >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
-                                        {{ number_format($total_sum['total_win_amount_sum'], 2) }}</td>
-                                    <td
-                                        class="{{ $total_sum['total_net_win_sum'] >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
-                                        {{ number_format($total_sum['total_net_win_sum'], 2) }}</td>
-                                    <td></td>
-                                </tr>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th> Total :</th>
+                                        <th class="font-weight-bold">{{ $total_sum['total_count_sum'] }}</th>
+                                        <th class="{{ $total_sum['total_bet_amount_sum'] >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
+                                            {{ number_format($total_sum['total_bet_amount_sum'], 2) }}
+                                        </th>
+                                        <th class="{{ $total_sum['total_win_amount_sum'] >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
+                                            {{ number_format($total_sum['total_win_amount_sum'], 2) }}</th>
+                                        <th class="{{ $total_sum['total_net_win_sum'] >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold">
+                                            {{ number_format($total_sum['total_net_win_sum'], 2) }}</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <!-- /.card-body -->

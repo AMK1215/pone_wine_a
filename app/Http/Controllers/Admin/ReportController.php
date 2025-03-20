@@ -236,9 +236,7 @@ class ReportController extends Controller
                 $query->whereNotNull('results.user_id')
                     ->orWhereNotNull('bets.user_id');
             });
-
         $this->applyRoleFilter($query, $adminId);
-
         return $query->groupBy('players.id', 'players.name', 'players.user_name', 'agents.name')->get();
     }
 

@@ -347,45 +347,48 @@
                             </ul>
                         </li>
                         @endcan
+                        @canany(['senior_owner_access','agent_access'])
                         <li
-                            class="nav-item {{ in_array(Route::currentRouteName(), ['admin.report.index', 'admin.report.ponewine']) ? 'menu-open' : '' }}">
-                            <a href="#" class="nav-link">
-                                <i class="fas fa-file-invoice"></i>
-                                <p>
-                                    Reports
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item menu-open">
-                                    <a href="{{ route('admin.report.index') }}"
-                                        class="nav-link {{ Route::current()->getName() == 'admin.report.index' ? 'active' : '' }}">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Win/Lose Report
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item menu-open">
-                                    <a href="{{ route('admin.report.ponewine') }}"
-                                        class="nav-link {{ Route::current()->getName() == 'admin.report.ponewine' ? 'active' : '' }}">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            PoneWine Report
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item menu-open">
-                                    <a href="{{ route('admin.report.shan.index') }}"
-                                        class="nav-link {{ Route::current()->getName() == 'admin.report.shan.index' ? 'active' : '' }}">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>
-                                            Shan Report
-                                        </p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                        class="nav-item {{ in_array(Route::currentRouteName(), ['admin.report.index', 'admin.report.ponewine']) ? 'menu-open' : '' }}">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-file-invoice"></i>
+                            <p>
+                                Reports
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item menu-open">
+                                <a href="{{ route('admin.report.index') }}"
+                                    class="nav-link {{ Route::current()->getName() == 'admin.report.index' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Win/Lose Report
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item menu-open">
+                                <a href="{{ route('admin.report.ponewine') }}"
+                                    class="nav-link {{ Route::current()->getName() == 'admin.report.ponewine' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        PoneWine Report
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item menu-open">
+                                <a href="{{ route('admin.report.shan.index') }}"
+                                    class="nav-link {{ Route::current()->getName() == 'admin.report.shan.index' ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>
+                                        Shan Report
+                                    </p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                        @endcanany
+
                         @can('owner_access')
                         <li
                             class="nav-item {{ in_array(Route::currentRouteName(), ['admin.text.index', 'admin.banners.index', 'admin.adsbanners.index', 'admin.promotions.index']) ? 'menu-open' : '' }}">

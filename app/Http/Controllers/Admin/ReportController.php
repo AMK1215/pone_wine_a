@@ -85,9 +85,7 @@ class ReportController extends Controller
 
     public function index(Request $request)
     {
-        $adminId = auth()->id();
-
-        $report = $this->buildQuery($request, $adminId);
+        $report = $this->buildQuery($request);
 
         $total_count_sum = $report->sum('total_count');
         $total_bet_amount_sum = $report->sum('total_bet_amount');
@@ -100,7 +98,7 @@ class ReportController extends Controller
             'total_win_amount_sum'  => $total_win_amount_sum,
             'total_net_win_sum'    => $total_net_win_sum
         ];
-
+       
         return view('admin.report.index', compact('report','total_sum'));
     }
 
@@ -189,10 +187,18 @@ class ReportController extends Controller
         return $this->isExistingAgent(Auth::id());
     }
 
-    private function buildQuery(Request $request, $adminId)
+    private function buildQuery(Request $request)
     {
+        $agent = Auth::user();
         $startDate = $request->start_date ??  Carbon::today()->startOfDay()->toDateString();
         $endDate = $request->end_date ?? Carbon::today()->endOfDay()->toDateString();
+        
+        $hierarchy = [
+            'Owner' => ['Super', 'Senior', 'Master', 'Agent'],
+            'Super' => ['Senior', 'Master', 'Agent'],
+            'Senior' => ['Master', 'Agent'],
+            'Master' => ['Agent'],
+        ];
 
         $resultsSubquery = Result::select(
             'results.user_id',
@@ -236,17 +242,17 @@ class ReportController extends Controller
                 $query->whereNotNull('results.user_id')
                     ->orWhereNotNull('bets.user_id');
             });
-        $this->applyRoleFilter($query, $adminId);
-        return $query->groupBy('players.id', 'players.name', 'players.user_name', 'agents.name')->get();
-    }
 
-    private function applyRoleFilter($query, $adminId)
-    {
-        if (Auth::user()->hasRole('Owner')) {
-            $query->where('agents.agent_id', $adminId);
-        } elseif(Auth::user()->hasRole('Agent')) {
-            $query->where('agents.id', $adminId);
-        }
+            if ($agent->hasRole('Senior Owner')) {
+                $report = $query;
+            } elseif ($agent->hasRole('Agent')) {
+                $agentChildrenIds = $agent->children->pluck('id')->toArray();
+                $report = $query->whereIn('players.id', $agentChildrenIds);
+            } else {
+                $agentChildrenIds = $this->getAgentChildrenIds($agent, $hierarchy);
+                $report = $query->whereIn('players.id', $agentChildrenIds);
+            }
+        return $report->groupBy('players.id', 'players.name', 'players.user_name', 'agents.name')->get();
     }
 
     private function getPlayerDetails($playerId, $request)

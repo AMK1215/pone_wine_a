@@ -6,33 +6,47 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin\ReportTransaction;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ShanReportController extends Controller
 {
     public function index(Request $request)
     {
-        $authUser = auth()->user(); // Get the authenticated admin
+        $agent = Auth::user();
 
-        // Fetch transactions of players related to agents managed by the authenticated admin
-        $reportTransactions = ReportTransaction::select(
+        $hierarchy = [
+            'Owner' => ['Super', 'Senior', 'Master', 'Agent'],
+            'Super' => ['Senior', 'Master', 'Agent'],
+            'Senior' => ['Master', 'Agent'],
+            'Master' => ['Agent'],
+        ];
+
+        $query = ReportTransaction::select(
             'report_transactions.user_id',
-            'users.name as player_name', // The player's name
-            'agents.name as agent_name', // The agent's name
+            'users.name as player_name',
+            'agents.name as agent_name',
             DB::raw('COUNT(report_transactions.id) AS transaction_count'),
             DB::raw('SUM(report_transactions.transaction_amount) AS total_transaction_amount'),
-            DB::raw('MAX(report_transactions.created_at) AS latest_transaction_date') // Use MAX or MIN for created_at
+            DB::raw('MAX(report_transactions.created_at) AS latest_transaction_date')
         )
-            ->join('users', 'report_transactions.user_id', '=', 'users.id') // Join users to get player data
-            ->join('users as agents', 'users.agent_id', '=', 'agents.id') // Join to get the agent data
-            ->where('agents.agent_id', $authUser->id) // Filter agents by the authenticated admin's ID
-            ->groupBy('report_transactions.user_id', 'users.name', 'agents.name') // Group by player and agent names
-            ->orderByDesc('latest_transaction_date') // Order by latest transaction date
+            ->join('users', 'report_transactions.user_id', '=', 'users.id')
+            ->join('users as agents', 'users.agent_id', '=', 'agents.id')
+            ->groupBy('report_transactions.user_id', 'users.name', 'agents.name')
+            ->orderByDesc('latest_transaction_date')
             ->when(isset($request->start_date) && isset($request->end_date), function ($query) use ($request) {
                 $query->whereBetween('report_transactions.created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
-            })
-            ->get();
+            });
 
+            if ($agent->hasRole('Senior Owner')) {
+                $reportTransactions = $query->get();
+            } elseif ($agent->hasRole('Agent')) {
+                $agentChildrenIds = $agent->children->pluck('id')->toArray();
+                $reportTransactions = $query->whereIn('user_id', $agentChildrenIds)->get();
+            } else {
+                $agentChildrenIds = $this->getAgentChildrenIds($agent, $hierarchy);
+                $reportTransactions = $query->whereIn('user_id', $agentChildrenIds)->get();
+            }
         return view('admin.report.shan.index', compact('reportTransactions'));
     }
 
@@ -92,5 +106,27 @@ class ShanReportController extends Controller
             ->get();
 
         return view('admin.shan.reports.agentindex', compact('reportTransactions'));
+    }
+
+    private function getAgentChildrenIds($agent, array $hierarchy)
+    {
+        foreach ($hierarchy as $role => $levels) {
+            if ($agent->hasRole($role)) {
+                return collect([$agent])
+                    ->flatMap(fn($levelAgent) => $this->getChildrenRecursive($levelAgent, $levels))
+                    ->pluck('id')
+                    ->toArray();
+            }
+        }
+        return [];
+    }
+
+    private function getChildrenRecursive($agent, array $levels)
+    {
+        $children = collect([$agent]);
+        foreach ($levels as $level) {
+            $children = $children->flatMap->children;
+        }
+        return $children->flatMap->children;
     }
 }
